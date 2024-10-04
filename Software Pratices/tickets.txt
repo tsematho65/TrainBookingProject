@@ -1,0 +1,2 @@
+samtse,T001,76.50,Tse :2;Ben:15;hi:16
+samtse,T001,New York,Boston,2024-10-11,09:00,50.00,samtse:18
