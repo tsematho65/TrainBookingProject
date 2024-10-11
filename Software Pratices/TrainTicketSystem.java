@@ -469,21 +469,53 @@ class TrainTicketSystem {
     }
 
     private static void orderTicket() {
+   	    List<Train> availableTrains = new ArrayList<Train>();
+    	
+    	// check if user has preferences
+    	System.out.println("Do you have any preferences? (yes/no)");
+    	String preferences = scanner.nextLine();
+    	
+		if (preferences.equals("yes")) {
+			System.out.println("Enter departure:");
+			String departure = scanner.next();
+
+			System.out.println("Enter arrival:");
+			String arrival = scanner.next();
+
+			System.out.println("Enter date (yyyy-MM-dd):");
+			String date = scanner.next();
+
+			trains = trains.stream().filter(t -> t.getDeparture().equals(departure) && t.getArrival().equals(arrival)
+					&& t.getDate().equals(date)).collect(Collectors.toList());
+			
+		} else if (preferences.equals("no")){
+			availableTrains = trains;
+			
+		} else {
+			System.out.println("Invalid choice.");
+            return;
+		}
+		
         System.out.println("Available trains:");
-        for (int i = 0; i < trains.size(); i++) {
-            System.out.println((i + 1) + ". " + trains.get(i));
+		if (availableTrains.isEmpty()) {
+			System.out.println("No trains found.");
+			return;
+		}
+		
+        for (int i = 0; i < availableTrains.size(); i++) {
+            System.out.println((i + 1) + ". " + availableTrains.get(i));
         }
 
         System.out.print("Select a train (enter number): ");
         int trainChoice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
 
-        if (trainChoice < 1 || trainChoice > trains.size()) {
+        if (trainChoice < 1 || trainChoice > availableTrains.size()) {
             System.out.println("Invalid train selection.");
             return;
         }
 
-        Train selectedTrain = trains.get(trainChoice - 1);
+        Train selectedTrain = availableTrains.get(trainChoice - 1);
 
         System.out.print("Enter number of passengers: ");
         int passengerCount = scanner.nextInt();
