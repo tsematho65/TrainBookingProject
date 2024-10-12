@@ -1,1 +1,2 @@
-3,T004,Los Angeles,Chicago,2024-10-11,08:30,200.0,5,jay:24
+3,T004,Los Angeles,Chicago,2024-10-11,08:30,200.0,5,v:19
+3,T008,Portland,Seattle,2024-10-11,09:30,90.0,2,Jay:24;V:18

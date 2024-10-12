@@ -214,123 +214,6 @@ class Database {
     // Database operations (read, write, update) for users, trains, and tickets
 }
 
-interface TicketDAO {
-	boolean addTicket(Ticket ticket);
-	List<Ticket> getTickets();
-	boolean updateTicket(Ticket ticket);
-}
-
-class TicketFileDAO implements TicketDAO {
-	private static final String TICKET_FILE = "tickets.txt";
-
-	@Override
-	public boolean addTicket(Ticket ticket) {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKET_FILE, true))) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(ticket.getUsername()).append(",");
-			sb.append(ticket.getTrain().getTrainNumber()).append(",");
-			sb.append(ticket.getTrain().getDeparture()).append(",");
-			sb.append(ticket.getTrain().getArrival()).append(",");
-			sb.append(ticket.getTrain().getDate()).append(",");
-			sb.append(ticket.getTrain().getTime()).append(",");
-			sb.append(ticket.getTotalPrice()).append(",");
-
-			for (int i = 0; i < ticket.getPassengers().size(); i++) {
-				Passenger p = ticket.getPassengers().get(i);
-				sb.append(p.getName()).append(":").append(p.getAge());
-				if (i < ticket.getPassengers().size() - 1) {
-					sb.append(";");
-				}
-			}
-
-			writer.write(sb.toString());
-			writer.newLine();
-			return true;
-		} catch (IOException e) {
-			System.out.println("Error writing to ticket file.");
-			return false;
-		}
-	}
-
-	@Override
-    public List<Ticket> getTickets() {
-        List<Ticket> tickets = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(TICKET_FILE))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 8) {
-                    String username = parts[0];
-                    String trainNumber = parts[1];
-                    String departure = parts[2];
-                    String arrival = parts[3];
-                    String date = parts[4];
-                    String time = parts[5];
-                    double totalPrice = Double.parseDouble(parts[6]);
-                    int rating = Integer.parseInt(parts[7]);
-                    
-                    Train train = new Train(trainNumber, departure, arrival, date, time, 0, 0);
-                    List<Passenger> passengers = new ArrayList<>();
-                    
-                    String[] passengerInfo = parts[8].split(";");
-                    for (String info : passengerInfo) {
-                        String[] pDetails = info.split(":");
-                        if (pDetails.length == 2) {
-                            passengers.add(new Passenger(pDetails[0], Integer.parseInt(pDetails[1])));
-                        }
-                    }
-                    
-                    Ticket ticket = TicketFactory.createTicket("regular", username, train, passengers, totalPrice);
-                    tickets.add(ticket);
-                }
-            }
-        } catch (IOException e) {
-        	System.out.println("Error reading tickets file.");
-        }
-        return tickets;
-   }
-	
-	@Override
-	public boolean updateTicket(Ticket ticket) {
-		List<String> ticketStrings = new ArrayList<>();
-		for (Ticket t : getTickets()) {
-			if (t.getUsername().equals(ticket.getUsername()) && t.getTrain().getTrainNumber().equals(ticket.getTrain().getTrainNumber()) && t.getTrain().getDate().equals(ticket.getTrain().getDate())) {
-				t = ticket;
-			}
-			StringBuilder sb = new StringBuilder();
-			sb.append(t.getUsername()).append(",");
-			sb.append(t.getTrain().getTrainNumber()).append(",");
-			sb.append(t.getTrain().getDeparture()).append(",");
-			sb.append(t.getTrain().getArrival()).append(",");
-			sb.append(t.getTrain().getDate()).append(",");
-			sb.append(t.getTrain().getTime()).append(",");
-			sb.append(t.getTotalPrice()).append(",");
-			sb.append(t.getRating()).append(",");
-
-			for (int i = 0; i < t.getPassengers().size(); i++) {
-				Passenger p = t.getPassengers().get(i);
-				sb.append(p.getName()).append(":").append(p.getAge());
-				if (i < t.getPassengers().size() - 1) {
-					sb.append(";");
-				}
-			}
-
-			ticketStrings.add(sb.toString());
-		}
-
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKET_FILE))) {
-			for (String t : ticketStrings) {
-				writer.write(t);
-				writer.newLine();
-			}
-			return true;
-		} catch (IOException e) {
-			System.out.println("Error writing to ticket file.");
-			return false;
-		}
-	}
-}
-
 // DAO Pattern
 interface UserDAO {
     boolean addUser(User user);
@@ -404,7 +287,6 @@ class TrainTicketSystem {
     private static String currentUser = null;
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static UserDAO userDAO = new UserFileDAO();
-    private static TicketDAO ticketDAO = new TicketFileDAO();
     private static List<Train> trains = new ArrayList<>();
     private static List<Ticket> tickets = new ArrayList<>();
 
@@ -473,8 +355,9 @@ class TrainTicketSystem {
 				ticket.setRating(rating);
 				
 				// update ticket file
-				ticketDAO.updateTicket(ticket);
+				updateTicketInFile(ticket);
 			}
+			System.out.println("-------------------------------------------------------------------------------------------------");
 			System.out.println("Thank you for your rating!");
 		}
     	
