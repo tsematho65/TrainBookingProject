@@ -1,2 +1,1 @@
-samtse,T001,76.50,Tse :2;Ben:15;hi:16
-samtse,T001,New York,Boston,2024-10-11,09:00,50.00,samtse:18
+3,T004,Los Angeles,Chicago,2024-10-11,08:30,200.0,5,jay:24

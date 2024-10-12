@@ -625,39 +625,39 @@ class TrainTicketSystem {
     }
 
     private static void orderTicket() {
-   	    List<Train> availableTrains = new ArrayList<Train>();
+    	List<Train> availableTrains = new ArrayList<Train>();
     	
     	// check if user has preferences
-    	System.out.println("Do you have any preferences? (Y/N)");
+    	System.out.println("Do you have any preferences? (yes/no)");
     	String preferences = scanner.nextLine();
     	
-		if (preferences.equals("Y")) {
+		if (preferences.equals("yes")) {
 			System.out.println("Enter departure:");
 			String departure = scanner.next();
-
+	
 			System.out.println("Enter arrival:");
 			String arrival = scanner.next();
-
+	
 			System.out.println("Enter date (yyyy-MM-dd):");
 			String date = scanner.next();
-
+	
 			trains = trains.stream().filter(t -> t.getDeparture().equals(departure) && t.getArrival().equals(arrival)
 					&& t.getDate().equals(date)).collect(Collectors.toList());
 			
-		} else if (preferences.equals("N")){
+		} else if (preferences.equals("no")){
 			availableTrains = trains;
 			
 		} else {
 			System.out.println("Invalid choice.");
-            return;
+	        	return;
 		}
-		
-        System.out.println("Available trains:");
+			
+	        System.out.println("Available trains:");
 		if (availableTrains.isEmpty()) {
 			System.out.println("No trains found.");
 			return;
 		}
-		
+	
         for (int i = 0; i < availableTrains.size(); i++) {
             System.out.println((i + 1) + ". " + availableTrains.get(i));
         }
