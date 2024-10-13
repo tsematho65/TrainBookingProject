@@ -289,6 +289,22 @@ class PayPalPayment implements PaymentStrategy {
     }
 }
 
+class Recommendation {
+	private String trainNumber;
+	private double averageRating;
+	
+	public Recommendation(String trainNumber, double averageRating) {
+		this.trainNumber = trainNumber;
+		this.averageRating = averageRating;
+	}
+	
+    // Getters and setters	
+	public String getTrainNumber() { return trainNumber; }
+	public void setTrainNumber(String trainNumber) { this.trainNumber = trainNumber; }
+	public double getAverageRating() { return averageRating; }
+	public void setAverageRating(double averageRating) { this.averageRating = averageRating; }
+}
+
 // Singleton Pattern
 class Database {
     private static Database instance;
@@ -307,127 +323,6 @@ class Database {
     }
 
     // Database operations (read, write, update) for users, trains, and tickets
-}
-
-interface TicketDAO {
-    boolean addTicket(Ticket ticket);
-
-    List<Ticket> getTickets();
-
-    boolean updateTicket(Ticket ticket);
-}
-
-class TicketFileDAO implements TicketDAO {
-    private static final String TICKET_FILE = "tickets.txt";
-
-    @Override
-    public boolean addTicket(Ticket ticket) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKET_FILE, true))) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(ticket.getUsername()).append(",");
-            sb.append(ticket.getTrain().getTrainNumber()).append(",");
-            sb.append(ticket.getTrain().getDeparture()).append(",");
-            sb.append(ticket.getTrain().getArrival()).append(",");
-            sb.append(ticket.getTrain().getDate()).append(",");
-            sb.append(ticket.getTrain().getTime()).append(",");
-            sb.append(ticket.getTotalPrice()).append(",");
-
-            for (int i = 0; i < ticket.getPassengers().size(); i++) {
-                Passenger p = ticket.getPassengers().get(i);
-                sb.append(p.getName()).append(":").append(p.getAge());
-                if (i < ticket.getPassengers().size() - 1) {
-                    sb.append(";");
-                }
-            }
-
-            writer.write(sb.toString());
-            writer.newLine();
-            return true;
-        } catch (IOException e) {
-            System.out.println("Error writing to ticket file.");
-            return false;
-        }
-    }
-
-    @Override
-    public List<Ticket> getTickets() {
-        List<Ticket> tickets = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(TICKET_FILE))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 8) {
-                    String username = parts[0];
-                    String trainNumber = parts[1];
-                    String departure = parts[2];
-                    String arrival = parts[3];
-                    String date = parts[4];
-                    String time = parts[5];
-                    double totalPrice = Double.parseDouble(parts[6]);
-                    int rating = Integer.parseInt(parts[7]);
-
-                    Train train = new Train(trainNumber, departure, arrival, date, time, 0, 0);
-                    List<Passenger> passengers = new ArrayList<>();
-
-                    String[] passengerInfo = parts[8].split(";");
-                    for (String info : passengerInfo) {
-                        String[] pDetails = info.split(":");
-                        if (pDetails.length == 2) {
-                            passengers.add(new Passenger(pDetails[0], Integer.parseInt(pDetails[1])));
-                        }
-                    }
-
-                    Ticket ticket = TicketFactory.createTicket("regular", username, train, passengers, totalPrice);
-                    tickets.add(ticket);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading tickets file.");
-        }
-        return tickets;
-    }
-
-    @Override
-    public boolean updateTicket(Ticket ticket) {
-        List<String> ticketStrings = new ArrayList<>();
-        for (Ticket t : getTickets()) {
-            if (t.getUsername().equals(ticket.getUsername())
-                    && t.getTrain().getTrainNumber().equals(ticket.getTrain().getTrainNumber())
-                    && t.getTrain().getDate().equals(ticket.getTrain().getDate())) {
-                t = ticket;
-            }
-            StringBuilder sb = new StringBuilder();
-            sb.append(t.getUsername()).append(",");
-            sb.append(t.getTrain().getTrainNumber()).append(",");
-            sb.append(t.getTrain().getDeparture()).append(",");
-            sb.append(t.getTrain().getArrival()).append(",");
-            sb.append(t.getTrain().getDate()).append(",");
-            sb.append(t.getTrain().getTime()).append(",");
-            sb.append(t.getTotalPrice()).append(",");
-            sb.append(t.getRating()).append(",");
-
-            for (int i = 0; i < t.getPassengers().size(); i++) {
-                Passenger p = t.getPassengers().get(i);
-                sb.append(p.getName()).append(":").append(p.getAge());
-                if (i < t.getPassengers().size() - 1) {
-                    sb.append(";");
-                }
-            }
-
-            ticketStrings.add(sb.toString());
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKET_FILE))) {
-            for (String t : ticketStrings) {
-                writer.write(t);
-                writer.newLine();
-            }
-            return true;
-        } catch (IOException e) {
-            System.out.println("Error writing to ticket file.");
-            return false;
-        }
-    }
 }
 
 // DAO Pattern
@@ -644,12 +539,12 @@ class TrainTicketSystem {
     private static String currentUser = null;
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static UserDAO userDAO = new UserFileDAO();
-    private static TicketDAO ticketDAO = new TicketFileDAO();
     private static List<Train> trains = new ArrayList<>();
     private static List<Ticket> tickets = new ArrayList<>();
 
     private static final String TRAINS_FILE = "trains.txt";
     private static final String TICKETS_FILE = "tickets.txt";
+    private static final int NUM_OF_RECOMMENDATIONS = 3;
 
     private static SeatingPlanDAO seatingPlanDAO = SeatingPlanDAO.getInstance();
 
@@ -687,44 +582,42 @@ class TrainTicketSystem {
     }
 
     private static void showMainMenu() {
-        // filter tickets based on user
-        List<Ticket> userTickets = tickets.stream()
-                .filter(ticket -> ticket.getUsername().equals(currentUser) && ticket.getRating() == 0)
-                .collect(Collectors.toList());
 
-        // check if user has finished their ticket
-        List<Ticket> usedTickets = userTickets.stream()
-                .filter(ticket -> {
-                    try {
-                        return new SimpleDateFormat("yyyy-MM-dd").parse(ticket.getTrain().getDate()).before(new Date());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
-
-        // ask user for ratings
-        if (!usedTickets.isEmpty()) {
-            System.out.println("\nPlease rate your journies!");
-            for (int i = 0; i < usedTickets.size(); i++) {
-                Ticket ticket = usedTickets.get(i);
-                System.out.println(
-                        "-------------------------------------------------------------------------------------------------");
-                System.out.println((i + 1) + ". " + ticket.toString());
-                System.out.print("\nRating (1-5, 1 is lowest, 5 is highest): ");
-
-                int rating = scanner.nextInt();
-                ticket.setRating(rating);
-
-                // update ticket file
-                ticketDAO.updateTicket(ticket);
-            }
-            System.out.println("Thank you for your rating!");
-        }
-
-        System.out.println(
-                "\n1. Order Ticket\n2. Check Tickets\n3. Edit Ticket\n4. Cancel Ticket\n5. Edit Profile\n6. Logout");
+    	// filter tickets based on user
+		List<Ticket> userTickets = tickets.stream().filter(ticket -> ticket.getUsername().equals(currentUser) && ticket.getRating() == 0).collect(Collectors.toList());
+    	
+    	// check if user has finished their ticket
+    	List<Ticket> usedTickets = userTickets.stream()
+		    .filter(ticket -> {
+		        try {
+		            return new SimpleDateFormat("yyyy-MM-dd").parse(ticket.getTrain().getDate()).before(new Date());
+		        } catch (ParseException e) {
+		            e.printStackTrace();
+		            return false;
+		        }
+		    })
+		    .collect(Collectors.toList());
+		
+    	// ask user for ratings
+		if (!usedTickets.isEmpty()) {
+		    System.out.println("\nPlease rate your journies!");
+			for (int i = 0; i < usedTickets.size(); i++) {
+				Ticket ticket = usedTickets.get(i);
+				System.out.println("-------------------------------------------------------------------------------------------------");
+				System.out.println((i + 1) + ". " + ticket.toString());
+				System.out.print("\nRating (1-5, 1 is lowest, 5 is highest): ");
+				
+				int rating = scanner.nextInt();
+				ticket.setRating(rating);
+				
+				// update ticket file
+				updateTicketInFile(ticket);
+			}
+			System.out.println("-------------------------------------------------------------------------------------------------");
+			System.out.println("Thank you for your rating!");
+		}
+    	
+        System.out.println("\n1. Order Ticket\n2. Check Tickets\n3. Edit Ticket\n4. Cancel Ticket\n5. Edit Profile\n6. Logout");
         System.out.print("Choose an option: ");
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
@@ -871,43 +764,80 @@ class TrainTicketSystem {
     }
 
     private static void orderTicket() {
-        List<Train> availableTrains = new ArrayList<Train>();
-
-        // check if user has preferences
-        System.out.println("Do you have any preferences? (yes/no)");
-        String preferences = scanner.nextLine();
-
-        if (preferences.equals("yes")) {
-            System.out.println("Enter departure:");
-            String departure = scanner.next();
-
-            System.out.println("Enter arrival:");
-            String arrival = scanner.next();
-
-            System.out.println("Enter date (yyyy-MM-dd):");
-            String date = scanner.next();
-
-            trains = trains.stream().filter(t -> t.getDeparture().equals(departure) && t.getArrival().equals(arrival)
-                    && t.getDate().equals(date)).collect(Collectors.toList());
-
-        } else if (preferences.equals("no")) {
-            availableTrains = trains;
-
-        } else {
-            System.out.println("Invalid choice.");
-            return;
-        }
-
-        System.out.println("Available trains:");
-        if (availableTrains.isEmpty()) {
-            System.out.println("No trains found.");
-            return;
-        }
-
+    	List<Train> availableTrains = new ArrayList<Train>();
+    	
+    	// check if user has preferences
+    	System.out.println("\nDo you have any preferences? (Y/N)");
+    	String preferences = scanner.nextLine();
+    	
+		if (preferences.equals("Y")) {
+			System.out.println("Enter departure:");
+			String departure = scanner.nextLine();
+	
+			System.out.println("Enter arrival:");
+			String arrival = scanner.nextLine();
+	
+			System.out.println("Enter date (yyyy-MM-dd):");
+			String date = scanner.nextLine();
+	
+			availableTrains = trains.stream().filter(t -> t.getDeparture().equals(departure) && t.getArrival().equals(arrival)
+					&& t.getDate().equals(date)).collect(Collectors.toList());
+			
+		} else if (preferences.equals("N")){
+			availableTrains = trains;
+			
+		} else {
+			System.out.println("Invalid choice.");
+	        return;
+		}
+		
+		List<String> recommendTrainNumbers = new ArrayList<String>();
+		// insert train recommendations
+		if (tickets.size() > 0) {	
+			System.out.println("\n------------------------------------------------------------------------------------------------------");
+			System.out.println("Best trains:");
+			
+			// calculate average rating for each train
+			List<Recommendation> recommendations = new ArrayList<Recommendation>();
+			for (Train train : availableTrains) {
+				double averageRating = tickets.stream()
+						.filter(ticket -> ticket.getTrain().getTrainNumber().equals(train.getTrainNumber()))
+						.mapToInt(Ticket::getRating).average().orElse(0);
+				recommendations.add(new Recommendation(train.getTrainNumber(), averageRating));
+			}
+			
+			// sort train recommendations by average rating
+			recommendations.sort(Comparator.comparingDouble(Recommendation::getAverageRating).reversed());
+			
+			// display train recommendations
+			for (int i = 0; i < Math.min(NUM_OF_RECOMMENDATIONS, recommendations.size()); i++) {
+				Recommendation recommendation = recommendations.get(i);
+				
+				// check and display only trains with average rating > 0
+				if (recommendation.getAverageRating() > 0) {
+					recommendTrainNumbers.add(recommendation.getTrainNumber());
+					System.out.println((i + 1) + ". Train " + recommendation.getTrainNumber() + ", Average Rating: "
+							+ recommendation.getAverageRating() + " out of 5.0");
+				}
+			}
+			
+		}
+		
+		System.out.println("\n------------------------------------------------------------------------------------------------------");
+		System.out.println("Available trains:");
+		if (availableTrains.isEmpty()) {
+			System.out.println("No trains found.");
+			return;
+		}
         for (int i = 0; i < availableTrains.size(); i++) {
-            System.out.println((i + 1) + ". " + availableTrains.get(i));
-        }
-
+        	if (recommendTrainNumbers.contains(availableTrains.get(i).getTrainNumber())) {
+				System.out.println((i + 1) + ". " + availableTrains.get(i) + " (Recommended)");
+			} else {
+				System.out.println((i + 1) + ". " + availableTrains.get(i));
+        	}
+        }    
+        
+        System.out.println("\n------------------------------------------------------------------------------------------------------");
         System.out.print("Select a train (enter number): ");
         int trainChoice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
