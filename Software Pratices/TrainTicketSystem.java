@@ -15,10 +15,21 @@ class User {
     }
 
     // Getters and setters
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
 
 class Train {
@@ -30,7 +41,8 @@ class Train {
     private int availableSeats;
     private double price;
 
-    public Train(String trainNumber, String departure, String arrival, String date, String time, int availableSeats, double price) {
+    public Train(String trainNumber, String departure, String arrival, String date, String time, int availableSeats,
+            double price) {
         this.trainNumber = trainNumber;
         this.departure = departure;
         this.arrival = arrival;
@@ -41,20 +53,61 @@ class Train {
     }
 
     // Getters and setters
-    public String getTrainNumber() { return trainNumber; }
-    public void setTrainNumber(String trainNumber) { this.trainNumber = trainNumber; }
-    public String getDeparture() { return departure; }
-    public void setDeparture(String departure) { this.departure = departure; }
-    public String getArrival() { return arrival; }
-    public void setArrival(String arrival) { this.arrival = arrival; }
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
-    public String getTime() { return time; }
-    public void setTime(String time) { this.time = time; }
-    public int getAvailableSeats() { return availableSeats; }
-    public void setAvailableSeats(int availableSeats) { this.availableSeats = availableSeats; }
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public String getTrainNumber() {
+        return trainNumber;
+    }
+
+    public void setTrainNumber(String trainNumber) {
+        this.trainNumber = trainNumber;
+    }
+
+    public String getDeparture() {
+        return departure;
+    }
+
+    public void setDeparture(String departure) {
+        this.departure = departure;
+    }
+
+    public String getArrival() {
+        return arrival;
+    }
+
+    public void setArrival(String arrival) {
+        this.arrival = arrival;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void setAvailableSeats(int availableSeats) {
+        this.availableSeats = availableSeats;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
     @Override
     public String toString() {
@@ -73,10 +126,21 @@ class Passenger {
     }
 
     // Getters and setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
 
     @Override
     public String toString() {
@@ -102,16 +166,45 @@ abstract class Ticket {
     public abstract String getTicketType();
 
     // Getters and setters
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public Train getTrain() { return train; }
-    public void setTrain(Train train) { this.train = train; }
-    public List<Passenger> getPassengers() { return passengers; }
-    public void setPassengers(List<Passenger> passengers) { this.passengers = passengers; }
-    public double getTotalPrice() { return totalPrice; }
-    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
-    public int getRating() { return rating; }
-    public void setRating(int rating) { this.rating = rating; }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Train getTrain() {
+        return train;
+    }
+
+    public void setTrain(Train train) {
+        this.train = train;
+    }
+
+    public List<Passenger> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<Passenger> passengers) {
+        this.passengers = passengers;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
 
     @Override
     public String toString() {
@@ -152,7 +245,8 @@ class BusinessTicket extends Ticket {
 
 // Factory Pattern
 class TicketFactory {
-    public static Ticket createTicket(String type, String username, Train train, List<Passenger> passengers, double totalPrice) {
+    public static Ticket createTicket(String type, String username, Train train, List<Passenger> passengers,
+            double totalPrice) {
         if (type.equalsIgnoreCase("regular")) {
             return new RegularTicket(username, train, passengers, totalPrice);
         } else if (type.equalsIgnoreCase("business")) {
@@ -202,7 +296,8 @@ class Database {
     private static final String TRAIN_FILE = "trains.txt";
     private static final String TICKET_FILE = "tickets.txt";
 
-    private Database() {}
+    private Database() {
+    }
 
     public static Database getInstance() {
         if (instance == null) {
@@ -215,44 +310,46 @@ class Database {
 }
 
 interface TicketDAO {
-	boolean addTicket(Ticket ticket);
-	List<Ticket> getTickets();
-	boolean updateTicket(Ticket ticket);
+    boolean addTicket(Ticket ticket);
+
+    List<Ticket> getTickets();
+
+    boolean updateTicket(Ticket ticket);
 }
 
 class TicketFileDAO implements TicketDAO {
-	private static final String TICKET_FILE = "tickets.txt";
+    private static final String TICKET_FILE = "tickets.txt";
 
-	@Override
-	public boolean addTicket(Ticket ticket) {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKET_FILE, true))) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(ticket.getUsername()).append(",");
-			sb.append(ticket.getTrain().getTrainNumber()).append(",");
-			sb.append(ticket.getTrain().getDeparture()).append(",");
-			sb.append(ticket.getTrain().getArrival()).append(",");
-			sb.append(ticket.getTrain().getDate()).append(",");
-			sb.append(ticket.getTrain().getTime()).append(",");
-			sb.append(ticket.getTotalPrice()).append(",");
+    @Override
+    public boolean addTicket(Ticket ticket) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKET_FILE, true))) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(ticket.getUsername()).append(",");
+            sb.append(ticket.getTrain().getTrainNumber()).append(",");
+            sb.append(ticket.getTrain().getDeparture()).append(",");
+            sb.append(ticket.getTrain().getArrival()).append(",");
+            sb.append(ticket.getTrain().getDate()).append(",");
+            sb.append(ticket.getTrain().getTime()).append(",");
+            sb.append(ticket.getTotalPrice()).append(",");
 
-			for (int i = 0; i < ticket.getPassengers().size(); i++) {
-				Passenger p = ticket.getPassengers().get(i);
-				sb.append(p.getName()).append(":").append(p.getAge());
-				if (i < ticket.getPassengers().size() - 1) {
-					sb.append(";");
-				}
-			}
+            for (int i = 0; i < ticket.getPassengers().size(); i++) {
+                Passenger p = ticket.getPassengers().get(i);
+                sb.append(p.getName()).append(":").append(p.getAge());
+                if (i < ticket.getPassengers().size() - 1) {
+                    sb.append(";");
+                }
+            }
 
-			writer.write(sb.toString());
-			writer.newLine();
-			return true;
-		} catch (IOException e) {
-			System.out.println("Error writing to ticket file.");
-			return false;
-		}
-	}
+            writer.write(sb.toString());
+            writer.newLine();
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error writing to ticket file.");
+            return false;
+        }
+    }
 
-	@Override
+    @Override
     public List<Ticket> getTickets() {
         List<Ticket> tickets = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(TICKET_FILE))) {
@@ -268,10 +365,10 @@ class TicketFileDAO implements TicketDAO {
                     String time = parts[5];
                     double totalPrice = Double.parseDouble(parts[6]);
                     int rating = Integer.parseInt(parts[7]);
-                    
+
                     Train train = new Train(trainNumber, departure, arrival, date, time, 0, 0);
                     List<Passenger> passengers = new ArrayList<>();
-                    
+
                     String[] passengerInfo = parts[8].split(";");
                     for (String info : passengerInfo) {
                         String[] pDetails = info.split(":");
@@ -279,62 +376,66 @@ class TicketFileDAO implements TicketDAO {
                             passengers.add(new Passenger(pDetails[0], Integer.parseInt(pDetails[1])));
                         }
                     }
-                    
+
                     Ticket ticket = TicketFactory.createTicket("regular", username, train, passengers, totalPrice);
                     tickets.add(ticket);
                 }
             }
         } catch (IOException e) {
-        	System.out.println("Error reading tickets file.");
+            System.out.println("Error reading tickets file.");
         }
         return tickets;
-   }
-	
-	@Override
-	public boolean updateTicket(Ticket ticket) {
-		List<String> ticketStrings = new ArrayList<>();
-		for (Ticket t : getTickets()) {
-			if (t.getUsername().equals(ticket.getUsername()) && t.getTrain().getTrainNumber().equals(ticket.getTrain().getTrainNumber()) && t.getTrain().getDate().equals(ticket.getTrain().getDate())) {
-				t = ticket;
-			}
-			StringBuilder sb = new StringBuilder();
-			sb.append(t.getUsername()).append(",");
-			sb.append(t.getTrain().getTrainNumber()).append(",");
-			sb.append(t.getTrain().getDeparture()).append(",");
-			sb.append(t.getTrain().getArrival()).append(",");
-			sb.append(t.getTrain().getDate()).append(",");
-			sb.append(t.getTrain().getTime()).append(",");
-			sb.append(t.getTotalPrice()).append(",");
-			sb.append(t.getRating()).append(",");
+    }
 
-			for (int i = 0; i < t.getPassengers().size(); i++) {
-				Passenger p = t.getPassengers().get(i);
-				sb.append(p.getName()).append(":").append(p.getAge());
-				if (i < t.getPassengers().size() - 1) {
-					sb.append(";");
-				}
-			}
+    @Override
+    public boolean updateTicket(Ticket ticket) {
+        List<String> ticketStrings = new ArrayList<>();
+        for (Ticket t : getTickets()) {
+            if (t.getUsername().equals(ticket.getUsername())
+                    && t.getTrain().getTrainNumber().equals(ticket.getTrain().getTrainNumber())
+                    && t.getTrain().getDate().equals(ticket.getTrain().getDate())) {
+                t = ticket;
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(t.getUsername()).append(",");
+            sb.append(t.getTrain().getTrainNumber()).append(",");
+            sb.append(t.getTrain().getDeparture()).append(",");
+            sb.append(t.getTrain().getArrival()).append(",");
+            sb.append(t.getTrain().getDate()).append(",");
+            sb.append(t.getTrain().getTime()).append(",");
+            sb.append(t.getTotalPrice()).append(",");
+            sb.append(t.getRating()).append(",");
 
-			ticketStrings.add(sb.toString());
-		}
+            for (int i = 0; i < t.getPassengers().size(); i++) {
+                Passenger p = t.getPassengers().get(i);
+                sb.append(p.getName()).append(":").append(p.getAge());
+                if (i < t.getPassengers().size() - 1) {
+                    sb.append(";");
+                }
+            }
 
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKET_FILE))) {
-			for (String t : ticketStrings) {
-				writer.write(t);
-				writer.newLine();
-			}
-			return true;
-		} catch (IOException e) {
-			System.out.println("Error writing to ticket file.");
-			return false;
-		}
-	}
+            ticketStrings.add(sb.toString());
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKET_FILE))) {
+            for (String t : ticketStrings) {
+                writer.write(t);
+                writer.newLine();
+            }
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error writing to ticket file.");
+            return false;
+        }
+    }
 }
 
 // DAO Pattern
 interface UserDAO {
     boolean addUser(User user);
+
     User getUser(String username);
+
     boolean updateUser(User user);
 }
 
@@ -398,6 +499,145 @@ class UserFileDAO implements UserDAO {
     }
 }
 
+class SeatingPlan {
+    private String trainNumber;
+    private boolean[] seats;
+
+    public SeatingPlan(String trainNumber, boolean[] seats) {
+        this.trainNumber = trainNumber;
+        this.seats = seats;
+    }
+
+    public String getTrainNumber() {
+        return trainNumber;
+    }
+
+    public boolean isSeatAvailable(int seatIndex) {
+        return !seats[seatIndex];
+    }
+
+    public List<Integer> assignSeats(int numSeats, boolean connected) {
+        if (connected) {
+            return assignConnectedSeats(numSeats);
+        } else {
+            return assignNonConnectedSeats(numSeats);
+        }
+    }
+
+    private List<Integer> assignConnectedSeats(int numSeats) {
+        int seatsPerRow = 4; // Assuming 4 seats per row
+        for (int row = 0; row < seats.length / seatsPerRow; row++) {
+            for (int col = 0; col <= seatsPerRow - numSeats; col++) {
+                boolean available = true;
+                for (int k = 0; k < numSeats; k++) {
+                    if (!isSeatAvailable(row * seatsPerRow + col + k)) {
+                        available = false;
+                        break;
+                    }
+                }
+                if (available) {
+                    List<Integer> assignedSeats = new ArrayList<>();
+                    for (int k = 0; k < numSeats; k++) {
+                        seats[row * seatsPerRow + col + k] = true;
+                        assignedSeats.add(row * seatsPerRow + col + k);
+                    }
+                    return assignedSeats;
+                }
+            }
+        }
+        return new ArrayList<>(); // Return an empty list if no seats are assigned
+    }
+
+    private List<Integer> assignNonConnectedSeats(int numSeats) {
+        List<Integer> assignedSeats = new ArrayList<>();
+        for (int i = 0; i < seats.length; i++) {
+            if (isSeatAvailable(i)) {
+                seats[i] = true;
+                assignedSeats.add(i);
+                if (assignedSeats.size() == numSeats) {
+                    return assignedSeats;
+                }
+            }
+        }
+        return new ArrayList<>(); // Return an empty list if not enough seats are assigned
+    }
+
+    public static SeatingPlan fromString(String line) {
+        String[] parts = line.split(":");
+        String trainNumber = parts[0];
+        String[] seatStrings = parts[1].split(",");
+        boolean[] seats = new boolean[seatStrings.length];
+        for (int i = 0; i < seatStrings.length; i++) {
+            seats[i] = seatStrings[i].equals("X");
+        }
+        return new SeatingPlan(trainNumber, seats);
+    }
+
+    public String getSeatingPlanString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < seats.length; i++) {
+            if (i % 4 == 0) {
+                sb.append("\n");
+            }
+            if (seats[i]) {
+                sb.append("X\t");
+            } else {
+                sb.append(i).append("\t");
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    @Override
+    public String toString() {
+        return trainNumber + ":" + Arrays.toString(seats);
+    }
+}
+
+class SeatingPlanDAO {
+    private Map<String, SeatingPlan> seatingPlans;
+    private static SeatingPlanDAO instance = null;
+
+    private SeatingPlanDAO() {
+        this.seatingPlans = new HashMap<>();
+        try {
+            loadSeatingPlans("seatingPlan.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle the exception, e.g., log it or rethrow as a runtime exception
+        }
+    }
+
+    public static SeatingPlanDAO getInstance() {
+        if (instance == null) {
+            instance = new SeatingPlanDAO();
+        }
+        return instance;
+    }
+
+    public void loadSeatingPlans(String filename) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                SeatingPlan seatingPlan = SeatingPlan.fromString(line);
+                seatingPlans.put(seatingPlan.getTrainNumber(), seatingPlan);
+            }
+        }
+    }
+
+    public SeatingPlan getSeatingPlan(String trainNumber) {
+        return seatingPlans.get(trainNumber);
+    }
+
+    public List<Integer> assignSeats(String trainNumber, int numSeats, boolean connected) {
+        SeatingPlan seatingPlan = getSeatingPlan(trainNumber);
+        if (seatingPlan != null) {
+            return seatingPlan.assignSeats(numSeats, connected);
+        }
+        return new ArrayList<>(); // Return an empty list if no seats are assigned
+    }
+}
+
 // Controller
 class TrainTicketSystem {
     private static Scanner scanner = new Scanner(System.in);
@@ -410,6 +650,8 @@ class TrainTicketSystem {
 
     private static final String TRAINS_FILE = "trains.txt";
     private static final String TICKETS_FILE = "tickets.txt";
+
+    private static SeatingPlanDAO seatingPlanDAO = SeatingPlanDAO.getInstance();
 
     public static void main(String[] args) {
         loadTrains();
@@ -445,40 +687,44 @@ class TrainTicketSystem {
     }
 
     private static void showMainMenu() {
-    	// filter tickets based on user
-		List<Ticket> userTickets = tickets.stream().filter(ticket -> ticket.getUsername().equals(currentUser) && ticket.getRating() == 0).collect(Collectors.toList());
-    	
-    	// check if user has finished their ticket
-    	List<Ticket> usedTickets = userTickets.stream()
-		    .filter(ticket -> {
-		        try {
-		            return new SimpleDateFormat("yyyy-MM-dd").parse(ticket.getTrain().getDate()).before(new Date());
-		        } catch (ParseException e) {
-		            e.printStackTrace();
-		            return false;
-		        }
-		    })
-		    .collect(Collectors.toList());
-		
-    	// ask user for ratings
-		if (!usedTickets.isEmpty()) {
-		    System.out.println("\nPlease rate your journies!");
-			for (int i = 0; i < usedTickets.size(); i++) {
-				Ticket ticket = usedTickets.get(i);
-				System.out.println("-------------------------------------------------------------------------------------------------");
-				System.out.println((i + 1) + ". " + ticket.toString());
-				System.out.print("\nRating (1-5, 1 is lowest, 5 is highest): ");
-				
-				int rating = scanner.nextInt();
-				ticket.setRating(rating);
-				
-				// update ticket file
-				ticketDAO.updateTicket(ticket);
-			}
-			System.out.println("Thank you for your rating!");
-		}
-    	
-        System.out.println("\n1. Order Ticket\n2. Check Tickets\n3. Edit Ticket\n4. Cancel Ticket\n5. Edit Profile\n6. Logout");
+        // filter tickets based on user
+        List<Ticket> userTickets = tickets.stream()
+                .filter(ticket -> ticket.getUsername().equals(currentUser) && ticket.getRating() == 0)
+                .collect(Collectors.toList());
+
+        // check if user has finished their ticket
+        List<Ticket> usedTickets = userTickets.stream()
+                .filter(ticket -> {
+                    try {
+                        return new SimpleDateFormat("yyyy-MM-dd").parse(ticket.getTrain().getDate()).before(new Date());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        // ask user for ratings
+        if (!usedTickets.isEmpty()) {
+            System.out.println("\nPlease rate your journies!");
+            for (int i = 0; i < usedTickets.size(); i++) {
+                Ticket ticket = usedTickets.get(i);
+                System.out.println(
+                        "-------------------------------------------------------------------------------------------------");
+                System.out.println((i + 1) + ". " + ticket.toString());
+                System.out.print("\nRating (1-5, 1 is lowest, 5 is highest): ");
+
+                int rating = scanner.nextInt();
+                ticket.setRating(rating);
+
+                // update ticket file
+                ticketDAO.updateTicket(ticket);
+            }
+            System.out.println("Thank you for your rating!");
+        }
+
+        System.out.println(
+                "\n1. Order Ticket\n2. Check Tickets\n3. Edit Ticket\n4. Cancel Ticket\n5. Edit Profile\n6. Logout");
         System.out.print("Choose an option: ");
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
@@ -545,13 +791,13 @@ class TrainTicketSystem {
                 String[] parts = line.split(",");
                 if (parts.length == 7) {
                     Train train = new Train(
-                        parts[0], // trainNumber
-                        parts[1], // departure
-                        parts[2], // arrival
-                        parts[3], // date
-                        parts[4], // time
-                        Integer.parseInt(parts[5]), // availableSeats
-                        Double.parseDouble(parts[6]) // price
+                            parts[0], // trainNumber
+                            parts[1], // departure
+                            parts[2], // arrival
+                            parts[3], // date
+                            parts[4], // time
+                            Integer.parseInt(parts[5]), // availableSeats
+                            Double.parseDouble(parts[6]) // price
                     );
                     trains.add(train);
                 }
@@ -576,10 +822,10 @@ class TrainTicketSystem {
                     String time = parts[5];
                     double totalPrice = Double.parseDouble(parts[6]);
                     int rating = Integer.parseInt(parts[7]);
-                    
+
                     Train train = new Train(trainNumber, departure, arrival, date, time, 0, 0);
                     List<Passenger> passengers = new ArrayList<>();
-                    
+
                     String[] passengerInfo = parts[8].split(";");
                     for (String info : passengerInfo) {
                         String[] pDetails = info.split(":");
@@ -587,7 +833,7 @@ class TrainTicketSystem {
                             passengers.add(new Passenger(pDetails[0], Integer.parseInt(pDetails[1])));
                         }
                     }
-                    
+
                     Ticket ticket = TicketFactory.createTicket("regular", username, train, passengers, totalPrice);
                     tickets.add(ticket);
                 }
@@ -608,7 +854,7 @@ class TrainTicketSystem {
             sb.append(ticket.getTrain().getTime()).append(",");
             sb.append(ticket.getTotalPrice()).append(",");
             sb.append(ticket.getRating()).append(",");
-            
+
             for (int i = 0; i < ticket.getPassengers().size(); i++) {
                 Passenger p = ticket.getPassengers().get(i);
                 sb.append(p.getName()).append(":").append(p.getAge());
@@ -616,7 +862,7 @@ class TrainTicketSystem {
                     sb.append(";");
                 }
             }
-            
+
             writer.write(sb.toString());
             writer.newLine();
         } catch (IOException e) {
@@ -625,39 +871,39 @@ class TrainTicketSystem {
     }
 
     private static void orderTicket() {
-    	List<Train> availableTrains = new ArrayList<Train>();
-    	
-    	// check if user has preferences
-    	System.out.println("Do you have any preferences? (yes/no)");
-    	String preferences = scanner.nextLine();
-    	
-		if (preferences.equals("yes")) {
-			System.out.println("Enter departure:");
-			String departure = scanner.next();
-	
-			System.out.println("Enter arrival:");
-			String arrival = scanner.next();
-	
-			System.out.println("Enter date (yyyy-MM-dd):");
-			String date = scanner.next();
-	
-			trains = trains.stream().filter(t -> t.getDeparture().equals(departure) && t.getArrival().equals(arrival)
-					&& t.getDate().equals(date)).collect(Collectors.toList());
-			
-		} else if (preferences.equals("no")){
-			availableTrains = trains;
-			
-		} else {
-			System.out.println("Invalid choice.");
-	        	return;
-		}
-			
-	        System.out.println("Available trains:");
-		if (availableTrains.isEmpty()) {
-			System.out.println("No trains found.");
-			return;
-		}
-	
+        List<Train> availableTrains = new ArrayList<Train>();
+
+        // check if user has preferences
+        System.out.println("Do you have any preferences? (yes/no)");
+        String preferences = scanner.nextLine();
+
+        if (preferences.equals("yes")) {
+            System.out.println("Enter departure:");
+            String departure = scanner.next();
+
+            System.out.println("Enter arrival:");
+            String arrival = scanner.next();
+
+            System.out.println("Enter date (yyyy-MM-dd):");
+            String date = scanner.next();
+
+            trains = trains.stream().filter(t -> t.getDeparture().equals(departure) && t.getArrival().equals(arrival)
+                    && t.getDate().equals(date)).collect(Collectors.toList());
+
+        } else if (preferences.equals("no")) {
+            availableTrains = trains;
+
+        } else {
+            System.out.println("Invalid choice.");
+            return;
+        }
+
+        System.out.println("Available trains:");
+        if (availableTrains.isEmpty()) {
+            System.out.println("No trains found.");
+            return;
+        }
+
         for (int i = 0; i < availableTrains.size(); i++) {
             System.out.println((i + 1) + ". " + availableTrains.get(i));
         }
@@ -698,6 +944,43 @@ class TrainTicketSystem {
             totalPrice *= 1.5; // 50% more expensive for business class
         }
 
+        // seats selection here:
+        SeatingPlan targetSeatingPlan = seatingPlanDAO.getSeatingPlan(selectedTrain.getTrainNumber());
+        System.out.println("Train No: " + selectedTrain.getTrainNumber() + ", Seating Plan:");
+        System.out.println(targetSeatingPlan.getSeatingPlanString());
+
+        boolean isConnected = false;
+        if (passengerCount > 1) {
+            System.out.println("Do you want to assign connected seats? (yes/no)");
+            String isconnected_answer = scanner.nextLine();
+            isConnected = "yes".equals(isconnected_answer) ? true : false;
+        }
+        List<Integer> assignedSeatsNumber = targetSeatingPlan.assignSeats(passengerCount, isConnected);
+        System.out.println("Updated Seating Plan: ");
+        System.out.println(targetSeatingPlan.getSeatingPlanString());
+        System.out.println("seats number: " + assignedSeatsNumber);
+
+        // TEST CASES:
+        // List<Integer> assignedSeatsNumber = targetSeatingPlan.assignSeats(5, false);
+        // System.out.println("\nCurrent Seating Plan (after 5 seats assigned, not
+        // connected --> (1...5) ): ");
+        // System.out.println(targetSeatingPlan.getSeatingPlanString());
+        // System.out.println("seats number: " + assignedSeatsNumber);
+
+        // assignedSeatsNumber = targetSeatingPlan.assignSeats(3, true);
+        // System.out.println("\nCurrent Seating Plan (after 3 seats assigned, connected
+        // --> (8,9,10) ): ");
+        // System.out.println(targetSeatingPlan.getSeatingPlanString());
+        // System.out.println("seats number: " + assignedSeatsNumber);
+
+        // assignedSeatsNumber = targetSeatingPlan.assignSeats(5, true);
+        // System.out.println("\nCurrent Seating Plan (after 5 seats assigned, not
+        // connected --> (error) ): ");
+        // System.out.println(targetSeatingPlan.getSeatingPlanString());
+        // // empty list returned if no seats are available => error => can not find a
+        // // solution
+        // System.out.println("seats number: " + assignedSeatsNumber);
+
         System.out.println("Total price: $" + totalPrice);
 
         System.out.print("Select payment method (1. Credit Card, 2. PayPal): ");
@@ -707,7 +990,8 @@ class TrainTicketSystem {
         PaymentStrategy paymentStrategy = (paymentChoice == 1) ? new CreditCardPayment() : new PayPalPayment();
 
         if (paymentStrategy.processPayment(totalPrice)) {
-            Ticket newTicket = TicketFactory.createTicket(ticketType, currentUser, selectedTrain, passengers, totalPrice);
+            Ticket newTicket = TicketFactory.createTicket(ticketType, currentUser, selectedTrain, passengers,
+                    totalPrice);
             tickets.add(newTicket);
             selectedTrain.setAvailableSeats(selectedTrain.getAvailableSeats() - passengerCount);
             saveTicket(newTicket);
@@ -733,254 +1017,255 @@ class TrainTicketSystem {
     }
 
     private static void editTicket() {
-    List<Ticket> userTickets = getUserTickets();
-    if (userTickets.isEmpty()) {
-        System.out.println("You have no tickets to edit.");
-        return;
-    }
-
-    System.out.println("Your tickets:");
-    for (int i = 0; i < userTickets.size(); i++) {
-        System.out.println((i + 1) + ". " + userTickets.get(i));
-    }
-
-    System.out.print("Select a ticket to edit (enter number): ");
-    int ticketChoice = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-
-    if (ticketChoice < 1 || ticketChoice > userTickets.size()) {
-        System.out.println("Invalid ticket selection.");
-        return;
-    }
-
-    Ticket selectedTicket = userTickets.get(ticketChoice - 1);
-
-    System.out.println("What would you like to edit?");
-    System.out.println("1. Change train");
-    System.out.println("2. Edit passengers");
-    System.out.print("Enter your choice: ");
-    int editChoice = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-
-    switch (editChoice) {
-        case 1:
-            changeTrain(selectedTicket);
-            break;
-        case 2:
-            editPassengers(selectedTicket);
-            break;
-        default:
-            System.out.println("Invalid choice.");
-    }
-}
-
-private static void changeTrain(Ticket ticket) {
-    System.out.println("Available trains:");
-    for (int i = 0; i < trains.size(); i++) {
-        System.out.println((i + 1) + ". " + trains.get(i));
-    }
-
-    System.out.print("Select a new train (enter number): ");
-    int trainChoice = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-
-    if (trainChoice < 1 || trainChoice > trains.size()) {
-        System.out.println("Invalid train selection.");
-        return;
-    }
-
-    Train newTrain = trains.get(trainChoice - 1);
-    
-    // Update available seats for old and new train
-    ticket.getTrain().setAvailableSeats(ticket.getTrain().getAvailableSeats() + ticket.getPassengers().size());
-    newTrain.setAvailableSeats(newTrain.getAvailableSeats() - ticket.getPassengers().size());
-
-    // Update ticket
-    ticket.setTrain(newTrain);
-    ticket.setTotalPrice(newTrain.getPrice() * ticket.getPassengers().size());
-
-    updateTicketInFile(ticket);
-    System.out.println("Ticket updated successfully.");
-}
-
-private static void editPassengers(Ticket ticket) {
-    System.out.println("Current passengers:");
-    List<Passenger> passengers = ticket.getPassengers();
-    for (int i = 0; i < passengers.size(); i++) {
-        System.out.println((i + 1) + ". " + passengers.get(i));
-    }
-
-    System.out.println("1. Add a passenger");
-    System.out.println("2. Remove a passenger");
-    System.out.println("3. Edit a passenger");
-    System.out.print("Enter your choice: ");
-    int choice = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-
-    switch (choice) {
-        case 1:
-            addPassenger(ticket);
-            break;
-        case 2:
-            removePassenger(ticket);
-            break;
-        case 3:
-            editPassenger(ticket);
-            break;
-        default:
-            System.out.println("Invalid choice.");
-    }
-}
-
-private static void addPassenger(Ticket ticket) {
-    System.out.print("Enter passenger name: ");
-    String name = scanner.nextLine();
-    System.out.print("Enter passenger age: ");
-    int age = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-
-    Passenger newPassenger = new Passenger(name, age);
-    ticket.getPassengers().add(newPassenger);
-    ticket.setTotalPrice(ticket.getTotalPrice() + ticket.getTrain().getPrice());
-    ticket.getTrain().setAvailableSeats(ticket.getTrain().getAvailableSeats() - 1);
-
-    updateTicketInFile(ticket);
-    System.out.println("Passenger added successfully.");
-}
-
-private static void removePassenger(Ticket ticket) {
-    List<Passenger> passengers = ticket.getPassengers();
-    System.out.println("Select a passenger to remove:");
-    for (int i = 0; i < passengers.size(); i++) {
-        System.out.println((i + 1) + ". " + passengers.get(i));
-    }
-
-    System.out.print("Enter passenger number: ");
-    int passengerChoice = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-
-    if (passengerChoice < 1 || passengerChoice > passengers.size()) {
-        System.out.println("Invalid passenger selection.");
-        return;
-    }
-
-    passengers.remove(passengerChoice - 1);
-    ticket.setTotalPrice(ticket.getTotalPrice() - ticket.getTrain().getPrice());
-    ticket.getTrain().setAvailableSeats(ticket.getTrain().getAvailableSeats() + 1);
-
-    updateTicketInFile(ticket);
-    System.out.println("Passenger removed successfully.");
-}
-
-private static void editPassenger(Ticket ticket) {
-    List<Passenger> passengers = ticket.getPassengers();
-    System.out.println("Select a passenger to edit:");
-    for (int i = 0; i < passengers.size(); i++) {
-        System.out.println((i + 1) + ". " + passengers.get(i));
-    }
-
-    System.out.print("Enter passenger number: ");
-    int passengerChoice = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-
-    if (passengerChoice < 1 || passengerChoice > passengers.size()) {
-        System.out.println("Invalid passenger selection.");
-        return;
-    }
-
-    Passenger selectedPassenger = passengers.get(passengerChoice - 1);
-
-    System.out.print("Enter new name (or press enter to keep current): ");
-    String newName = scanner.nextLine();
-    if (!newName.isEmpty()) {
-        selectedPassenger.setName(newName);
-    }
-
-    System.out.print("Enter new age (or -1 to keep current): ");
-    int newAge = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-    if (newAge != -1) {
-        selectedPassenger.setAge(newAge);
-    }
-
-    updateTicketInFile(ticket);
-    System.out.println("Passenger updated successfully.");
-}
-
-private static void cancelTicket() {
-    List<Ticket> userTickets = getUserTickets();
-    if (userTickets.isEmpty()) {
-        System.out.println("You have no tickets to cancel.");
-        return;
-    }
-
-    System.out.println("Your tickets:");
-    for (int i = 0; i < userTickets.size(); i++) {
-        System.out.println((i + 1) + ". " + userTickets.get(i));
-    }
-
-    System.out.print("Select a ticket to cancel (enter number): ");
-    int ticketChoice = scanner.nextInt();
-    scanner.nextLine(); // Consume newline
-
-    if (ticketChoice < 1 || ticketChoice > userTickets.size()) {
-        System.out.println("Invalid ticket selection.");
-        return;
-    }
-
-    Ticket selectedTicket = userTickets.get(ticketChoice - 1);
-
-    // Update available seats
-    selectedTicket.getTrain().setAvailableSeats(selectedTicket.getTrain().getAvailableSeats() + selectedTicket.getPassengers().size());
-
-    // Remove ticket from the list
-    tickets.remove(selectedTicket);
-
-    // Update tickets file
-    updateTicketsFile();
-
-    System.out.println("Ticket cancelled successfully.");
-    System.out.println("Refund amount: $" + (selectedTicket.getTotalPrice() * 0.9)); // 90% refund
-}
-
-private static List<Ticket> getUserTickets() {
-    return tickets.stream()
-            .filter(t -> t.getUsername().equals(currentUser))
-            .collect(Collectors.toList());
-}
-
-private static void updateTicketInFile(Ticket updatedTicket) {
-    updateTicketsFile();
-}
-
-private static void updateTicketsFile() {
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKETS_FILE))) {
-        for (Ticket ticket : tickets) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(ticket.getUsername()).append(",");
-            sb.append(ticket.getTrain().getTrainNumber()).append(",");
-            sb.append(ticket.getTrain().getDeparture()).append(",");
-            sb.append(ticket.getTrain().getArrival()).append(",");
-            sb.append(ticket.getTrain().getDate()).append(",");
-            sb.append(ticket.getTrain().getTime()).append(",");
-            sb.append(ticket.getTotalPrice()).append(",");
-            sb.append(ticket.getRating()).append(",");
-            
-            for (int i = 0; i < ticket.getPassengers().size(); i++) {
-                Passenger p = ticket.getPassengers().get(i);
-                sb.append(p.getName()).append(":").append(p.getAge());
-                if (i < ticket.getPassengers().size() - 1) {
-                    sb.append(";");
-                }
-            }
-            
-            writer.write(sb.toString());
-            writer.newLine();
+        List<Ticket> userTickets = getUserTickets();
+        if (userTickets.isEmpty()) {
+            System.out.println("You have no tickets to edit.");
+            return;
         }
-    } catch (IOException e) {
-        System.out.println("Error updating tickets file: " + e.getMessage());
+
+        System.out.println("Your tickets:");
+        for (int i = 0; i < userTickets.size(); i++) {
+            System.out.println((i + 1) + ". " + userTickets.get(i));
+        }
+
+        System.out.print("Select a ticket to edit (enter number): ");
+        int ticketChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        if (ticketChoice < 1 || ticketChoice > userTickets.size()) {
+            System.out.println("Invalid ticket selection.");
+            return;
+        }
+
+        Ticket selectedTicket = userTickets.get(ticketChoice - 1);
+
+        System.out.println("What would you like to edit?");
+        System.out.println("1. Change train");
+        System.out.println("2. Edit passengers");
+        System.out.print("Enter your choice: ");
+        int editChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        switch (editChoice) {
+            case 1:
+                changeTrain(selectedTicket);
+                break;
+            case 2:
+                editPassengers(selectedTicket);
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
     }
-}
+
+    private static void changeTrain(Ticket ticket) {
+        System.out.println("Available trains:");
+        for (int i = 0; i < trains.size(); i++) {
+            System.out.println((i + 1) + ". " + trains.get(i));
+        }
+
+        System.out.print("Select a new train (enter number): ");
+        int trainChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        if (trainChoice < 1 || trainChoice > trains.size()) {
+            System.out.println("Invalid train selection.");
+            return;
+        }
+
+        Train newTrain = trains.get(trainChoice - 1);
+
+        // Update available seats for old and new train
+        ticket.getTrain().setAvailableSeats(ticket.getTrain().getAvailableSeats() + ticket.getPassengers().size());
+        newTrain.setAvailableSeats(newTrain.getAvailableSeats() - ticket.getPassengers().size());
+
+        // Update ticket
+        ticket.setTrain(newTrain);
+        ticket.setTotalPrice(newTrain.getPrice() * ticket.getPassengers().size());
+
+        updateTicketInFile(ticket);
+        System.out.println("Ticket updated successfully.");
+    }
+
+    private static void editPassengers(Ticket ticket) {
+        System.out.println("Current passengers:");
+        List<Passenger> passengers = ticket.getPassengers();
+        for (int i = 0; i < passengers.size(); i++) {
+            System.out.println((i + 1) + ". " + passengers.get(i));
+        }
+
+        System.out.println("1. Add a passenger");
+        System.out.println("2. Remove a passenger");
+        System.out.println("3. Edit a passenger");
+        System.out.print("Enter your choice: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        switch (choice) {
+            case 1:
+                addPassenger(ticket);
+                break;
+            case 2:
+                removePassenger(ticket);
+                break;
+            case 3:
+                editPassenger(ticket);
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
+    }
+
+    private static void addPassenger(Ticket ticket) {
+        System.out.print("Enter passenger name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter passenger age: ");
+        int age = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        Passenger newPassenger = new Passenger(name, age);
+        ticket.getPassengers().add(newPassenger);
+        ticket.setTotalPrice(ticket.getTotalPrice() + ticket.getTrain().getPrice());
+        ticket.getTrain().setAvailableSeats(ticket.getTrain().getAvailableSeats() - 1);
+
+        updateTicketInFile(ticket);
+        System.out.println("Passenger added successfully.");
+    }
+
+    private static void removePassenger(Ticket ticket) {
+        List<Passenger> passengers = ticket.getPassengers();
+        System.out.println("Select a passenger to remove:");
+        for (int i = 0; i < passengers.size(); i++) {
+            System.out.println((i + 1) + ". " + passengers.get(i));
+        }
+
+        System.out.print("Enter passenger number: ");
+        int passengerChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        if (passengerChoice < 1 || passengerChoice > passengers.size()) {
+            System.out.println("Invalid passenger selection.");
+            return;
+        }
+
+        passengers.remove(passengerChoice - 1);
+        ticket.setTotalPrice(ticket.getTotalPrice() - ticket.getTrain().getPrice());
+        ticket.getTrain().setAvailableSeats(ticket.getTrain().getAvailableSeats() + 1);
+
+        updateTicketInFile(ticket);
+        System.out.println("Passenger removed successfully.");
+    }
+
+    private static void editPassenger(Ticket ticket) {
+        List<Passenger> passengers = ticket.getPassengers();
+        System.out.println("Select a passenger to edit:");
+        for (int i = 0; i < passengers.size(); i++) {
+            System.out.println((i + 1) + ". " + passengers.get(i));
+        }
+
+        System.out.print("Enter passenger number: ");
+        int passengerChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        if (passengerChoice < 1 || passengerChoice > passengers.size()) {
+            System.out.println("Invalid passenger selection.");
+            return;
+        }
+
+        Passenger selectedPassenger = passengers.get(passengerChoice - 1);
+
+        System.out.print("Enter new name (or press enter to keep current): ");
+        String newName = scanner.nextLine();
+        if (!newName.isEmpty()) {
+            selectedPassenger.setName(newName);
+        }
+
+        System.out.print("Enter new age (or -1 to keep current): ");
+        int newAge = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+        if (newAge != -1) {
+            selectedPassenger.setAge(newAge);
+        }
+
+        updateTicketInFile(ticket);
+        System.out.println("Passenger updated successfully.");
+    }
+
+    private static void cancelTicket() {
+        List<Ticket> userTickets = getUserTickets();
+        if (userTickets.isEmpty()) {
+            System.out.println("You have no tickets to cancel.");
+            return;
+        }
+
+        System.out.println("Your tickets:");
+        for (int i = 0; i < userTickets.size(); i++) {
+            System.out.println((i + 1) + ". " + userTickets.get(i));
+        }
+
+        System.out.print("Select a ticket to cancel (enter number): ");
+        int ticketChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        if (ticketChoice < 1 || ticketChoice > userTickets.size()) {
+            System.out.println("Invalid ticket selection.");
+            return;
+        }
+
+        Ticket selectedTicket = userTickets.get(ticketChoice - 1);
+
+        // Update available seats
+        selectedTicket.getTrain().setAvailableSeats(
+                selectedTicket.getTrain().getAvailableSeats() + selectedTicket.getPassengers().size());
+
+        // Remove ticket from the list
+        tickets.remove(selectedTicket);
+
+        // Update tickets file
+        updateTicketsFile();
+
+        System.out.println("Ticket cancelled successfully.");
+        System.out.println("Refund amount: $" + (selectedTicket.getTotalPrice() * 0.9)); // 90% refund
+    }
+
+    private static List<Ticket> getUserTickets() {
+        return tickets.stream()
+                .filter(t -> t.getUsername().equals(currentUser))
+                .collect(Collectors.toList());
+    }
+
+    private static void updateTicketInFile(Ticket updatedTicket) {
+        updateTicketsFile();
+    }
+
+    private static void updateTicketsFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TICKETS_FILE))) {
+            for (Ticket ticket : tickets) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(ticket.getUsername()).append(",");
+                sb.append(ticket.getTrain().getTrainNumber()).append(",");
+                sb.append(ticket.getTrain().getDeparture()).append(",");
+                sb.append(ticket.getTrain().getArrival()).append(",");
+                sb.append(ticket.getTrain().getDate()).append(",");
+                sb.append(ticket.getTrain().getTime()).append(",");
+                sb.append(ticket.getTotalPrice()).append(",");
+                sb.append(ticket.getRating()).append(",");
+
+                for (int i = 0; i < ticket.getPassengers().size(); i++) {
+                    Passenger p = ticket.getPassengers().get(i);
+                    sb.append(p.getName()).append(":").append(p.getAge());
+                    if (i < ticket.getPassengers().size() - 1) {
+                        sb.append(";");
+                    }
+                }
+
+                writer.write(sb.toString());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating tickets file: " + e.getMessage());
+        }
+    }
 
     private static void editProfile() {
         System.out.print("Enter new password: ");
