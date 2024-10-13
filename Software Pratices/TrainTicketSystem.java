@@ -195,6 +195,22 @@ class PayPalPayment implements PaymentStrategy {
     }
 }
 
+class Recommendation {
+	private String trainNumber;
+	private double averageRating;
+	
+	public Recommendation(String trainNumber, double averageRating) {
+		this.trainNumber = trainNumber;
+		this.averageRating = averageRating;
+	}
+	
+    // Getters and setters	
+	public String getTrainNumber() { return trainNumber; }
+	public void setTrainNumber(String trainNumber) { this.trainNumber = trainNumber; }
+	public double getAverageRating() { return averageRating; }
+	public void setAverageRating(double averageRating) { this.averageRating = averageRating; }
+}
+
 // Singleton Pattern
 class Database {
     private static Database instance;
@@ -292,6 +308,7 @@ class TrainTicketSystem {
 
     private static final String TRAINS_FILE = "trains.txt";
     private static final String TICKETS_FILE = "tickets.txt";
+    private static final int NUM_OF_RECOMMENDATIONS = 3;
 
     public static void main(String[] args) {
         loadTrains();
@@ -511,40 +528,78 @@ class TrainTicketSystem {
     	List<Train> availableTrains = new ArrayList<Train>();
     	
     	// check if user has preferences
-    	System.out.println("Do you have any preferences? (yes/no)");
+    	System.out.println("\nDo you have any preferences? (Y/N)");
     	String preferences = scanner.nextLine();
     	
-		if (preferences.equals("yes")) {
+		if (preferences.equals("Y")) {
 			System.out.println("Enter departure:");
-			String departure = scanner.next();
+			String departure = scanner.nextLine();
 	
 			System.out.println("Enter arrival:");
-			String arrival = scanner.next();
+			String arrival = scanner.nextLine();
 	
 			System.out.println("Enter date (yyyy-MM-dd):");
-			String date = scanner.next();
+			String date = scanner.nextLine();
 	
-			trains = trains.stream().filter(t -> t.getDeparture().equals(departure) && t.getArrival().equals(arrival)
+			availableTrains = trains.stream().filter(t -> t.getDeparture().equals(departure) && t.getArrival().equals(arrival)
 					&& t.getDate().equals(date)).collect(Collectors.toList());
 			
-		} else if (preferences.equals("no")){
+		} else if (preferences.equals("N")){
 			availableTrains = trains;
 			
 		} else {
 			System.out.println("Invalid choice.");
-	        	return;
+	        return;
 		}
+		
+		List<String> recommendTrainNumbers = new ArrayList<String>();
+		// insert train recommendations
+		if (tickets.size() > 0) {	
+			System.out.println("\n------------------------------------------------------------------------------------------------------");
+			System.out.println("Best trains:");
 			
-	        System.out.println("Available trains:");
+			// calculate average rating for each train
+			List<Recommendation> recommendations = new ArrayList<Recommendation>();
+			for (Train train : availableTrains) {
+				double averageRating = tickets.stream()
+						.filter(ticket -> ticket.getTrain().getTrainNumber().equals(train.getTrainNumber()))
+						.mapToInt(Ticket::getRating).average().orElse(0);
+				recommendations.add(new Recommendation(train.getTrainNumber(), averageRating));
+			}
+			
+			// sort train recommendations by average rating
+			recommendations.sort(Comparator.comparingDouble(Recommendation::getAverageRating).reversed());
+			
+			// display train recommendations
+			for (int i = 0; i < Math.min(NUM_OF_RECOMMENDATIONS, recommendations.size()); i++) {
+				Recommendation recommendation = recommendations.get(i);
+				
+				// check and display only trains with average rating > 0
+				if (recommendation.getAverageRating() > 0) {
+					recommendTrainNumbers.add(recommendation.getTrainNumber());
+					System.out.println((i + 1) + ". Train " + recommendation.getTrainNumber() + ", Average Rating: "
+							+ recommendation.getAverageRating() + " out of 5.0");
+				}
+			}
+			
+		}
+		
+		System.out.println("\n------------------------------------------------------------------------------------------------------");
+		System.out.println("Available trains:");
 		if (availableTrains.isEmpty()) {
 			System.out.println("No trains found.");
 			return;
 		}
 	
         for (int i = 0; i < availableTrains.size(); i++) {
-            System.out.println((i + 1) + ". " + availableTrains.get(i));
-        }
-
+        	if (recommendTrainNumbers.contains(availableTrains.get(i).getTrainNumber())) {
+				System.out.println((i + 1) + ". " + availableTrains.get(i) + " (Recommended)");
+			} else {
+				System.out.println((i + 1) + ". " + availableTrains.get(i));
+        	}
+        }    
+        
+        System.out.println("\n------------------------------------------------------------------------------------------------------");
         System.out.print("Select a train (enter number): ");
         int trainChoice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
