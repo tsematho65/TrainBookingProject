@@ -77,4 +77,13 @@ public class UserDAO {
         }
         return result;
     }
+    
+    // fn to get all orders by user
+	public ArrayList<OrderRecord> getOrdersByUser(String id) {
+		ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();
+		for (OrderRecord order : getUser_fromUserTable(id).getOrderRecordList()) {
+			orders.add(order);
+		}
+		return orders;
+	}
 }

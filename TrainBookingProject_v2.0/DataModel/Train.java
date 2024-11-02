@@ -89,7 +89,7 @@ public class Train {
 
     @Override
     public String toString() {
-        return String.format("%s, From: %s to %s on %s at %s, seats available: %d, Price: $%.2f, Status: %s",
-                trainID, departure, arrival, date, time, availableSeats, price, status);
+        return String.format("%s, From: %s to %s on %s at %s, seats available: %d, Price: $%.2f",
+                trainID, departure, arrival, date, time, availableSeats, price);
     }
 }

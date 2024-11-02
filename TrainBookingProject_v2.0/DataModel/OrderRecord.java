@@ -3,19 +3,20 @@ package DataModel;
 import java.util.*;
 
 public class OrderRecord {
-    private int orderId;
-    private int userId;
-    private int trainId;
+    private String orderId;
+    private String userId;
+    private String trainId;
     private Date orderDate;
     private double amount;
     private ArrayList<Passenger> passengerList;
     private ArrayList<Ticket> ticketList;
+    private int rating;
 
     // Default constructor
     public OrderRecord() {}
 
     // Parameterized constructor
-    public OrderRecord(int orderId, int userId, int trainId, Date orderDate, double amount, ArrayList<Passenger> passengerList, ArrayList<Ticket> ticketList) {
+    public OrderRecord(String orderId, String userId, String trainId, Date orderDate, double amount, ArrayList<Passenger> passengerList, ArrayList<Ticket> ticketList) {
         this.orderId = orderId;
         this.userId = userId;
         this.trainId = trainId;
@@ -23,30 +24,31 @@ public class OrderRecord {
         this.amount = amount;
         this.passengerList = passengerList;
         this.ticketList = ticketList;
+        this.rating = 0;
     }
 
     // Getters and setters
-    public int getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(int orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public int getTrainId() {
+    public String getTrainId() {
         return trainId;
     }
 
-    public void setTrainId(int trainId) {
+    public void setTrainId(String trainId) {
         this.trainId = trainId;
     }
 
@@ -81,4 +83,12 @@ public class OrderRecord {
     public void setTicketList(ArrayList<Ticket> ticketList) {
         this.ticketList = ticketList;
     }
+    
+	public int getRating() {
+		return rating;
+	}
+	
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
 }

@@ -29,6 +29,8 @@ public class Main{
                     String password = scanner.nextLine();
 
                     current_LoginedUser = train_ticket_system.login(username, password);
+                    System.out.print("\nWelcome " + current_LoginedUser.getUsername() + "!");
+                    
                     break;
 
                 case 2:
@@ -56,12 +58,12 @@ public class Main{
         }
         // while loop for normal user   
         while (current_LoginedUser.getRole() == "normal") {
-            System.out.println("1. Order Ticket");
-            System.out.println("2. Check Tickets");
-            System.out.println("3. Edit Ticket");
-            System.out.println("4. Cancel Ticket");
-            System.out.println("5. Edit Profile");
-            System.out.println("6. Logout");
+        	
+            // display finished orders
+            train_ticket_system.displayFinishedOrders(current_LoginedUser.getId(), scanner);
+            
+        	System.out.println();
+            train_ticket_system.displayMainMenu();
             System.out.print("Choose an option: ");
 
             int option = scanner.nextInt();
@@ -69,49 +71,25 @@ public class Main{
 
             switch (option) {
                 case 1:
-                    System.out.println("Order Ticket:");
-                    System.out.println("\nDo you have any preferences? (Y/N)");     // rating, preferences implementation
-                    String preferences = scanner.nextLine();
-
-                    if (preferences.equals("Y")) {
-                        System.out.println("Enter departure:");
-                        String departure = scanner.nextLine();
-                
-                        System.out.println("Enter arrival:");
-                        String arrival = scanner.nextLine();
-                
-                        System.out.println("Enter date (yyyy-MM-dd):");
-                        String date = scanner.nextLine();
-                
-                        // ...
-                        
-                    } else if (preferences.equals("N")){
-                        // ...
-                        
-                    } else {
-                        System.out.println("Invalid choice.");
-                        return;
-                    }
-                    
-                    // insert train recommendations
-                    // if (tickets.size() > 0) {	
-                    //     System.out.println("\n------------------------------------------------------------------------------------------------------");
-                    //     System.out.println("Best trains:");
-			
-			        // calculate average rating for each train
-                    // ...
-
-                    // sort train recommendations by average rating
-                    // recommendations.sort(Comparator.comparingDouble(Recommendation::getAverageRating).reversed());
-                    
-                    // display train recommendations
+					if (current_LoginedUser.getOrderRecordList().size() > 0) {
+						System.out.print("\nDo you have any preferences for your train ticket? (Y/N) ");
+						String preferences = scanner.nextLine();
+						
+						if (preferences.equals("Y")) {
+							System.out.print("\nPlease enter the location that you might want to depart or arrive [LA, Washington DC, Miami, Chicago, None]: ");
+							String location = scanner.nextLine();
+							
+	                		train_ticket_system.displayRecommendations(current_LoginedUser.getId(), location);
+						}
+					}
                     
                     // Base Case: No train recommendations
-                    System.out.println("\n------------------------------------------------------------------------------------------------------");
+                    System.out.println("\n=============================================================================================================");
                     System.out.println("Available trains:");
                     train_ticket_system.displayTrains_available();
-                    System.out.println("please enter the train number you want to order: ");
+                    System.out.println("\nPlease enter the train number you want to order: ");
                     int trainChoice = scanner.nextInt();
+                    System.out.println("\n=============================================================================================================");
 
                     if (trainChoice < 0 || trainChoice > train_ticket_system.getTrainTable().size() ) {
                         System.out.println("Invalid train selection.");
@@ -140,6 +118,19 @@ public class Main{
                         order_passengerList.add(new Passenger(name, age));
                     }
                     
+                    OrderRecord orderRecord = new OrderRecord(
+                    	String.format("orderID_%s_%s", current_LoginedUser.getId(), current_LoginedUser.getOrderRecordList().size()),
+                		current_LoginedUser.getId(), 
+                		selectedTrain.getTrainNumber(), 
+                		new Date(),
+                		0, // tmp
+                		null, // tmp
+                		null // tmp
+                	);
+                    current_LoginedUser.addOrderRecord(orderRecord);
+                    
+                    System.out.println("Order successful.");
+//                    System.out.println("Order ID: " + orderRecord.getOrderId());
 
                     break;
 
