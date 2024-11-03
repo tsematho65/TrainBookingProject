@@ -87,8 +87,8 @@ public class TrainTicketSystem {
 		if (finishedOrders.size() == 0) {
 			System.out.println("\nNo finished orders.");
 		} else {
-			System.out.println("\nFinished Orders:");
-			System.out.println("===============================================");
+			System.out.println("\n===============================================");
+			System.out.println("Finished Orders:");
 			for (int i = 0; i < finishedOrders.size(); i++) {
 				OrderRecord finishedOrder = finishedOrders.get(i);
 				Train train = trainDAO.getTrain_fromTrainTable(finishedOrder.getTrainId());
@@ -104,7 +104,7 @@ public class TrainTicketSystem {
 				int rating = sc.nextInt();
 				finishedOrder.setRating(rating);
 			}
-			System.out.println("===============================================");
+			System.out.println("\n===============================================");
 		}
 	}
 	
@@ -150,21 +150,22 @@ public class TrainTicketSystem {
 //  recommend train according to user's order history
 	public void displayRecommendations(String id, String location) {
 		ArrayList<String> recommendedTrainIds = recommendTrains(id);
-		System.out.println(recommendedTrainIds.size());
-		if (recommendedTrainIds.isEmpty()) {
+		ArrayList<Train> availableTrains = new ArrayList<>();
+		
+		for (int i = 0; i < recommendedTrainIds.size(); i++) {
+			Train train = trainDAO.getTrain_fromTrainTable(recommendedTrainIds.get(i));
+			
+			if (train.getStatus().equals("active") && train.getAvailableSeats() > 0) {
+				availableTrains.add(train);
+			}
+		}
+		
+		System.out.println("\n=============================================================================================================");
+		System.out.println("Top 3 Train Recommendations:");
+		
+		if (availableTrains.size() == 0) {
 			System.out.println("No recommendations available.");
 		} else {
-			System.out.println("\n=============================================================================================================");
-			System.out.println("Top 3 Train Recommendations:");
-			ArrayList<Train> availableTrains = new ArrayList<>();
-			for (int i = 0; i < recommendedTrainIds.size(); i++) {
-				Train train = trainDAO.getTrain_fromTrainTable(recommendedTrainIds.get(i));
-				
-				if (train.getStatus().equals("active") && train.getAvailableSeats() > 0) {
-					availableTrains.add(train);
-				}
-			}
-			
 			if (location.equals("None")) {
 				for (int i = 0; i < availableTrains.size(); i++) {
 					System.out.println(availableTrains.get(i).toString());
@@ -176,8 +177,9 @@ public class TrainTicketSystem {
 					}
 				}
 			}
-			System.out.println("\n=============================================================================================================");
 		}
+
+		System.out.println("\n=============================================================================================================");
 	}
 
 //  fn to order tickets

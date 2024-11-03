@@ -72,7 +72,7 @@ public class Main{
             switch (option) {
                 case 1:
 					if (current_LoginedUser.getOrderRecordList().size() > 0) {
-						System.out.print("\nDo you have any preferences for your train ticket? (Y/N) ");
+						System.out.print("\nDo you need any recommendations? (Y/N) ");
 						String preferences = scanner.nextLine();
 						
 						if (preferences.equals("Y")) {
@@ -88,7 +88,7 @@ public class Main{
                     System.out.println("Available trains:");
                     train_ticket_system.displayTrains_available();
                     System.out.println("\nPlease enter the train number you want to order: ");
-                    int trainChoice = scanner.nextInt();
+                    int trainChoice = scanner.nextInt() - 1;
                     System.out.println("\n=============================================================================================================");
 
                     if (trainChoice < 0 || trainChoice > train_ticket_system.getTrainTable().size() ) {
