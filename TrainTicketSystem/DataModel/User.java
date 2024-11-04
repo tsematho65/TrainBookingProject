@@ -6,14 +6,15 @@ public class User {
     private String username;
     private String password;
     private String role;
-    private String status;
+    private Member member;
+    
 
     public User(String role, String id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
-        this.status = "active";
+      
     }
 
    
@@ -54,4 +55,16 @@ public class User {
     public void setStatus(String status) {
         this.status = status;
     }
+
+	public void setMember(Member member) {
+		this.member = member;
+	}
+
+	public String getMemberType() {
+		return member.getMemberType();
+	}
+
+	public double getDiscount() {
+		return member.getDiscount();
+	}
 }
