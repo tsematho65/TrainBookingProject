@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.*;
 
 import DAO.*;
@@ -7,10 +8,12 @@ public class TrainTicketSystem {
     private static TrainTicketSystem instance = null;
     private  UserDAO userDAO;
     private  TrainDAO trainDAO;
+    private  SeatDAO seatPlanDAO;
 
     private TrainTicketSystem() {
         userDAO = new UserDAO();
         trainDAO = new TrainDAO();
+        seatPlanDAO = new SeatDAO();
     }
 
     public static TrainTicketSystem getInstance() {
@@ -180,6 +183,50 @@ public class TrainTicketSystem {
 		}
 
 		System.out.println("\n=============================================================================================================");
+	}
+
+	// arrange single seat
+	public ArrayList<String> arrangeSeat(String trainNumber) {
+		
+		seatPlan target_seatPlan = seatPlanDAO.getSeatPlan_ByTrainID(trainNumber);
+		String result = seatPlanDAO.getOneAvailableSeat(target_seatPlan);
+		
+		// test
+		System.out.println("test_seats result: " + result);
+		System.out.println("test_seats target_seatPlan: " + target_seatPlan.toString());
+		ArrayList<String> seatNumbers = new ArrayList<>();
+
+		if(result != null) {
+			Train targetTrain = trainDAO.getTrain_fromTrainTable(trainNumber);
+			int availableSeats = targetTrain.getAvailableSeats();
+			availableSeats--;
+			targetTrain.setAvailableSeats(availableSeats);
+			seatNumbers.add(result);
+			return seatNumbers;
+		}
+
+		return null;
+	}
+
+	// arrange seats together, > 1 passengers
+	public ArrayList<String> arrangeSeat(String trainNumber, int passengerCount) {
+		
+		seatPlan target_seatPlan = seatPlanDAO.getSeatPlan_ByTrainID(trainNumber);
+		ArrayList<String> result = seatPlanDAO.getMultipleAvailableSeat(target_seatPlan, passengerCount);
+		
+		// test
+		System.out.println("test_seats result: " + result);
+		System.out.println("test_seats target_seatPlan: " + target_seatPlan.toString());
+
+		if(result != null) {
+			Train targetTrain = trainDAO.getTrain_fromTrainTable(trainNumber);
+			int availableSeats = targetTrain.getAvailableSeats();
+			availableSeats -= passengerCount;
+			targetTrain.setAvailableSeats(availableSeats);
+			return result;
+		}
+
+		return null;
 	}
 
 //  fn to order tickets

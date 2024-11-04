@@ -101,31 +101,78 @@ public class Main{
                     int passengerCount = scanner.nextInt();
 
                     ArrayList<Passenger> order_passengerList = new ArrayList<>();
-                    // ArrayList<Ticket> order_ticketList = new ArrayList<>(); <-- class Ticket isn't defined yet, inheritance approach ... sub class ... factory pattern
 
-                    for (int i = 0; i < passengerCount; i++) {
-                        System.out.print("Select ticket type (1. Regular, 2. Business): ");
+                    int seatCount = selectedTrain.getAvailableSeats();
+                    if (passengerCount > seatCount) {
+                        System.out.println("Not enough seats available.");
+                        break;
+                    }
+                    int totalPrice = 0;
+                    int counter = 0;
+                    double ticketPrice = selectedTrain.getPrice();
+                    
+                    while (counter < passengerCount) {
+                        System.out.print("Select ticket type (1. Regular, 2. Upgrade(with meal) price = + $30 ): ");
                         int ticketTypeChoice = scanner.nextInt();
-
-                        System.out.println("Passenger " + (i + 1) + ":");
+                        
+                        if (ticketTypeChoice == 2) {
+                            totalPrice += (ticketPrice+30);
+                        } else if(ticketTypeChoice == 1) {
+                            totalPrice += ticketPrice;
+                        } else {
+                            System.out.println("Invalid ticket type. Please try again.");
+                            continue;
+                        }
+                        
+                        System.out.println("Passenger " + (counter + 1) + ":");
                         System.out.print("Name: ");
                         String name = scanner.next();
 
                         System.out.print("Age: ");
                         int age = scanner.nextInt();
                         // scanner.nextLine(); // Consume newline
-
+                        
                         order_passengerList.add(new Passenger(name, age));
+                        counter++;
                     }
                     
+
+                    // Seats arrangement -> ticket Info:
+                    ArrayList<String> seatNumbersForticket ;
+                    //System.out.println("Seats will be arranged randomly.");
+                    if(passengerCount > 1 && passengerCount <= 6) {
+                        System.out.println("Would you like to arrange seats together? (Y/N)");
+                        String preference = scanner.next();
+                        if (preference.equals("Y")) {
+                            seatNumbersForticket = train_ticket_system.arrangeSeat(selectedTrain.getTrainNumber(), passengerCount);
+                        }else{
+                            seatNumbersForticket = train_ticket_system.arrangeSeat(selectedTrain.getTrainNumber());
+
+                        }
+                    } else if(passengerCount > 6) {
+                        System.out.println("Seats will be arranged randomly.");
+                        seatNumbersForticket = train_ticket_system.arrangeSeat(selectedTrain.getTrainNumber(), passengerCount);
+                    }
+                    else {
+                        System.out.println("Seats will be arranged randomly.");
+                        seatNumbersForticket = train_ticket_system.arrangeSeat(selectedTrain.getTrainNumber());
+                    }
+                    
+                    // test:
+                    // System.out.println("test_seats are: " + seatNumbersForticket);
+                    // System.out.println("test_seats left: " + selectedTrain.getAvailableSeats());
+
+                    // Ticket Info:
+                    // ...
+
                     OrderRecord orderRecord = new OrderRecord(
                     	String.format("orderID_%s_%s", current_LoginedUser.getId(), current_LoginedUser.getOrderRecordList().size()),
-                		current_LoginedUser.getId(), 
+                		current_LoginedUser.getId(),
                 		selectedTrain.getTrainNumber(), 
                 		new Date(),
-                		0, // tmp
-                		null, // tmp
-                		null // tmp
+                		totalPrice, // tmp
+                		order_passengerList, // tmp
+                		null// tmp
                 	);
                     current_LoginedUser.addOrderRecord(orderRecord);
                     

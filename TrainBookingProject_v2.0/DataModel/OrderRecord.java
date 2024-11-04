@@ -26,7 +26,7 @@ public class OrderRecord {
         this.ticketList = ticketList;
         this.rating = 0;
     }
-
+    
     // Getters and setters
     public String getOrderId() {
         return orderId;
