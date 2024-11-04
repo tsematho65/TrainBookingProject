@@ -50,7 +50,6 @@ public class OrderRecordDAO {
         return false;
     }
 
-    // 删除订单记录
     public boolean deleteOrderRecord(int orderId) {
         Iterator<OrderRecord> iterator = table_orderRecord.iterator();
         while (iterator.hasNext()) {
