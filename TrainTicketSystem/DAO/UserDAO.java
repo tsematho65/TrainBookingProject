@@ -106,4 +106,8 @@ public class UserDAO {
 		}
 		return result;
 	}
+	
+	public void signIN() {
+		nowUser.signIn();
+	}
 }

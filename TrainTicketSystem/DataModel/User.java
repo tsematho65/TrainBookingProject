@@ -7,6 +7,8 @@ public class User {
     private String password;
     private String role;
     private Member member;
+    private int points; 
+    private LocalDate lastSignInDate; 
     
 
     public User(String role, String id, String username, String password) {
@@ -14,7 +16,9 @@ public class User {
         this.username = username;
         this.password = password;
         this.role = role;
-      
+        this.member = new NormalMember();
+        lastSignInDate = null;
+        points = 0; 
     }
 
    
@@ -67,4 +71,34 @@ public class User {
 	public double getDiscount() {
 		return member.getDiscount();
 	}
+	
+	
+	public boolean signIn() {
+        LocalDate today = LocalDate.now();
+        if (lastSignInDate != null && lastSignInDate.equals(today)) {
+            System.out.println("You have already signed in today. Please come back tomorrow.");
+            return false; 
+        }
+        
+
+        lastSignInDate = today;
+        
+        points += POINTS_PER_SIGN_IN;
+        
+     
+        if (isWinningSignIn()) {
+            System.out.println(username + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + " points and win a prize!");
+        } else {
+            System.out.println(username + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + "points but no prize. ");
+        }
+        
+        return true; 
+    }
+
+    private boolean isWinningSignIn() {
+        
+        Random random = new Random();
+        return random.nextInt(10) < 1; 
+    }
+}
 }
