@@ -1,6 +1,8 @@
 package DataModel;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class User {
 	
@@ -12,6 +14,7 @@ public class User {
     private int points; 
     private LocalDate lastSignInDate; 
     private ArrayList<OrderRecord> orderRecordList;
+    private static final int POINTS_PER_SIGN_IN = 10;
     
 
     public User(String role, String id, String username, String password) {
@@ -54,14 +57,6 @@ public class User {
     }
     public String getRole() {
         return role;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
 	public void setMember(Member member) {
@@ -137,6 +132,15 @@ public class User {
             }
         }
         return null;
+	}
+
+	public Member getMember() {
+        return member;
+    }
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", role=" + role + ", member="
+				+ member + ", points=" + points + ", lastSignInDate=" + lastSignInDate + ", orderRecordList="
+				+ orderRecordList + "]";
 	}
 
 }
