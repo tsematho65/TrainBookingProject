@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -11,6 +10,7 @@ public class TrainTicketSystem {
     private  TrainDAO trainDAO;
     private  SeatDAO seatPlanDAO;
 	private CustomerServiceDAO customerServiceDAO;
+	private OrderRecordDAO orderRecordDAO;
 	private User currentUser;
 
     private TrainTicketSystem() {
@@ -18,6 +18,8 @@ public class TrainTicketSystem {
         trainDAO = new TrainDAO();
         seatPlanDAO = new SeatDAO();
 		customerServiceDAO = new CustomerServiceDAO();
+		orderRecordDAO = new OrderRecordDAO();
+		currentUser = null;
     }
 
     public static TrainTicketSystem getInstance() {
@@ -26,6 +28,22 @@ public class TrainTicketSystem {
         }
         return instance;
     }
+
+	public User getCurrentUser() {
+		return currentUser;
+	}
+
+	public void setCurrentUser(User currentUser) {
+		this.currentUser = currentUser;
+	}
+
+	// fn to display welcome menu
+	public void displayWelcomeMenu() {
+		System.out.println("Welcome to Train Ticket System!");
+		System.out.println("1. Login");
+		System.out.println("2. Register");
+		System.out.println("3. Exit");
+	}
     
     public User login(String username, String password) {
         User user = userDAO.login(username, password);
@@ -107,8 +125,9 @@ public class TrainTicketSystem {
 //  fn to get finished orders
 	public ArrayList<OrderRecord> getFinishedOrders(String id) {
 		ArrayList<OrderRecord> finishedOrders = new ArrayList<OrderRecord>();
-		ArrayList<OrderRecord> orderRecordList = userDAO.getUser_fromUserTable(id).getOrderRecordList();
-		
+		// ArrayList<OrderRecord> orderRecordList = userDAO.getUser_fromUserTable(id).getOrderRecordList();
+		ArrayList<OrderRecord> orderRecordList = orderRecordDAO.getOrdersByUserId(id);
+
 		for (int i = 0; i < orderRecordList.size(); i++) {
 			OrderRecord orderRecord = orderRecordList.get(i);
 			String status = trainDAO.getTrain_fromTrainTable(orderRecord.getTrainId()).getStatus();
@@ -162,7 +181,8 @@ public class TrainTicketSystem {
 
 //  fn to provide recommendations
 	public ArrayList<String> recommendTrains(String id) {
-	    ArrayList<OrderRecord> orderRecordList = userDAO.getUser_fromUserTable(id).getOrderRecordList();
+	    // ArrayList<OrderRecord> orderRecordList = userDAO.getUser_fromUserTable(id).getOrderRecordList();
+		ArrayList<OrderRecord> orderRecordList = orderRecordDAO.getOrdersByUserId(id);
 
 	    if (orderRecordList.isEmpty()) {
 	        return new ArrayList<>();
@@ -298,6 +318,191 @@ public class TrainTicketSystem {
 		return returnWord;
 	}
 
-//  fn to order tickets
-//  ...
+	// fn to order tickets
+	public void orderTicket(Scanner sc) {
+		if (orderRecordDAO.getOrdersByUserId(currentUser.getId()).size() > 0) {
+			System.out.print("\nDo you need any recommendations? (Y/N) ");
+			String preferences = sc.nextLine();
+			
+			if (preferences.equals("Y")) {
+				System.out.print("\nPlease enter the location that you might want to depart or arrive [LA, Washington DC, Miami, Chicago, None]: ");
+				String location = sc.nextLine();
+				
+				displayRecommendations(currentUser.getId(), location);
+			}
+		}
+
+		// Base Case: No train recommendations
+		System.out.println("\n=============================================================================================================");
+		System.out.println("Available trains:");
+		displayTrains_available();
+		System.out.println("\nPlease enter the train number you want to order: ");
+		int trainChoice = sc.nextInt() - 1;
+		System.out.println("\n=============================================================================================================");
+
+		if (trainChoice < 0 || trainChoice > trainDAO.getTable_train().size()) {
+			System.out.println("Invalid train selection.");
+			return;
+		}
+		Train selectedTrain = trainDAO.getTable_train().get(trainChoice);
+		
+		System.out.print("Enter number of passengers: ");
+		int passengerCount = sc.nextInt();
+
+		ArrayList<Passenger> order_passengerList = new ArrayList<>();
+
+		int seatCount = selectedTrain.getAvailableSeats();
+		if (passengerCount > seatCount) {
+			System.out.println("Not enough seats available.");
+		}
+		int totalPrice = 0;
+		int counter = 0;
+		double ticketPrice = selectedTrain.getPrice();
+		
+		while (counter < passengerCount) {
+			System.out.print("Select ticket type (1. Regular, 2. Upgrade(with meal) price = + $30 ): ");
+			int ticketTypeChoice = sc.nextInt();
+			
+			if (ticketTypeChoice == 2) {
+				totalPrice += (ticketPrice+30);
+			} else if(ticketTypeChoice == 1) {
+				totalPrice += ticketPrice;
+			} else {
+				System.out.println("Invalid ticket type. Please try again.");
+				continue;
+			}
+			
+			System.out.println("Passenger " + (counter + 1) + ":");
+			System.out.print("Name: ");
+			String name = sc.next();
+
+			System.out.print("Age: ");
+			int age = sc.nextInt();
+			// scanner.nextLine(); // Consume newline
+			
+			order_passengerList.add(new Passenger(name, age));
+			counter++;
+		}
+		
+
+		// Seats arrangement -> ticket Info:
+		ArrayList<String> seatNumbersForticket ;
+		//System.out.println("Seats will be arranged randomly.");
+		if(passengerCount > 1 && passengerCount <= 6) {
+			System.out.println("Would you like to arrange seats together? (Y/N)");
+			String preference = sc.next();
+			if (preference.equals("Y")) {
+				seatNumbersForticket = arrangeSeat(selectedTrain.getTrainNumber(), passengerCount);
+			}else{
+				seatNumbersForticket = arrangeSeat(selectedTrain.getTrainNumber());
+
+			}
+		} else if(passengerCount > 6) {
+			System.out.println("Seats will be arranged randomly.");
+			seatNumbersForticket = arrangeSeat(selectedTrain.getTrainNumber(), passengerCount);
+		}
+		else {
+			System.out.println("Seats will be arranged randomly.");
+			seatNumbersForticket = arrangeSeat(selectedTrain.getTrainNumber());
+		}
+		
+		// test:
+		// System.out.println("test_seats are: " + seatNumbersForticket);
+		// System.out.println("test_seats left: " + selectedTrain.getAvailableSeats());
+
+		// Ticket Info:
+		// ...
+
+		OrderRecord orderRecord = new OrderRecord(
+			String.format("orderID_%s_%s", currentUser.getId(), orderRecordDAO.getOrdersByUserId(currentUser.getId()).size()),
+			currentUser.getId(),
+			selectedTrain.getTrainNumber(), 
+			new Date(),
+			totalPrice, // tmp
+			order_passengerList, // tmp
+			null// tmp
+		);
+
+		// Add through OrderRecordDAO
+		// current_LoginedUser.addOrderRecord(orderRecord);
+		orderRecordDAO.addOrderRecord(orderRecord);
+		
+		System.out.println("Order successful.");
+//                    System.out.println("Order ID: " + orderRecord.getOrderId());
+	}
+
+	// fn to check tickets (more like check orders)
+	public void checkTicket(Scanner sc) {
+		System.out.println("Your Order Records:");
+		ArrayList<OrderRecord> userOrders = orderRecordDAO.getOrdersByUserId(currentUser.getId());
+
+		if (userOrders.isEmpty()) {
+			System.out.println("You currently have no orders.");
+		} else {
+			for (OrderRecord order : userOrders) {
+				System.out.println(order.toString());
+				System.out.println("--------------------------------------------------");
+			}
+		}
+	}
+
+	public void editTicket(Scanner sc) {
+		System.out.println("Edit Tickets");
+	}
+
+	public void cs(Scanner sc) {
+		boolean isStay = true;
+		System.out.println("\n=============================================================================================================");
+		System.out.println("CSer : Hi, welcome to customer service, how can I help you? (type your question or type exit to back to main menu)");
+		while(isStay){
+			System.out.print("You : ");
+			String question = sc.nextLine();
+			if(question.equals("exit")){
+				isStay = false;
+				System.out.println("CSer : Goodbye!");
+			}else if(question == null || question.isEmpty()){
+				System.out.println("CSer : Please type your question.");
+			}else{
+				System.out.println("CSer : " + getAnswer(question));
+			}
+			System.out.println((isStay) ? "CSer : Anything else?(type your question or type exit to back to main menu)" : "");
+		}
+		System.out.println("\n=============================================================================================================");
+	}
+
+
+	public void csAdmin(Scanner sc) {
+		boolean isStay = true;
+		System.out.println("\n=============================================================================================================");
+		while(isStay){
+			boolean isKeyword = false;
+			boolean isAnswer = false;
+			String answer = null;
+			String keyword = null;
+			while(!isKeyword){
+				System.out.println("Enter keyword:");
+				keyword = sc.nextLine();
+				if(keyword.isEmpty()){
+					System.out.println("Keyword cannot be empty.");
+				}else if(keyword.equals("exit")){
+					isStay = false;
+				}else{
+					isKeyword = true;
+				}
+			}
+			while(!isAnswer){
+				System.out.println("Enter answer:");
+				answer = sc.nextLine();
+				if(answer.isEmpty()){
+					System.out.println("Answer cannot be empty.");
+				}else if(answer.equals("exit")){
+					isStay = false;
+				}else{
+					isAnswer = true;
+				}
+			}
+			System.out.println(addQA(keyword, answer));
+		}
+		System.out.println("\n=============================================================================================================");
+	}
 }

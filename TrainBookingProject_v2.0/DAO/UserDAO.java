@@ -125,11 +125,12 @@ public class UserDAO {
 	// 	return nowUser.getRole().equals("admin");
 	// }
 
-	public ArrayList<OrderRecord> getOrdersByUser(String id) {
-		ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();
-		for (OrderRecord order : getUser_fromUserTable(id).getOrderRecordList()) {
-			orders.add(order);
-		}
-		return orders;
-	}
+	// Already exists in OrderRecordDAO
+	// public ArrayList<OrderRecord> getOrdersByUser(String id) {
+	// 	ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();
+	// 	for (OrderRecord order : getUser_fromUserTable(id).getOrderRecordList()) {
+	// 		orders.add(order);
+	// 	}
+	// 	return orders;
+	// }
 }
