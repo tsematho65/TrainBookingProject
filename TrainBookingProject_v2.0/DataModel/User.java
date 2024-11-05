@@ -14,7 +14,7 @@ public class User {
     private int points; 
     private LocalDate lastSignInDate; 
     private ArrayList<OrderRecord> orderRecordList;
-    private static final int POINTS_PER_SIGN_IN = 10;
+    // private static final int POINTS_PER_SIGN_IN = 10;
     
 
     public User(String role, String id, String username, String password) {
@@ -112,39 +112,39 @@ public class User {
     //     return random.nextInt(10) < 1; 
     // }
     
-
-	public ArrayList<OrderRecord> getOrderRecordList() {
-		return orderRecordList;
-	}
+    // Already exist in OrderRecordDAO
+	// public ArrayList<OrderRecord> getOrderRecordList() {
+	// 	return orderRecordList;
+	// }
 	
-	public void setOrderRecordList(ArrayList<OrderRecord> orderRecordList) {
-		this.orderRecordList = orderRecordList;
-	}
+	// public void setOrderRecordList(ArrayList<OrderRecord> orderRecordList) {
+	// 	this.orderRecordList = orderRecordList;
+	// }
 
-	public void addOrderRecord(OrderRecord orderRecord) {
-		orderRecordList.add(orderRecord);
-	}
+	// public void addOrderRecord(OrderRecord orderRecord) {
+	// 	orderRecordList.add(orderRecord);
+	// }
 
-	public void removeOrderRecord(OrderRecord orderRecord) {
-		orderRecordList.remove(orderRecord);
-	}
+	// public void removeOrderRecord(OrderRecord orderRecord) {
+	// 	orderRecordList.remove(orderRecord);
+	// }
 
-	public void updateOrderRecord(OrderRecord orderRecord) {
-        for (OrderRecord or : orderRecordList) {
-            if (or.getOrderId().equals(orderRecord.getOrderId())) {
-                or = orderRecord;
-            }
-        }
-    }
+	// public void updateOrderRecord(OrderRecord orderRecord) {
+    //     for (OrderRecord or : orderRecordList) {
+    //         if (or.getOrderId().equals(orderRecord.getOrderId())) {
+    //             or = orderRecord;
+    //         }
+    //     }
+    // }
 
-	public OrderRecord getOrderRecordById(String orderId) {
-		for (OrderRecord orderRecord : orderRecordList) {
-            if (orderRecord.getOrderId().equals(orderId)) {
-                return orderRecord;
-            }
-        }
-        return null;
-	}
+	// public OrderRecord getOrderRecordById(String orderId) {
+	// 	for (OrderRecord orderRecord : orderRecordList) {
+    //         if (orderRecord.getOrderId().equals(orderId)) {
+    //             return orderRecord;
+    //         }
+    //     }
+    //     return null;
+	// }
 
 	public Member getMember() {
         return member;

@@ -91,4 +91,8 @@ public class OrderRecord {
 	public void setRating(int rating) {
 		this.rating = rating;
 	}
+
+    public String toString() {
+        return "to be implemented";
+    }
 }
