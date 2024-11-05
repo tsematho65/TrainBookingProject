@@ -1,6 +1,7 @@
 package DB_init;
 
 import DataModel.*;
+
 import java.util.*;
 
 public class Database {
@@ -14,6 +15,8 @@ public class Database {
     private ArrayList<OrderRecord> table_orderRecord;
     private ArrayList<seatPlan> table_seattingPlan;
     private ArrayList<Passenger> table_passenger;
+    private ArrayList<CsQuestion> table_question;
+    private ArrayList<Ticket> table_ticket; 
 
     // ID values reference for each table
 
@@ -24,6 +27,7 @@ public class Database {
         table_orderRecord = new ArrayList<>();
         table_seattingPlan = new ArrayList<>();
         table_passenger = new ArrayList<>();
+        table_question = new ArrayList<>();
         DB_initialize();
     }
 
@@ -46,6 +50,15 @@ public class Database {
         sp1.updateSeat(2, "X");
 
         table_seattingPlan.add(sp1);
+        table_question.add(new CsQuestion("book ticket", "To book a ticket, you should press 1 in the main menu after login, then follow the instructions to do booking."));
+        table_question.add(new CsQuestion("edit ticket", "To edit a ticket, you should press 3 in the main menu after login, then follow the instructions to edit."));
+        table_question.add(new CsQuestion("check ticket", "To check a ticket, you should press 2 in the main menu after login, then you can see all ticket you booked."));
+        table_question.add(new CsQuestion("cancel ticket", "To cancel a ticket, you should press 4 in the main menu after login, then follow the instructions to cancel."));
+        table_question.add(new CsQuestion("edit profile", "To edit your profile, you should press 5 in the main menu after login."));
+        table_question.add(new CsQuestion("problem", "If you have any problem, please press 7 to contact customer service."));
+        table_question.add(new CsQuestion("customer service", "If you have any problem, please press 7 to contact customer service."));
+        table_question.add(new CsQuestion("help", "If you have any problem, please press 7 to contact customer service."));
+        table_question.add(new CsQuestion("contact method", "How to find us : email : 123@123.com, phone : 1234567890"));
     }
 
     public ArrayList<User> getTable_user() {   
@@ -64,6 +77,13 @@ public class Database {
     public ArrayList<Passenger> getTable_passenger() {   
         return getInstance().table_passenger;
     }
+    public ArrayList<CsQuestion> getTable_question() {   
+        return getInstance().table_question;
+    }
+    public ArrayList<Ticket> getTable_ticket() { 
+        return getInstance().table_ticket;
+    }
+
 
     public static Database getInstance () {
         if (instance == null) {

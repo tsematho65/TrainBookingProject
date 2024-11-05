@@ -29,7 +29,7 @@ public class Main{
                     String password = scanner.nextLine();
 
                     current_LoginedUser = train_ticket_system.login(username, password);
-                    System.out.print("\nWelcome " + current_LoginedUser.getUsername() + "!");
+                    // System.out.print("\nWelcome " + current_LoginedUser.getUsername() + "!");
                     
                     break;
 
@@ -191,6 +191,28 @@ public class Main{
                     // ....
                     break;
 
+                //CS function
+                case 7:
+                    boolean isStay = true;
+                    System.out.println("\n=============================================================================================================");
+                    System.out.println("CSer : Hi, welcome to customer service, how can I help you? (type your question or type exit to back to main menu)");
+                    while(isStay){
+                        System.out.print("You : ");
+                        String question = scanner.nextLine();
+                        if(question.equals("exit")){
+                            isStay = false;
+                            System.out.println("CSer : Goodbye!");
+                        }else if(question == null || question.isEmpty()){
+                            System.out.println("CSer : Please type your question.");
+                        }else{
+                            System.out.println("CSer : " + train_ticket_system.getAnswer(question));
+                        }
+                        System.out.println((isStay) ? "CSer : Anything else?(type your question or type exit to back to main menu)" : "");
+                    }
+                    System.out.println("\n=============================================================================================================");
+                    break;
+                    
+
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
@@ -201,19 +223,57 @@ public class Main{
             // ...
             System.out.println("5. Edit Profile");
             System.out.println("6. Logout");
+            System.out.println("7. Add Keyword and answer");
             System.out.print("Choose an option: ");
             int option = scanner.nextInt();
+            scanner.nextLine();
 
             switch (option) {
                 case 1:
                     System.out.println("Manage Train Schedule");
                     // ...
                     break;
-                // ...
+                case 7:
+                    boolean isStay = true;
+                    System.out.println("\n=============================================================================================================");
+                    while(isStay){
+                        boolean isKeyword = false;
+                        boolean isAnswer = false;
+                        String answer = null;
+                        String keyword = null;
+                        while(!isKeyword){
+                            System.out.println("Enter keyword:");
+                            keyword = scanner.nextLine();
+                            if(keyword.isEmpty()){
+                                System.out.println("Keyword cannot be empty.");
+                            }else if(keyword.equals("exit")){
+                                isStay = false;
+                            }else{
+                                isKeyword = true;
+                            }
+                        }
+                        while(!isAnswer){
+                            System.out.println("Enter answer:");
+                            answer = scanner.nextLine();
+                            if(answer.isEmpty()){
+                                System.out.println("Answer cannot be empty.");
+                            }else if(answer.equals("exit")){
+                                isStay = false;
+                            }else{
+                                isAnswer = true;
+                            }
+                        }
+                        System.out.println(train_ticket_system.addQA(keyword, answer));
+                    }
+                    System.out.println("\n=============================================================================================================");
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+                }
+               
             }
         }
 
         
     }
 
-}

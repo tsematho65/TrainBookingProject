@@ -5,80 +5,126 @@ import DB_init.*;
 import DataModel.*;
 
 public class UserDAO {
+	
     private ArrayList<User> table_user;
+    // private User nowUser;
     
     public UserDAO() {
         table_user = Database.getInstance().getTable_user();
     }
+    
 
-    public ArrayList<User> getTable_user() {
-        return table_user;
+    public String print_user(User user) {
+    	
+        return user.toString();
+        
     }
 
-    public User user_login(String userName, String pwd) {
-        User targetUser = null;
+    // Moved to TrainTicketSystem.java
+	// public String getNowUser() {
+	// 	return nowUser.toString();
+	// }
+	
+	// public User getNowUser_fromUserTable() {
+	
+	// 	return nowUser;
+	// }
+
+    // changed from return boolean to return User
+    public User login(String userName, String pwd) {
+		User currentUser = null;
         for (User user : table_user) {
             if (user.getUsername().equals(userName) && user.getPassword().equals(pwd)) {
-                targetUser = user;
+            	// this.nowUser = user;
+				currentUser = user;
             }
         }
         
-        return targetUser;
+        return currentUser;
     }
+    
+	// Not needed here
+    // public double getDiscount() {
+    // 	return nowUser.getMember().getDiscount();
+    // }
+    
+	// public double getDiscount(String Id) {
+	// 	for (User user : table_user) {
+	// 		if (user.getUsername().equals(Id)) {
+	// 			return user.getMember().getDiscount();
+	// 		}
+	// 	}
+	// 	return 0;
+	// }
+	
+	// Changed from return String to return boolean
+	public boolean register(String role, String userName, String pwd) {
+		for (User user : table_user) {
+			if (user.getUsername().equals(userName)) {
+				return false;
+			}
+		}
+		table_user.add(new User("normal", "userID_" + (table_user.size() + 1), userName, pwd));
+		return true;
+	}
 
-    public User getUser_fromUserTable(String id) {
-        User targetUser = null;
-        for (User user : table_user) {
-            if (user.getId().equals(id)) {
-                targetUser = user;
-            }
-        }
-        
-        return targetUser;
+    public ArrayList<User> getUserList(List<User> userList) {
+    	return table_user;
     }
-
-    public User getUser_fromUserTable(String uname, String pwd) {
-        User targetUser = null;
-        for (User user : table_user) {
-            if (user.getUsername().equals(uname) && user.getPassword().equals(pwd)) {
-                targetUser = user;
-            }
-        }
-        
-        return targetUser;
-    }
+    
+	public void printUserList() {
+		for (User user : table_user) {
+			System.out.println(print_user(user));
+		}
+	}
 
     public boolean addUser_fromUserTable(User user) {
         table_user.add(user);
         return true;
     }
 
-    public boolean updateUser_fromUserTable(User user) {
-        boolean result = false;
-        User foundUser = getUser_fromUserTable(user.getId());
-        
-        if(foundUser != null) {
-            foundUser.setUsername(user.getUsername());
-            foundUser.setPassword(user.getPassword());
-            foundUser.setRole(user.getRole());
-            result = true;
-        }
+	public User getUser_fromUserTable(String Id) {
+		for (User user : table_user) {
+			if (user.getId().equals(Id)) {
+				return user;
+			}
+		}
+		return null;
+	}
 
-        return result;
-    }
+	public boolean updateUser_fromUserTable(User user) {
+		boolean result = false;
+		User foundUser = getUser_fromUserTable(user.getId());
 
-    public boolean deleteUser_fromUserTable(String id) {
-        boolean result = false;
-        User foundUser = getUser_fromUserTable(id);
-        
-        if(foundUser != null) {
-            table_user.remove(foundUser);
-            result = true;
-        }
-        return result;
-    }
-    
-    // fn to get all orders by user
+		if (foundUser != null) {
+			foundUser.setUsername(user.getUsername());
+			foundUser.setPassword(user.getPassword());
+			foundUser.setRole(user.getRole());
+			result = true;
+		}
+		return result;
+	}
+
+	public boolean deleteUser_fromUserTable(String userId) {
+		boolean result = false;
+		User foundUser = getUser_fromUserTable(userId);
+
+		if (foundUser != null) {
+			table_user.remove(foundUser);
+			result = true;
+		}
+		return result;
+	}
+	
+	// moved to TrainTicketSystem.java
+	// public void signIN() {
+	// 	nowUser.signIn();
+	// }
+
+    // public boolean checkIsAdmin() {
+	// 	return nowUser.getRole().equals("admin");
+	// }
+
 	public ArrayList<OrderRecord> getOrdersByUser(String id) {
 		ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();
 		for (OrderRecord order : getUser_fromUserTable(id).getOrderRecordList()) {

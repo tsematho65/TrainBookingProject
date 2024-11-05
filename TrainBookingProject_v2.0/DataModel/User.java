@@ -1,25 +1,34 @@
 package DataModel;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class User {
+	
     private String id;
     private String username;
     private String password;
     private String role;
-    private String status;
+    private Member member;
+    private int points; 
+    private LocalDate lastSignInDate; 
     private ArrayList<OrderRecord> orderRecordList;
+    private static final int POINTS_PER_SIGN_IN = 10;
+    
 
     public User(String role, String id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.member = new NormalMember();
         orderRecordList = new ArrayList<OrderRecord>();
-        status = "active";
+        lastSignInDate = null;
+        points = 0; 
     }
 
-    // Getters and setters
+   
     public String getUsername() {
         return username;
     }
@@ -50,14 +59,60 @@ public class User {
         return role;
     }
 
-    public String getStatus() {
-        return status;
+	public void setMember(Member member) {
+		this.member = member;
+	}
+
+	public String getMemberType() {
+		return member.getMemberType();
+	}
+
+	public double getDiscount() {
+		return member.getDiscount();
+	}
+	
+    public LocalDate getLastSignInDate() {
+        return lastSignInDate;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setPoints(int points) {
+        this.points = points;
     }
+
+    public int getPoints() {
+        return points;
+    }
+	
+    // Moved to TrainTicketSystem.java
+	// public boolean signIn() {
+    //     LocalDate today = LocalDate.now();
+    //     if (lastSignInDate != null && lastSignInDate.equals(today)) {
+    //         System.out.println("You have already signed in today. Please come back tomorrow.");
+    //         return false; 
+    //     }
+        
+
+    //     lastSignInDate = today;
+        
+    //     points += POINTS_PER_SIGN_IN;
+        
+     
+    //     if (isWinningSignIn()) {
+    //         System.out.println(username + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + " points and win a prize!");
+    //     } else {
+    //         System.out.println(username + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + "points but no prize. ");
+    //     }
+        
+    //     return true; 
+    // }
+
+    // private boolean isWinningSignIn() {
+        
+    //     Random random = new Random();
+    //     return random.nextInt(10) < 1; 
+    // }
     
+
 	public ArrayList<OrderRecord> getOrderRecordList() {
 		return orderRecordList;
 	}
@@ -89,6 +144,15 @@ public class User {
             }
         }
         return null;
+	}
+
+	public Member getMember() {
+        return member;
+    }
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", role=" + role + ", member="
+				+ member + ", points=" + points + ", lastSignInDate=" + lastSignInDate + ", orderRecordList="
+				+ orderRecordList + "]";
 	}
 
 }

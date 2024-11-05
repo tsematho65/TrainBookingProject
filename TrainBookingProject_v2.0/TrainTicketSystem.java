@@ -1,4 +1,5 @@
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.*;
 
 import DAO.*;
@@ -9,11 +10,14 @@ public class TrainTicketSystem {
     private  UserDAO userDAO;
     private  TrainDAO trainDAO;
     private  SeatDAO seatPlanDAO;
+	private CustomerServiceDAO customerServiceDAO;
+	private User currentUser;
 
     private TrainTicketSystem() {
         userDAO = new UserDAO();
         trainDAO = new TrainDAO();
         seatPlanDAO = new SeatDAO();
+		customerServiceDAO = new CustomerServiceDAO();
     }
 
     public static TrainTicketSystem getInstance() {
@@ -24,8 +28,8 @@ public class TrainTicketSystem {
     }
     
     public User login(String username, String password) {
-        User user = userDAO.user_login(username, password);
-        if (user != null ) {
+        User user = userDAO.login(username, password);
+        if (user != null) {
             System.out.println("Login successful.");
         } else {
             System.out.println("Invalid username or password.");
@@ -35,16 +39,50 @@ public class TrainTicketSystem {
         return user;
     }
 
+	// 
     public boolean register(String username, String password){
-        // check if the username is already taken
-        for (User user : userDAO.getTable_user()) {
-            if (user.getUsername().equals(username)) {
-                return false;
-            }
+		// Checking if username matches is already done in UserDAO
+        // check if the username is already taken		
+        // for (User user : userDAO.getTable_user()) {
+        //     if (user.getUsername().equals(username)) {
+        //         return false;
+        //     }
+        // }
+
+		return userDAO.register("normal", username, password);
+		// Adding new user is also done in UserDAO
+        // User user = new User("normal", "userID_" + userDAO.getTable_user().size(), username, password);
+        // userDAO.addUser_fromUserTable(user);
+        // return true;
+    }
+
+	// sign in for reward?
+	public boolean signIn() {
+        LocalDate today = LocalDate.now();
+		LocalDate lastSignInDate = currentUser.getLastSignInDate();
+        if (lastSignInDate != null && lastSignInDate.equals(today)) {
+            System.out.println("You have already signed in today. Please come back tomorrow.");
+            return false; 
         }
-        User user = new User("normal", "userID_" + userDAO.getTable_user().size(), username, password);
-        userDAO.addUser_fromUserTable(user);
-        return true;
+
+        lastSignInDate = today;
+
+		final int POINTS_PER_SIGN_IN = 10;
+        currentUser.setPoints(currentUser.getPoints() + 10);
+     
+        if (isWinningSignIn()) {
+            System.out.println(currentUser.getUsername() + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + " points and win a prize!");
+        } else {
+            System.out.println(currentUser.getUsername() + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + "points but no prize. ");
+        }
+        
+        return true; 
+    }
+
+    private boolean isWinningSignIn() {
+        
+        Random random = new Random();
+        return random.nextInt(10) < 1; 
     }
 
     public int displayTrains_available() {
@@ -119,9 +157,9 @@ public class TrainTicketSystem {
         System.out.println("4. Cancel Ticket");
         System.out.println("5. Edit Profile");
         System.out.println("6. Logout");
+		System.out.println("7. Customer Service");
 	}
-	
-	
+
 //  fn to provide recommendations
 	public ArrayList<String> recommendTrains(String id) {
 	    ArrayList<OrderRecord> orderRecordList = userDAO.getUser_fromUserTable(id).getOrderRecordList();
@@ -227,6 +265,37 @@ public class TrainTicketSystem {
 		}
 
 		return null;
+	}
+
+	// fn to find answer by keyword
+	public String getAnswer(String question) {
+		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
+		String lowerQ = question.toLowerCase();
+		for (int i = 0; i < questionList.size(); i++) {
+            if (lowerQ.contains(questionList.get(i).getQuestion().toLowerCase())) {
+                return questionList.get(i).getAnswer();
+            }
+        }
+		return "Your question seems to be new. Please ask via email for further assistance.";
+	}
+
+	// fn to find answer by keyword
+	public String addQA(String keyword, String answer) {
+		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
+		String lowerK = keyword.toLowerCase();
+		String returnWord = "";
+		for (int i = 0; i < questionList.size(); i++) {
+            if (lowerK.equals(questionList.get(i).getQuestion().toLowerCase())) {
+                return "Keyword already exists.";
+				
+            }
+        }
+		if(customerServiceDAO.addQA(new CsQuestion(keyword, answer))){
+			returnWord = "QA added successfully.";
+		}else{
+			returnWord = "Failed to add QA.";
+		}
+		return returnWord;
 	}
 
 //  fn to order tickets
