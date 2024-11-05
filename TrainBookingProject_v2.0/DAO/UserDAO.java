@@ -14,7 +14,7 @@ public class UserDAO {
     }
     
 
-    public ArrayList<User> print_user(User user) {
+    public String print_user(User user) {
     	
         return user.toString();
         
@@ -26,7 +26,7 @@ public class UserDAO {
 	}
 	
 	public User getNowUser_fromUserTable() {
-	}
+	
 		return nowUser;
 	}
 
@@ -47,9 +47,9 @@ public class UserDAO {
     	return nowUser.getMember().getDiscount();
     }
     
-	public double getDiscount(String userName) {
+	public double getDiscount(String Id) {
 		for (User user : table_user) {
-			if (user.getUsername().equals(userName)) {
+			if (user.getUsername().equals(Id)) {
 				return user.getMember().getDiscount();
 			}
 		}
@@ -57,7 +57,7 @@ public class UserDAO {
 	}
 	
 
-	public String register(String userName, String pwd) {
+	public String register(String role, String userName, String pwd) {
 		for (User user : table_user) {
 			if (user.getUsername().equals(userName)) {
 				return "User already exists!";
@@ -85,6 +85,15 @@ public class UserDAO {
         return true;
     }
 
+	public User getUser_fromUserTable(String Id) {
+		for (User user : table_user) {
+			if (user.getId().equals(Id)) {
+				return user;
+			}
+		}
+		return null;
+	}
+
 	public boolean updateUser_fromUserTable(User user) {
 		boolean result = false;
 		User foundUser = getUser_fromUserTable(user.getId());
@@ -98,9 +107,9 @@ public class UserDAO {
 		return result;
 	}
 
-	public boolean deleteUser_fromUserTable(String userName) {
+	public boolean deleteUser_fromUserTable(String userId) {
 		boolean result = false;
-		User foundUser = getUser_fromUserTable(userName);
+		User foundUser = getUser_fromUserTable(userId);
 
 		if (foundUser != null) {
 			table_user.remove(foundUser);
@@ -113,8 +122,12 @@ public class UserDAO {
 		nowUser.signIn();
 	}
 
+    public boolean checkIsAdmin() {
+		return nowUser.getRole().equals("admin");
+	}
     
-    // fn to get all orders by user
+    
+
 	public ArrayList<OrderRecord> getOrdersByUser(String id) {
 		ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();
 		for (OrderRecord order : getUser_fromUserTable(id).getOrderRecordList()) {

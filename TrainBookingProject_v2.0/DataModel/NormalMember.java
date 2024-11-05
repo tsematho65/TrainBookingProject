@@ -1,6 +1,6 @@
 package DataModel;
 
-public class NormalMember implements MembershipState {
+public class NormalMember implements Member {
     
     public String getMemberType() {
         return "Normal Member";
