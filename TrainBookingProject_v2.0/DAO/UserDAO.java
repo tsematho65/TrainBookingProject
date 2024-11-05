@@ -7,7 +7,7 @@ import DataModel.*;
 public class UserDAO {
 	
     private ArrayList<User> table_user;
-    private User nowUser;
+    // private User nowUser;
     
     public UserDAO() {
         table_user = Database.getInstance().getTable_user();
@@ -20,58 +20,56 @@ public class UserDAO {
         
     }
 
-    
-	public String getNowUser() {
-		return nowUser.toString();
-	}
+    // Moved to TrainTicketSystem.java
+	// public String getNowUser() {
+	// 	return nowUser.toString();
+	// }
 	
-	public User getNowUser_fromUserTable() {
+	// public User getNowUser_fromUserTable() {
 	
-		return nowUser;
-	}
+	// 	return nowUser;
+	// }
 
-    
-    public boolean login(String userName, String pwd) {
-       
+    // changed from return boolean to return User
+    public User login(String userName, String pwd) {
+		User currentUser = null;
         for (User user : table_user) {
             if (user.getUsername().equals(userName) && user.getPassword().equals(pwd)) {
-            	this.nowUser = user;
-                return true;
+            	// this.nowUser = user;
+				currentUser = user;
             }
         }
         
-        return false;
+        return currentUser;
     }
     
-    public double getDiscount() {
-    	return nowUser.getMember().getDiscount();
-    }
+	// Not needed here
+    // public double getDiscount() {
+    // 	return nowUser.getMember().getDiscount();
+    // }
     
-	public double getDiscount(String Id) {
-		for (User user : table_user) {
-			if (user.getUsername().equals(Id)) {
-				return user.getMember().getDiscount();
-			}
-		}
-		return 0;
-	}
+	// public double getDiscount(String Id) {
+	// 	for (User user : table_user) {
+	// 		if (user.getUsername().equals(Id)) {
+	// 			return user.getMember().getDiscount();
+	// 		}
+	// 	}
+	// 	return 0;
+	// }
 	
-
-	public String register(String role, String userName, String pwd) {
+	// Changed from return String to return boolean
+	public boolean register(String role, String userName, String pwd) {
 		for (User user : table_user) {
 			if (user.getUsername().equals(userName)) {
-				return "User already exists!";
+				return false;
 			}
 		}
 		table_user.add(new User("normal", "userID_" + (table_user.size() + 1), userName, pwd));
-		return "Register successfully!";
+		return true;
 	}
 
-	
-	
-	
     public ArrayList<User> getUserList(List<User> userList) {
-    	        return table_user;
+    	return table_user;
     }
     
 	public void printUserList() {
@@ -118,15 +116,14 @@ public class UserDAO {
 		return result;
 	}
 	
-	public void signIN() {
-		nowUser.signIn();
-	}
+	// moved to TrainTicketSystem.java
+	// public void signIN() {
+	// 	nowUser.signIn();
+	// }
 
-    public boolean checkIsAdmin() {
-		return nowUser.getRole().equals("admin");
-	}
-    
-    
+    // public boolean checkIsAdmin() {
+	// 	return nowUser.getRole().equals("admin");
+	// }
 
 	public ArrayList<OrderRecord> getOrdersByUser(String id) {
 		ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();

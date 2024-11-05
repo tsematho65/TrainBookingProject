@@ -29,7 +29,7 @@ public class Main{
                     String password = scanner.nextLine();
 
                     current_LoginedUser = train_ticket_system.login(username, password);
-                    System.out.print("\nWelcome " + current_LoginedUser.getUsername() + "!");
+                    // System.out.print("\nWelcome " + current_LoginedUser.getUsername() + "!");
                     
                     break;
 

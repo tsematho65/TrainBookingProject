@@ -71,34 +71,46 @@ public class User {
 		return member.getDiscount();
 	}
 	
+    public LocalDate getLastSignInDate() {
+        return lastSignInDate;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public int getPoints() {
+        return points;
+    }
 	
-	public boolean signIn() {
-        LocalDate today = LocalDate.now();
-        if (lastSignInDate != null && lastSignInDate.equals(today)) {
-            System.out.println("You have already signed in today. Please come back tomorrow.");
-            return false; 
-        }
+    // Moved to TrainTicketSystem.java
+	// public boolean signIn() {
+    //     LocalDate today = LocalDate.now();
+    //     if (lastSignInDate != null && lastSignInDate.equals(today)) {
+    //         System.out.println("You have already signed in today. Please come back tomorrow.");
+    //         return false; 
+    //     }
         
 
-        lastSignInDate = today;
+    //     lastSignInDate = today;
         
-        points += POINTS_PER_SIGN_IN;
+    //     points += POINTS_PER_SIGN_IN;
         
      
-        if (isWinningSignIn()) {
-            System.out.println(username + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + " points and win a prize!");
-        } else {
-            System.out.println(username + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + "points but no prize. ");
-        }
+    //     if (isWinningSignIn()) {
+    //         System.out.println(username + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + " points and win a prize!");
+    //     } else {
+    //         System.out.println(username + " signIn sucessful, you get " + POINTS_PER_SIGN_IN + "points but no prize. ");
+    //     }
         
-        return true; 
-    }
+    //     return true; 
+    // }
 
-    private boolean isWinningSignIn() {
+    // private boolean isWinningSignIn() {
         
-        Random random = new Random();
-        return random.nextInt(10) < 1; 
-    }
+    //     Random random = new Random();
+    //     return random.nextInt(10) < 1; 
+    // }
     
 
 	public ArrayList<OrderRecord> getOrderRecordList() {

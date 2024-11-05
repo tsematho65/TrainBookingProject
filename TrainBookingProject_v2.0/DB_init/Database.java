@@ -15,6 +15,7 @@ public class Database {
     private ArrayList<OrderRecord> table_orderRecord;
     private ArrayList<Passenger> table_passenger;
     private ArrayList<CsQuestion> table_question;
+    private ArrayList<Ticket> table_ticket; 
 
     // ID values reference for each table
 
@@ -59,7 +60,9 @@ public class Database {
     public ArrayList<CsQuestion> getTable_question() {   
         return getInstance().table_question;
     }
-
+    public ArrayList<Ticket> getTable_ticket() { 
+        return getInstance().table_ticket;
+    }
 
 
     public static Database getInstance () {
