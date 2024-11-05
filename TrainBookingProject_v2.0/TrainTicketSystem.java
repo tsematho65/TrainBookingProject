@@ -505,4 +505,33 @@ public class TrainTicketSystem {
 		}
 		System.out.println("\n=============================================================================================================");
 	}
+
+	public void addTrain(Train train) {
+	trainDAO.addTrain_fromTrainTable(train);
+	}
+	
+	public boolean removeTrain(String trainNumber) {
+		return trainDAO.deleteTrain_fromTrainTable(trainNumber);
+	}
+	
+	
+	public void updateTrain(Train train) {
+		trainDAO.updateTrain_fromTrainTable(train);
+	}
+	
+	public Train getTrainByNumber(String trainNumber) {
+		return trainDAO.getTrain_fromTrainTable(trainNumber);
+	}
+	
+	
+	public void displayAllTrains() {
+		ArrayList<Train> allTrains = trainDAO.getTable_train();
+		if(allTrains.isEmpty()) {
+			System.out.println("No trains available.");
+		} else {
+			for(Train train : allTrains) {
+				System.out.println(train.toString());
+			}
+		}
+	}
 }
