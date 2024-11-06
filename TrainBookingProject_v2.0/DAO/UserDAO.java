@@ -118,6 +118,26 @@ public class UserDAO {
 		return result;
 	}
 	
+	public boolean isUsernameExists(String username) {
+	for (User user : table_user) {
+        if (user.getUsername().equalsIgnoreCase(username)) {
+            return true;
+        }
+	    }
+	    return false;
+	}
+	
+	public User getUserByUsername(String username) {
+		for (User user : table_user) {
+	        if (user.getUsername().equals(username)) {
+	            return user;
+	        }
+	    }
+	
+	    return null;
+	
+	}
+	
 	// moved to TrainTicketSystem.java
 	// public void signIN() {
 	// 	nowUser.signIn();
@@ -135,4 +155,5 @@ public class UserDAO {
 	// 	}
 	// 	return orders;
 	// }
+
 }
