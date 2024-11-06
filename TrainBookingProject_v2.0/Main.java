@@ -79,17 +79,16 @@ public class Main{
                     break;
 
                 case 3:
-                    break;
-
-                case 4:
-                    break;
-
-                case 5:
+                    // EDIT PROFILE
                     break;
 
                 //CS function
-                case 6:
+                case 4:
                     train_ticket_system.cs(scanner);
+                    break;
+
+                case 5:
+                    // LOGOUT
                     break;
 
                 default:

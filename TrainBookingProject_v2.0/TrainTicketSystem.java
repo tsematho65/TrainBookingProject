@@ -154,11 +154,10 @@ public class TrainTicketSystem {
 	// fn to display main menu
 	public void displayMainMenu() {
 		System.out.println("1. Order Ticket");
-        System.out.println("2. Check and Edit Tickets");
-        System.out.println("3. Cancel Ticket");
-        System.out.println("4. Edit Profile");
+        System.out.println("2. View Orders");
+        System.out.println("3. Edit Profile");
+		System.out.println("4. Customer Service");
         System.out.println("5. Logout");
-		System.out.println("6. Customer Service");
 	}
 
 	// fn to order tickets
@@ -408,16 +407,36 @@ public class TrainTicketSystem {
 				return;
 			}
 
-			System.out.println("Enter the Order No. if you wish to edit it or 0 to return to main menu: ");
+			System.out.print("Enter the Order No. to EDIT or CANCEL it, 0 to return to the main menu: ");
 			int orderNo = sc.nextInt(); // not to be confused with Order Id
-			sc.nextLine();
 	
 			if (orderNo == 0) {
 				return;
 			} else if (orderNo > userOrders.size()) {
 				System.out.println("Invalid option.");
 			} else {
-				editTicket(sc, userOrders.get(orderNo - 1));
+				System.out.println("1. Edit Order");
+				System.out.println("2. Cancel Order");
+				System.out.println("3. Return");
+				System.out.print("Please select an option: ");
+				int option = sc.nextInt();
+				sc.nextLine();
+				
+				switch (option) {
+					case 1:
+						editTicket(sc, userOrders.get(orderNo - 1));
+						break;
+
+					case 2:
+						cancelTicket(sc, userOrders.get(orderNo - 1));
+						break;
+
+					case 3:
+						return;
+
+					default:
+                    	System.out.println("Invalid option. Please try again.");
+				}
 			}
 		}
 	}
@@ -526,6 +545,33 @@ public class TrainTicketSystem {
 
         System.out.println("Order has been updated.");
 	}
+
+    private void cancelTicket(Scanner sc, OrderRecord order) {
+        System.out.print("Are you sure you want to cancel this order? (Y/N): ");
+        String confirm = sc.nextLine();
+        if (!confirm.equalsIgnoreCase("Y")) {
+            System.out.println("Cancel operation aborted.");
+            return;
+        }
+
+  
+        String trainId = order.getTrainId();
+        Train train = trainDAO.getTrain_fromTrainTable(trainId); 
+        int passengerCount = order.getPassengerList().size();
+        train.setAvailableSeats(train.getAvailableSeats() + passengerCount);
+		trainDAO.updateTrain_fromTrainTable(train);
+		      
+        // for (Ticket t : order.getTicketList()) {
+        //     ticketDAO.getTable_ticket().remove(t);
+        // }
+
+        boolean deleted = orderRecordDAO.deleteOrderRecord(order.getOrderId());
+        if (deleted) {
+            System.out.println("Order has been successfully canceled.");
+        } else {
+            System.out.println("Failed to cancel the order.");
+        }
+    }
 
 	public void cs(Scanner sc) {
 		boolean isStay = true;
