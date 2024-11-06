@@ -116,10 +116,14 @@ public class Main {
                     System.out.println("View Reports");
                     train_ticket_system.viewReports(scanner); 
                     break;
+                case 3:
+                    System.out.println("Manage Users");
+                    train_ticket_system.manageUsers(scanner);
+                    break;
                 case 4:
                     System.out.println("Edit Profile");
-                    // ... Implement Edit Profile functionality
-                    break;
+                    train_ticket_system.editProfile(scanner);
+                    break; 
                 case 5:
                     // Logout
                     current_LoginedUser = null;
