@@ -410,7 +410,9 @@ public class TrainTicketSystem {
 	public void checkTicket(Scanner scanner) {
 		while (true) {
 			ArrayList<OrderRecord> userOrders = orderRecordDAO.getOrdersByUserId(currentUser.getId());
-			System.out.println("Your Order Records:");
+			if (!userOrders.isEmpty()) {
+				summarizeOrders(userOrders);
+			}
 			displayOrders(userOrders);
 
 			if (userOrders.isEmpty()) {
@@ -455,6 +457,7 @@ public class TrainTicketSystem {
 		if (userOrders.isEmpty()) {
 			System.out.println("You currently have no orders.");
 		} else {
+			System.out.println("Your Order Records:");
 			for (int i = 0; i < userOrders.size(); i++) {
 				OrderRecord order = userOrders.get(i);
 				String orderNoAndId = String.format("%s %d: %s %s", "==========", i + 1, order.getOrderId(),
@@ -468,6 +471,56 @@ public class TrainTicketSystem {
 			}
 		}
 		return userOrders.size();
+	}
+
+	private void summarizeOrders(ArrayList<OrderRecord> userOrders) {
+		int ratingSum = 0;
+		HashMap<String, Integer> destVisitCount = new HashMap<>();
+		HashMap<String, Double> destAvgRating = new HashMap<>();
+		int maxVisitCount = 0;
+		double maxAvgRating = 0;
+
+		for (OrderRecord order : userOrders) {
+			ratingSum += order.getRating();
+			
+			String dest = trainDAO.getTrain_fromTrainTable(order.getTrainId()).getArrival();
+			int visitCount = destVisitCount.getOrDefault(dest, 0);
+			double destRatingSum = destAvgRating.getOrDefault(dest, 0.0) * visitCount;
+
+			int newVisitCount = visitCount + 1;
+			double newRatingAvg = (destRatingSum + order.getRating()) / newVisitCount;
+			
+			destVisitCount.put(dest, newVisitCount);
+			destAvgRating.put(dest, newRatingAvg);
+
+			if (maxVisitCount < newVisitCount) {
+				maxVisitCount = newVisitCount;
+			}
+
+		}
+
+		for (double avgRating : destAvgRating.values()) {
+			if (maxAvgRating < avgRating) {
+				maxAvgRating = avgRating;
+			}
+		}
+
+		System.out.println("Summary of your orders:");
+		System.out.printf("Average rating of your orders: %.2f\n", ratingSum / (double) userOrders.size());
+		
+		System.out.printf("Your most visited destination(s) (%d times each):\n", maxVisitCount);
+		for (Map.Entry<String, Integer> entry : destVisitCount.entrySet()) {
+			if (entry.getValue() == maxVisitCount) {
+				System.out.println(entry.getKey());
+			}
+		}
+
+		System.out.printf("Your highest rated destination(s) (Average of %.2f rating each):\n", maxAvgRating);
+		for (Map.Entry<String, Double> entry : destAvgRating.entrySet()) {
+			if (entry.getValue() == maxAvgRating) {
+				System.out.println(entry.getKey());
+			}
+		}
 	}
 
 	private void editTicket(Scanner scanner, OrderRecord order) {
