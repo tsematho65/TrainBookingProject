@@ -1,8 +1,9 @@
 package DAO;
 import java.util.*;
 
-import DB_init.*;
 import DataModel.*;
+
+
 
 public class UserDAO {
 	
