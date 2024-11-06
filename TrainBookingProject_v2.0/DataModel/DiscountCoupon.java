@@ -10,7 +10,7 @@ public class DiscountCoupon implements Coupon {
     private LocalDate expiryDate;
 
     public DiscountCoupon(double discount, String couponType, String couponCode, LocalDate expiryDate) {
-        this.couponId = couponId;
+        // this.couponId = couponId;
         this.discount = discount;
         this.couponType = couponType;
         this.couponCode = couponCode;
