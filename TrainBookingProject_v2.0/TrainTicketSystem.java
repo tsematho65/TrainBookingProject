@@ -1343,4 +1343,314 @@ public class TrainTicketSystem {
                      .collect(Collectors.toList());
     }
 
+//User Mangement
+	public void manageUsers(Scanner scanner) {
+		boolean managing = true;
+		while (managing) {
+			System.out.println("\n--- Manage Users ---");
+			System.out.println("1. List All Users");
+			System.out.println("2. Add New User");
+			System.out.println("3. Remove User");
+			System.out.println("4. Change User Role");
+			System.out.println("5. Return to Admin Menu");
+			System.out.print("Choose an option: ");
+			
+			int choice = -1;
+			try {
+				choice = scanner.nextInt();
+				scanner.nextLine(); 
+			} catch (InputMismatchException e) {
+				System.out.println("Invalid input. Please enter a number between 1 and 5.");
+				scanner.nextLine(); 
+				continue;
+			}
+			
+			switch (choice) {
+				case 1:
+					listAllUsers();
+					break;
+				case 2:
+					addNewUser(scanner);
+					break;
+				case 3:
+					removeUser(scanner);
+					break;
+				case 4:
+					changeUserRole(scanner);
+					break;
+				case 5:
+					managing = false;
+					System.out.println("Returning to Admin Menu.");
+					break;
+				default:
+					System.out.println("Invalid option. Please choose between 1 and 5.");
+			}
+		}
+	}
+	private void listAllUsers() {
+		Database db = Database.getInstance();
+        ArrayList<User> users = db.getTable_user();
+        if (users.isEmpty()) {
+            System.out.println("\nNo users found in the system.");
+            return;
+        }
+        
+        System.out.println("\n--- Registered Users ---");
+        System.out.printf("%-10s %-20s %-10s\n", "User ID", "Username", "Role");
+        System.out.println("-------------------------------------------------");
+        for (User user : users) {
+            System.out.printf("%-10s %-20s %-10s\n", user.getId(), user.getUsername(), user.getRole());
+        }
+    }
+
+	private void addNewUser(Scanner scanner) {
+		System.out.println("\n--- Add New User ---");
+		
+		System.out.print("Enter Username: ");
+		String username = scanner.nextLine().trim();
+		if (username.isEmpty()) {
+			System.out.println("Username cannot be empty.");
+			return;
+		}
+		
+		
+		if (userDAO.isUsernameExists(username)) {
+			System.out.println("Username already exists. Please choose a different username.");
+			return;
+		}
+		
+		System.out.print("Enter Password: ");
+		String password = scanner.nextLine().trim();
+		if (password.isEmpty()) {
+			System.out.println("Password cannot be empty.");
+			return;
+		}
+		
+		System.out.println("Select Role:");
+		System.out.println("1. Normal User");
+		System.out.println("2. Administrator");
+		System.out.print("Choose an option: ");
+		
+		int roleChoice = -1;
+		try {
+			roleChoice = scanner.nextInt();
+			scanner.nextLine(); 
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid input. Role set to 'normal user' by default.");
+			scanner.nextLine(); 
+			roleChoice = 1;
+		}
+		
+		String role = "normal";
+		if (roleChoice == 2) {
+			role = "admin";
+		}
+		
+		boolean success = userDAO.register(role, username, password);
+		if (success) {
+			System.out.println("User added successfully.");
+		} else {
+			System.out.println("Failed to add user. Please try again.");
+		}
+	}
+
+	private void removeUser(Scanner scanner) {
+		System.out.println("\n--- Remove User ---");
+		System.out.print("Enter the User ID or Username to remove: ");
+		String input = scanner.nextLine().trim();
+		
+		User userToRemove = null;
+		userToRemove = userDAO.getUser_fromUserTable(input);
+		if (userToRemove == null) {
+			userToRemove = userDAO.getUserByUsername(input);
+		}
+		
+		if (userToRemove == null) {
+			System.out.println("User not found.");
+			return;
+		}
+		
+		
+		if (userToRemove.getId().equals(currentUser.getId())) {
+			System.out.println("You cannot remove your own account.");
+			return;
+		}
+		
+		System.out.print("Are you sure you want to remove user '" + userToRemove.getUsername() + "'? (Y/N): ");
+		String confirmation = scanner.nextLine().trim().toUpperCase();
+		if (!confirmation.equals("Y")) {
+			System.out.println("User removal canceled.");
+			return;
+		}
+		
+		boolean success = userDAO.deleteUser_fromUserTable(userToRemove.getId());
+		if (success) {
+			System.out.println("User removed successfully.");
+		} else {
+			System.out.println("Failed to remove user. Please try again.");
+		}
+	}
+
+	private void changeUserRole(Scanner scanner) {
+		System.out.println("\n--- Change User Role ---");
+		System.out.print("Enter the User ID or Username to modify: ");
+		String input = scanner.nextLine().trim();
+		
+		User userToModify = null;
+		userToModify = userDAO.getUser_fromUserTable(input);
+		if (userToModify == null) {
+			userToModify = userDAO.getUserByUsername(input);
+		}
+		
+		if (userToModify == null) {
+			System.out.println("User not found.");
+			return;
+		}
+		
+
+		if (userToModify.getId().equals(currentUser.getId())) {
+			System.out.println("You cannot change your own role.");
+			return;
+		}
+		
+		System.out.println("Current Role: " + userToModify.getRole());
+		System.out.println("Select New Role:");
+		System.out.println("1. Normal User");
+		System.out.println("2. Administrator");
+		System.out.print("Choose an option: ");
+		
+		int roleChoice = -1;
+		try {
+			roleChoice = scanner.nextInt();
+			scanner.nextLine(); 
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid input. Role not changed.");
+			scanner.nextLine(); 
+			return;
+		}
+		
+		String newRole = userToModify.getRole(); 
+		if (roleChoice == 1) {
+			newRole = "normal";
+		} else if (roleChoice == 2) {
+			newRole = "admin";
+		} else {
+			System.out.println("Invalid role option. Role not changed.");
+			return;
+		}
+		
+		if (newRole.equalsIgnoreCase(userToModify.getRole())) {
+			System.out.println("User already has the role '" + newRole + "'. No changes made.");
+			return;
+		}
+		
+		userToModify.setRole(newRole);
+		boolean success = userDAO.updateUser_fromUserTable(userToModify);
+		if (success) {
+			System.out.println("User role updated successfully to '" + newRole + "'.");
+		} else {
+			System.out.println("Failed to update user role. Please try again.");
+		}
+	}
+
+	//Edit Profile
+	public void editProfile(Scanner scanner) {
+		System.out.println("\n--- Edit Profile ---");
+		boolean editing = true;
+		
+		while (editing) {
+			System.out.println("1. Change Username");
+			System.out.println("2. Change Password");
+			System.out.println("3. Return to Main Menu");
+			System.out.print("Choose an option: ");
+			
+			int choice = -1;
+			try {
+				choice = scanner.nextInt();
+				scanner.nextLine(); // Consume newline
+			} catch (InputMismatchException e) {
+				System.out.println("Invalid input. Please enter a number between 1 and 3.");
+				scanner.nextLine(); // Clear invalid input
+				continue;
+			}
+			
+			switch (choice) {
+				case 1:
+					changeUsername(scanner);
+					break;
+				case 2:
+					changePassword(scanner);
+					break;
+				case 3:
+					editing = false;
+					System.out.println("Returning to Main Menu.");
+					break;
+				default:
+					System.out.println("Invalid option. Please choose between 1 and 3.");
+			}
+		}
+	}
+
+	private void changeUsername(Scanner scanner) {
+		System.out.println("\n--- Change Username ---");
+		System.out.print("Enter your new username: ");
+		String newUsername = scanner.nextLine().trim();
+		
+		if (newUsername.isEmpty()) {
+			System.out.println("Username cannot be empty.");
+			return;
+		}
+		
+
+		if (userDAO.isUsernameExists(newUsername)) {
+			System.out.println("Username already exists. Please choose a different username.");
+			return;
+		}
+		
+		currentUser.setUsername(newUsername);
+		boolean success = userDAO.updateUser_fromUserTable(currentUser);
+		if (success) {
+			System.out.println("Username updated successfully.");
+		} else {
+			System.out.println("Failed to update username. Please try again.");
+		}
+	}
+
+	private void changePassword(Scanner scanner) {
+		System.out.println("\n--- Change Password ---");
+		System.out.print("Enter your current password: ");
+		String currentPassword = scanner.nextLine().trim();
+		
+		
+		User verifiedUser = userDAO.login(currentUser.getUsername(), currentPassword);
+		if (verifiedUser == null || !verifiedUser.getId().equals(currentUser.getId())) {
+			System.out.println("Incorrect current password.");
+			return;
+		}
+		
+		System.out.print("Enter your new password: ");
+		String newPassword = scanner.nextLine().trim();
+		if (newPassword.isEmpty()) {
+			System.out.println("Password cannot be empty.");
+			return;
+		}
+		
+		System.out.print("Confirm your new password: ");
+		String confirmPassword = scanner.nextLine().trim();
+		if (!newPassword.equals(confirmPassword)) {
+			System.out.println("Passwords do not match.");
+			return;
+		}
+		
+		currentUser.setPassword(newPassword);
+		boolean success = userDAO.updateUser_fromUserTable(currentUser);
+		if (success) {
+			System.out.println("Password updated successfully.");
+		} else {
+			System.out.println("Failed to update password. Please try again.");
+		}
+	}
+
+    
 }
+
