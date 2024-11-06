@@ -10,9 +10,12 @@ public class DiscountCoupon implements Coupon {
     private LocalDate expiryDate;
 
     public DiscountCoupon(double discount, String couponType, String couponCode, LocalDate expiryDate) {
+<<<<<<< HEAD
         // this.couponId = couponId;
+=======
+>>>>>>> branch 'main' of https://github.com/JayV0128/TrainBookingProject.git
         this.discount = discount;
-        this.couponType = couponType;
+        this.couponType = "DiscountCoupon";
         this.couponCode = couponCode;
         this.expiryDate = expiryDate;
     }
