@@ -1343,30 +1343,4 @@ public class TrainTicketSystem {
                      .collect(Collectors.toList());
     }
 
-    public void displayFinishedOrders(String id, Scanner scanner) {
-        ArrayList<OrderRecord> finishedOrders = getFinishedOrders(id);
-        if (finishedOrders.size() == 0) {
-            System.out.println("\nNo finished orders.");
-        } else {
-            System.out.println("\n===============================================");
-            System.out.println("Finished Orders:");
-            for (int i = 0; i < finishedOrders.size(); i++) {
-                OrderRecord finishedOrder = finishedOrders.get(i);
-                Train train = trainDAO.getTrain_fromTrainTable(finishedOrder.getTrainId());
-
-                
-                System.out.println((i + 1) + ": " + finishedOrder.getOrderId());
-                System.out.println("\nTrain ID: " + train.getTrainNumber());
-                System.out.println("Journey: from " + train.getDeparture() + " to " + train.getArrival());
-                System.out.println("Date: " + train.getDate() + ", " + train.getTime());
-                System.out.println("Price: " + train.getPrice());
-
-                System.out.print("\nPlease rate this order: (1-5, 5 is the best): ");
-                int rating = scanner.nextInt();
-                scanner.nextLine(); 
-                finishedOrder.setRating(rating);
-            }
-            System.out.println("\n===============================================");
-        }
-    }
 }
