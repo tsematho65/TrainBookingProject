@@ -12,7 +12,7 @@ public class AmountCoupon implements Coupon {
 
 	public AmountCoupon(double amount, String couponType, String couponCode, LocalDate expiryDate) {
 		this.amount = amount;
-		this.couponType = couponType;
+		this.couponType = "Amount Coupon";
 		this.couponCode = couponCode;
 		this.expiryDate = expiryDate;
 	}

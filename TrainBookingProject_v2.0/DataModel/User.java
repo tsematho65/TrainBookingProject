@@ -14,6 +14,7 @@ public class User {
     private int points; 
     private LocalDate lastSignInDate; 
     private ArrayList<OrderRecord> orderRecordList;
+    private ArrayList<Coupon> couponList;
     // private static final int POINTS_PER_SIGN_IN = 10;
     
 
@@ -145,6 +146,19 @@ public class User {
     //     }
     //     return null;
 	// }
+    
+	public void addCoupon(Coupon coupon) {
+		couponList.add(coupon);
+	}
+	
+	public void removeCoupon(Coupon coupon) {
+		couponList.remove(coupon);
+	}
+	
+	public ArrayList<Coupon> getCouponList() {
+		return couponList;
+	}
+	
 
 	public Member getMember() {
         return member;

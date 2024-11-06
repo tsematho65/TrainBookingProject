@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry excluding="Software Pratices/|TrainBookingProject_vCS_function/|TrainBookingProject_v2.0/" kind="src" path=""/>
+	<classpathentry kind="src" path="Software Pratices"/>
+	<classpathentry kind="src" path="TrainBookingProject_v2.0"/>
+	<classpathentry kind="src" path="TrainBookingProject_vCS_function"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
