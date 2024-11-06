@@ -114,7 +114,7 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("View Reports");
-
+                    train_ticket_system.viewReports(scanner); 
                     break;
                 case 4:
                     System.out.println("Edit Profile");
