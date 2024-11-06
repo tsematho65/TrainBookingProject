@@ -57,7 +57,6 @@ public class TrainTicketSystem {
         return user;
     }
 
-	// 
     public boolean register(String username, String password){
 		// Checking if username matches is already done in UserDAO
         // check if the username is already taken		
@@ -103,26 +102,34 @@ public class TrainTicketSystem {
         return random.nextInt(10) < 1; 
     }
 
-    public int displayTrains_available() {
-        ArrayList<Train> availableTrainTable = trainDAO.getTable_train();
-        int availableTrain_count = 0;
+	//	fn to display finished orders
+	public void displayFinishedOrders(String id, Scanner sc) {
+		ArrayList<OrderRecord> finishedOrders = getFinishedOrders(id);
+		if (finishedOrders.size() == 0) {
+			System.out.println("\nNo finished orders.");
+		} else {
+			System.out.println("\n===============================================");
+			System.out.println("Finished Orders:");
+			for (int i = 0; i < finishedOrders.size(); i++) {
+				OrderRecord finishedOrder = finishedOrders.get(i);
+				Train train = trainDAO.getTrain_fromTrainTable(finishedOrder.getTrainId());
+				
+				// print finishedOrder details
+				System.out.println((i + 1) +": " + finishedOrder.getOrderId());
+				System.out.println("\nTrain Number: " + train.getTrainNumber());
+				System.out.println("Journey: " + "from " + train.getDeparture() + " to " + train.getArrival());
+				System.out.println("Date: " + train.getDate() + ", " + train.getTime());
+				System.out.println("Price: " + train.getPrice());
+				
+				System.out.print("\nPlease rate this order: (1-5, 5 is the best): ");
+				int rating = sc.nextInt();
+				finishedOrder.setRating(rating);
+			}
+			System.out.println("\n===============================================");
+		}
+	}
 
-        // display a table to show all available trains
-        for (int i = 0; i < availableTrainTable.size(); i++) {
-            Train train = availableTrainTable.get(i);
-            if(train.getStatus() == "active" && train.getAvailableSeats() > 0 ) {
-                availableTrain_count++;
-                System.out.println((i+1) + ": " + train.toString());
-            }
-        }
-        return availableTrain_count;
-    }
-
-    public ArrayList<Train> getTrainTable(){
-        return trainDAO.getTable_train();
-    }
-
-//  fn to get finished orders
+	//  fn to get finished orders
 	public ArrayList<OrderRecord> getFinishedOrders(String id) {
 		ArrayList<OrderRecord> finishedOrders = new ArrayList<OrderRecord>();
 		// ArrayList<OrderRecord> orderRecordList = userDAO.getUser_fromUserTable(id).getOrderRecordList();
@@ -139,183 +146,19 @@ public class TrainTicketSystem {
 		}
 		return finishedOrders;
 	}
+
+    // public ArrayList<Train> getTrainTable(){
+    //     return trainDAO.getTable_train();
+    // }
 	
-	
-//	fn to display finished orders
-	public void displayFinishedOrders(String id, Scanner sc) {
-		ArrayList<OrderRecord> finishedOrders = getFinishedOrders(id);
-		if (finishedOrders.size() == 0) {
-			System.out.println("\nNo finished orders.");
-		} else {
-			System.out.println("\n===============================================");
-			System.out.println("Finished Orders:");
-			for (int i = 0; i < finishedOrders.size(); i++) {
-				OrderRecord finishedOrder = finishedOrders.get(i);
-				Train train = trainDAO.getTrain_fromTrainTable(finishedOrder.getTrainId());
-				
-//				print finishedOrder details
-				System.out.println((i + 1) +": " + finishedOrder.getOrderId());
-				System.out.println("\nTrain Number: " + train.getTrainNumber());
-				System.out.println("Journey: " + "from " + train.getDeparture() + " to " + train.getArrival());
-				System.out.println("Date: " + train.getDate() + ", " + train.getTime());
-				System.out.println("Price: " + train.getPrice());
-				
-				System.out.print("\nPlease rate this order: (1-5, 5 is the best): ");
-				int rating = sc.nextInt();
-				finishedOrder.setRating(rating);
-			}
-			System.out.println("\n===============================================");
-		}
-	}
-	
-//	fn to display main menu
+	// fn to display main menu
 	public void displayMainMenu() {
 		System.out.println("1. Order Ticket");
-        System.out.println("2. Check Tickets");
-        System.out.println("3. Edit Ticket");
-        System.out.println("4. Cancel Ticket");
-        System.out.println("5. Edit Profile");
-        System.out.println("6. Logout");
-		System.out.println("7. Customer Service");
-	}
-
-//  fn to provide recommendations
-	public ArrayList<String> recommendTrains(String id) {
-	    // ArrayList<OrderRecord> orderRecordList = userDAO.getUser_fromUserTable(id).getOrderRecordList();
-		ArrayList<OrderRecord> orderRecordList = orderRecordDAO.getOrdersByUserId(id);
-
-	    if (orderRecordList.isEmpty()) {
-	        return new ArrayList<>();
-	    } else {
-	        Map<String, Integer> trainRating = new HashMap<>();
-	        for (OrderRecord orderRecord : orderRecordList) {
-	            String trainId = orderRecord.getTrainId();
-	            int rating = orderRecord.getRating();
-	            if (rating > 0) {
-	                trainRating.put(trainId, rating);
-				} else {
-					trainRating.put(trainId, 0);
-				}
-	        }
-
-	        List<String> sortedTrainIds = trainRating.entrySet().stream()
-	                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-	                .map(Map.Entry::getKey)
-	                .toList();
-
-	        int endIndex = Math.min(3, sortedTrainIds.size());
-	        return new ArrayList<>(sortedTrainIds.subList(0, endIndex));
-	    }
-	}
-	
-//  recommend train according to user's order history
-	public void displayRecommendations(String id, String location) {
-		ArrayList<String> recommendedTrainIds = recommendTrains(id);
-		ArrayList<Train> availableTrains = new ArrayList<>();
-		
-		for (int i = 0; i < recommendedTrainIds.size(); i++) {
-			Train train = trainDAO.getTrain_fromTrainTable(recommendedTrainIds.get(i));
-			
-			if (train.getStatus().equals("active") && train.getAvailableSeats() > 0) {
-				availableTrains.add(train);
-			}
-		}
-		
-		System.out.println("\n=============================================================================================================");
-		System.out.println("Top 3 Train Recommendations:");
-		
-		if (availableTrains.size() == 0) {
-			System.out.println("No recommendations available.");
-		} else {
-			if (location.equals("None")) {
-				for (int i = 0; i < availableTrains.size(); i++) {
-					System.out.println(availableTrains.get(i).toString());
-				}
-			} else {
-				for (int i = 0; i < availableTrains.size(); i++) {
-					if (availableTrains.get(i).getDeparture().equals(location) || availableTrains.get(i).getArrival().equals(location)) {
-						System.out.println(availableTrains.get(i).toString());
-					}
-				}
-			}
-		}
-
-		System.out.println("\n=============================================================================================================");
-	}
-
-	// arrange single seat
-	public ArrayList<String> arrangeSeat(String trainNumber) {
-		
-		seatPlan target_seatPlan = seatPlanDAO.getSeatPlan_ByTrainID(trainNumber);
-		String result = seatPlanDAO.getOneAvailableSeat(target_seatPlan);
-		
-		// test
-		System.out.println("test_seats result: " + result);
-		System.out.println("test_seats target_seatPlan: " + target_seatPlan.toString());
-		ArrayList<String> seatNumbers = new ArrayList<>();
-
-		if(result != null) {
-			Train targetTrain = trainDAO.getTrain_fromTrainTable(trainNumber);
-			int availableSeats = targetTrain.getAvailableSeats();
-			availableSeats--;
-			targetTrain.setAvailableSeats(availableSeats);
-			seatNumbers.add(result);
-			return seatNumbers;
-		}
-
-		return null;
-	}
-
-	// arrange seats together, > 1 passengers
-	public ArrayList<String> arrangeSeat(String trainNumber, int passengerCount) {
-		
-		seatPlan target_seatPlan = seatPlanDAO.getSeatPlan_ByTrainID(trainNumber);
-		ArrayList<String> result = seatPlanDAO.getMultipleAvailableSeat(target_seatPlan, passengerCount);
-		
-		// test
-		System.out.println("test_seats result: " + result);
-		System.out.println("test_seats target_seatPlan: " + target_seatPlan.toString());
-
-		if(result != null) {
-			Train targetTrain = trainDAO.getTrain_fromTrainTable(trainNumber);
-			int availableSeats = targetTrain.getAvailableSeats();
-			availableSeats -= passengerCount;
-			targetTrain.setAvailableSeats(availableSeats);
-			return result;
-		}
-
-		return null;
-	}
-
-	// fn to find answer by keyword
-	public String getAnswer(String question) {
-		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
-		String lowerQ = question.toLowerCase();
-		for (int i = 0; i < questionList.size(); i++) {
-            if (lowerQ.contains(questionList.get(i).getQuestion().toLowerCase())) {
-                return questionList.get(i).getAnswer();
-            }
-        }
-		return "Your question seems to be new. Please ask via email for further assistance.";
-	}
-
-	// fn to find answer by keyword
-	public String addQA(String keyword, String answer) {
-		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
-		String lowerK = keyword.toLowerCase();
-		String returnWord = "";
-		for (int i = 0; i < questionList.size(); i++) {
-            if (lowerK.equals(questionList.get(i).getQuestion().toLowerCase())) {
-                return "Keyword already exists.";
-				
-            }
-        }
-		if(customerServiceDAO.addQA(new CsQuestion(keyword, answer))){
-			returnWord = "QA added successfully.";
-		}else{
-			returnWord = "Failed to add QA.";
-		}
-		return returnWord;
+        System.out.println("2. Check and Edit Tickets");
+        System.out.println("3. Cancel Ticket");
+        System.out.println("4. Edit Profile");
+        System.out.println("5. Logout");
+		System.out.println("6. Customer Service");
 	}
 
 	// fn to order tickets
@@ -428,26 +271,260 @@ public class TrainTicketSystem {
 		orderRecordDAO.addOrderRecord(orderRecord);
 		
 		System.out.println("Order successful.");
-//                    System.out.println("Order ID: " + orderRecord.getOrderId());
+		// System.out.println("Order ID: " + orderRecord.getOrderId());
+	}
+
+    public int displayTrains_available() {
+        ArrayList<Train> availableTrainTable = trainDAO.getTable_train();
+        int availableTrain_count = 0;
+
+        // display a table to show all available trains
+        for (int i = 0; i < availableTrainTable.size(); i++) {
+            Train train = availableTrainTable.get(i);
+            if(train.getStatus() == "active" && train.getAvailableSeats() > 0 ) {
+                availableTrain_count++;
+                System.out.println((i+1) + ": " + train.toString());
+            }
+        }
+        return availableTrain_count;
+    }
+
+	// recommend train according to user's order history
+	public void displayRecommendations(String id, String location) {
+		ArrayList<String> recommendedTrainIds = recommendTrains(id);
+		ArrayList<Train> availableTrains = new ArrayList<>();
+		
+		for (int i = 0; i < recommendedTrainIds.size(); i++) {
+			Train train = trainDAO.getTrain_fromTrainTable(recommendedTrainIds.get(i));
+			
+			if (train.getStatus().equals("active") && train.getAvailableSeats() > 0) {
+				availableTrains.add(train);
+			}
+		}
+		
+		System.out.println("\n=============================================================================================================");
+		System.out.println("Top 3 Train Recommendations:");
+		
+		if (availableTrains.size() == 0) {
+			System.out.println("No recommendations available.");
+		} else {
+			if (location.equals("None")) {
+				for (int i = 0; i < availableTrains.size(); i++) {
+					System.out.println(availableTrains.get(i).toString());
+				}
+			} else {
+				for (int i = 0; i < availableTrains.size(); i++) {
+					if (availableTrains.get(i).getDeparture().equals(location) || availableTrains.get(i).getArrival().equals(location)) {
+						System.out.println(availableTrains.get(i).toString());
+					}
+				}
+			}
+		}
+
+		System.out.println("\n=============================================================================================================");
+	}
+
+	// fn to provide recommendations
+	public ArrayList<String> recommendTrains(String id) {
+	    // ArrayList<OrderRecord> orderRecordList = userDAO.getUser_fromUserTable(id).getOrderRecordList();
+		ArrayList<OrderRecord> orderRecordList = orderRecordDAO.getOrdersByUserId(id);
+
+	    if (orderRecordList.isEmpty()) {
+	        return new ArrayList<>();
+	    } else {
+	        Map<String, Integer> trainRating = new HashMap<>();
+	        for (OrderRecord orderRecord : orderRecordList) {
+	            String trainId = orderRecord.getTrainId();
+	            int rating = orderRecord.getRating();
+	            if (rating > 0) {
+	                trainRating.put(trainId, rating);
+				} else {
+					trainRating.put(trainId, 0);
+				}
+	        }
+
+	        List<String> sortedTrainIds = trainRating.entrySet().stream()
+	                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+	                .map(Map.Entry::getKey)
+	                .toList();
+
+	        int endIndex = Math.min(3, sortedTrainIds.size());
+	        return new ArrayList<>(sortedTrainIds.subList(0, endIndex));
+	    }
+	}
+
+	// arrange single seat
+	public ArrayList<String> arrangeSeat(String trainNumber) {
+		
+		seatPlan target_seatPlan = seatPlanDAO.getSeatPlan_ByTrainID(trainNumber);
+		String result = seatPlanDAO.getOneAvailableSeat(target_seatPlan);
+		
+		// test
+		System.out.println("test_seats result: " + result);
+		System.out.println("test_seats target_seatPlan: " + target_seatPlan.toString());
+		ArrayList<String> seatNumbers = new ArrayList<>();
+
+		if(result != null) {
+			Train targetTrain = trainDAO.getTrain_fromTrainTable(trainNumber);
+			int availableSeats = targetTrain.getAvailableSeats();
+			availableSeats--;
+			targetTrain.setAvailableSeats(availableSeats);
+			seatNumbers.add(result);
+			return seatNumbers;
+		}
+
+		return null;
+	}
+
+	// arrange seats together, > 1 passengers
+	public ArrayList<String> arrangeSeat(String trainNumber, int passengerCount) {
+		
+		seatPlan target_seatPlan = seatPlanDAO.getSeatPlan_ByTrainID(trainNumber);
+		ArrayList<String> result = seatPlanDAO.getMultipleAvailableSeat(target_seatPlan, passengerCount);
+		
+		// test
+		System.out.println("test_seats result: " + result);
+		System.out.println("test_seats target_seatPlan: " + target_seatPlan.toString());
+
+		if(result != null) {
+			Train targetTrain = trainDAO.getTrain_fromTrainTable(trainNumber);
+			int availableSeats = targetTrain.getAvailableSeats();
+			availableSeats -= passengerCount;
+			targetTrain.setAvailableSeats(availableSeats);
+			return result;
+		}
+
+		return null;
 	}
 
 	// fn to check tickets (more like check orders)
 	public void checkTicket(Scanner sc) {
-		System.out.println("Your Order Records:");
-		ArrayList<OrderRecord> userOrders = orderRecordDAO.getOrdersByUserId(currentUser.getId());
+		while (true) {
+			ArrayList<OrderRecord> userOrders = orderRecordDAO.getOrdersByUserId(currentUser.getId());
+			System.out.println("Your Order Records:");
+			displayOrders(userOrders);
+	
+			if (userOrders.isEmpty()) {
+				return;
+			}
 
-		if (userOrders.isEmpty()) {
-			System.out.println("You currently have no orders.");
-		} else {
-			for (OrderRecord order : userOrders) {
-				System.out.println(order.toString());
-				System.out.println("--------------------------------------------------");
+			System.out.println("Enter the Order No. if you wish to edit it or 0 to return to main menu: ");
+			int orderNo = sc.nextInt(); // not to be confused with Order Id
+			sc.nextLine();
+	
+			if (orderNo == 0) {
+				return;
+			} else if (orderNo > userOrders.size()) {
+				System.out.println("Invalid option.");
+			} else {
+				editTicket(sc, userOrders.get(orderNo - 1));
 			}
 		}
 	}
 
-	public void editTicket(Scanner sc) {
-		System.out.println("Edit Tickets");
+	private int displayOrders(ArrayList<OrderRecord> userOrders) {
+		if (userOrders.isEmpty()) {
+			System.out.println("You currently have no orders.");
+		} else {
+			for (int i = 0; i < userOrders.size(); i++) {
+				OrderRecord order = userOrders.get(i);
+				String orderNoAndId = String.format("%s %d: %s %s", "==========", i + 1, order.getOrderId(), "==========");
+				System.out.println(orderNoAndId);
+				System.out.println(order.toString());
+				for (int j = 0; j < orderNoAndId.length(); j++) {
+					System.out.print("=");
+				}
+				System.out.println();
+			}
+		}
+		return userOrders.size();
+	}
+
+	private void editTicket(Scanner sc, OrderRecord order) {
+        System.out.println("Current Order Details:");
+        System.out.println(order.toString());
+        System.out.println("You can perform the following actions:");
+        System.out.println("1. Modify Passenger Information");
+        System.out.println("2. Modify Ticket Type");
+        System.out.println("3. Return");
+        System.out.print("Choose an option: ");
+        int editOption = sc.nextInt();
+        sc.nextLine();
+
+        switch (editOption) {
+            case 1:
+                // Modify Passenger Information
+                ArrayList<Passenger> passengers = order.getPassengerList();
+                for (int i = 0; i < passengers.size(); i++) {
+                    Passenger p = passengers.get(i);
+                    System.out.printf("Passenger %d: %s, Age: %d\n", i + 1, p.getName(), p.getAge());
+                    System.out.print("Do you want to modify this passenger's information? (Y/N): ");
+                    String choice = sc.nextLine();
+                    if (choice.equalsIgnoreCase("Y")) {
+                        System.out.print("Enter new name: ");
+                        String newName = sc.nextLine();
+                        System.out.print("Enter new age: ");
+                        int newAge = sc.nextInt();
+                        sc.nextLine();
+
+                        p.setName(newName);
+                        p.setAge(newAge);
+                    }
+                }
+                System.out.println("Passenger information updated.");
+                break;
+
+            case 2:
+                // ArrayList<Ticket> tickets = order.getTicketList();
+                // for (int i = 0; i < tickets.size(); i++) {
+                //     Ticket t = tickets.get(i);
+                //     System.out.printf("Ticket %d: %s\n", i + 1, t.toString());
+                //     System.out.print("Do you want to modify this ticket's type? (Y/N): ");
+                //     String choice = sc.nextLine();
+                //     if (choice.equalsIgnoreCase("Y")) {
+                //         System.out.println("Select new ticket type:");
+                //         System.out.println("1. Regular");
+                //         System.out.println("2. Business");
+                //         System.out.print("Choose: ");
+                //         int typeChoice = sc.nextInt();
+                //         sc.nextLine();
+
+                //         if (typeChoice == 1) {
+                //             if (t instanceof BusinessTicket) {
+                //                 BusinessTicket bt = (BusinessTicket) t;
+                //                 double newPrice = system.getTrainTable().get(order.getTrainId() - 1).getPrice();
+                //                 RegularTicket rt = new RegularTicket("Regular", newPrice);
+                //                 tickets.set(i, rt);
+                //                 order.setAmount(order.getAmount() - bt.getPrice() + rt.getPrice());
+                //                 ticketDAO.getTable_ticket().remove(bt);
+                //                 ticketDAO.addTicket(rt);
+                //             }
+                //         } else if (typeChoice == 2) {
+                //             if (t instanceof RegularTicket) {
+                //                 RegularTicket rt = (RegularTicket) t;
+                //                 double newPrice = system.getTrainTable().get(order.getTrainId() - 1).getPrice() * 1.5;
+                //                 BusinessTicket bt = new BusinessTicket("Business", newPrice, "Yes");
+                //                 tickets.set(i, bt);
+                //                 order.setAmount(order.getAmount() - rt.getPrice() + bt.getPrice());
+                //                 ticketDAO.getTable_ticket().remove(rt);
+                //                 ticketDAO.addTicket(bt);
+                //             }
+                //         } else {
+                //             System.out.println("Invalid ticket type selection.");
+                //         }
+                //     }
+                // }
+                // System.out.println("Ticket types updated.");
+                break;
+
+            case 3:
+                return;
+
+            default:
+                System.out.println("Invalid option.");
+        }
+
+        System.out.println("Order has been updated.");
 	}
 
 	public void cs(Scanner sc) {
@@ -470,6 +547,17 @@ public class TrainTicketSystem {
 		System.out.println("\n=============================================================================================================");
 	}
 
+	// fn to find answer by keyword
+	public String getAnswer(String question) {
+		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
+		String lowerQ = question.toLowerCase();
+		for (int i = 0; i < questionList.size(); i++) {
+            if (lowerQ.contains(questionList.get(i).getQuestion().toLowerCase())) {
+                return questionList.get(i).getAnswer();
+            }
+        }
+		return "Your question seems to be new. Please ask via email for further assistance.";
+	}
 
 	public void csAdmin(Scanner sc) {
 		boolean isStay = true;
@@ -504,6 +592,25 @@ public class TrainTicketSystem {
 			System.out.println(addQA(keyword, answer));
 		}
 		System.out.println("\n=============================================================================================================");
+	}
+
+	// fn to find answer by keyword
+	public String addQA(String keyword, String answer) {
+		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
+		String lowerK = keyword.toLowerCase();
+		String returnWord = "";
+		for (int i = 0; i < questionList.size(); i++) {
+            if (lowerK.equals(questionList.get(i).getQuestion().toLowerCase())) {
+                return "Keyword already exists.";
+				
+            }
+        }
+		if(customerServiceDAO.addQA(new CsQuestion(keyword, answer))){
+			returnWord = "QA added successfully.";
+		}else{
+			returnWord = "Failed to add QA.";
+		}
+		return returnWord;
 	}
 
 	public void addTrain(Train train) {

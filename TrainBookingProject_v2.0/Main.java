@@ -75,17 +75,20 @@ public class Main{
                     break;
 
                 case 2:
-                    // NOT IMPLEMENTED YET
                     train_ticket_system.checkTicket(scanner);
                     break;
 
                 case 3:
-                    // NOT IMPLEMENTED YET
-                    train_ticket_system.editTicket(scanner);
+                    break;
+
+                case 4:
+                    break;
+
+                case 5:
                     break;
 
                 //CS function
-                case 7:
+                case 6:
                     train_ticket_system.cs(scanner);
                     break;
 
