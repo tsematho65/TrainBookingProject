@@ -79,7 +79,7 @@ public class Main {
                     break;
 
                 case 3:
-                    // EDIT PROFILE
+                    train_ticket_system.editProfile(scanner);
                     break;
 
                 // CS function
