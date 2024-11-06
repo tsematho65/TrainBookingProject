@@ -93,6 +93,18 @@ public class OrderRecord {
 	}
 
     public String toString() {
-        return "to be implemented";
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("User ID: %s\nTrain ID: %s\nOrder Date: %s\nTotal Amount: $%.2f\n", 
+            userId, trainId, orderDate.toString(), amount));
+        sb.append("Passengers:\n");
+        for (Passenger p : passengerList) {
+            sb.append(p.toString()).append("\n");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        // sb.append("Tickets:\n");
+        // for (Ticket t : ticketList) {
+        //     sb.append(t.toString()).append("\n");
+        // }
+        return sb.toString();
     }
 }
