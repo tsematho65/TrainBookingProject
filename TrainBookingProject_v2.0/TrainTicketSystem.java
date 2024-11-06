@@ -711,7 +711,7 @@ public class TrainTicketSystem {
 		// return;
 		// }
 
-		String trainID = ("trainId_" + trainDAO.getTable_train().size() + 1);
+		String trainID = ("trainId_" + (trainDAO.getTable_train().size() + 1));
 
 		System.out.print("Enter Departure Station: ");
 		String departure = scanner.nextLine();
