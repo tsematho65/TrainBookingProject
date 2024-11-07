@@ -138,6 +138,18 @@ public class UserDAO {
 	
 	}
 	
+    public double calculateDiscount(double totalAmount, User currentUser) {
+
+        ArrayList<Coupon> coupons = currentUser.getCouponList();
+        double maxDiscount = 0.0;
+        for (Coupon coupon : coupons) {
+            if (coupon.getDiscount(totalAmount) > maxDiscount) {
+                maxDiscount = coupon.getDiscount(totalAmount);
+            }
+        }
+        return maxDiscount;
+    }
+	
 	// moved to TrainTicketSystem.java
 	// public void signIN() {
 	// 	nowUser.signIn();
