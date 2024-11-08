@@ -54,120 +54,123 @@ public class Main {
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
-        }
 
-        // while loop for normal user
-        while (current_LoginedUser.getRole() == "normal") {
 
-            // display finished orders
-            train_ticket_system.displayFinishedOrders(current_LoginedUser.getId(), scanner);
+            // while loop for normal user
+            while (current_LoginedUser != null && current_LoginedUser.getRole() == "normal") {
 
-            System.out.println();
-            train_ticket_system.displayMainMenu();
-            System.out.print("Choose an option: ");
+                // display finished orders
+                train_ticket_system.displayFinishedOrders(current_LoginedUser.getId(), scanner);
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+                System.out.println();
+                train_ticket_system.displayMainMenu();
+                System.out.print("Choose an option: ");
 
-            switch (option) {
-                case 1:
-                    train_ticket_system.orderTicket(scanner);
-                    break;
+                option = scanner.nextInt();
+                scanner.nextLine();
 
-                case 2:
-                    train_ticket_system.checkTicket(scanner);
-                    break;
+                switch (option) {
+                    case 1:
+                        train_ticket_system.orderTicket(scanner);
+                        break;
 
-                case 3:
-                    // EDIT PROFILE
-                    break;
+                    case 2:
+                        train_ticket_system.checkTicket(scanner);
+                        break;
 
-                // CS function
-                case 4:
-                    train_ticket_system.cs(scanner);
-                    break;
+                    case 3:
+                        // EDIT PROFILE
+                        break;
 
-                case 5:
-                    // LOGOUT
-                    break;
+                    // CS function
+                    case 4:
+                        train_ticket_system.cs(scanner);
+                        break;
 
-                default:
-                    System.out.println("Invalid option. Please try again.");
+                    case 5:
+                        // LOGOUT
+                        current_LoginedUser = null;
+                        System.out.println("Logged out successfully.\n");
+                        break;
+
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
             }
-        }
 
-        while (current_LoginedUser.getRole() == "admin") {
-            System.out.println("1. Manage Train Schedule");
-            System.out.println("2. View Reports");
-            System.out.println("3. Manage Users");
-            System.out.println("4. Edit Profile");
-            System.out.println("5. Logout");
-            System.out.println("6. Add Keyword and Answer");
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            while (current_LoginedUser != null && current_LoginedUser.getRole() == "admin") {
+                System.out.println("1. Manage Train Schedule");
+                System.out.println("2. View Reports");
+                System.out.println("3. Manage Users");
+                System.out.println("4. Edit Profile");
+                System.out.println("5. Logout");
+                System.out.println("6. Add Keyword and Answer");
+                option = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (option) {
-                case 1:
-                    System.out.println("Manage Train Schedule");
-                    // ... Implement Manage Train Schedule functionality
-                    train_ticket_system.manageTrainSchedule(scanner);// Corrected method call
-                    break;
-                case 2:
-                    System.out.println("View Reports");
+                switch (option) {
+                    case 1:
+                        System.out.println("Manage Train Schedule");
+                        // ... Implement Manage Train Schedule functionality
+                        train_ticket_system.manageTrainSchedule(scanner);// Corrected method call
+                        break;
+                    case 2:
+                        System.out.println("View Reports");
 
-                    break;
-                case 4:
-                    System.out.println("Edit Profile");
-                    // ... Implement Edit Profile functionality
-                    break;
-                case 5:
-                    // Logout
-                    current_LoginedUser = null;
-                    System.out.println("Logged out successfully.\n");
-                    break;
-                case 6:
-                    // Add Keyword and Answer
-                    // boolean isStay = true;
-                    // System.out.println(
-                    //         "\n=============================================================================================================");
-                    // while (isStay) {
-                    //     boolean isKeyword = false;
-                    //     boolean isAnswer = false;
-                    //     String answer = null;
-                    //     String keyword = null;
-                    //     while (!isKeyword) {
-                    //         System.out.println("Enter keyword:");
-                    //         keyword = scanner.nextLine();
-                    //         if (keyword.isEmpty()) {
-                    //             System.out.println("Keyword cannot be empty.");
-                    //         } else if (keyword.equalsIgnoreCase("exit")) {
-                    //             isStay = false;
-                    //         } else {
-                    //             isKeyword = true;
-                    //         }
-                    //     }
-                    //     while (!isAnswer) {
-                    //         System.out.println("Enter answer:");
-                    //         answer = scanner.nextLine();
-                    //         if (answer.isEmpty()) {
-                    //             System.out.println("Answer cannot be empty.");
-                    //         } else if (answer.equalsIgnoreCase("exit")) {
-                    //             isStay = false;
-                    //         } else {
-                    //             isAnswer = true;
-                    //         }
-                    //     }
-                    //     if (isKeyword && isAnswer) { // Ensure both keyword and answer are provided
-                    //         System.out.println(train_ticket_system.addQA(keyword, answer));
-                    //     }
-                    // }
-                    // System.out.println(
-                    //         "\n=============================================================================================================");
+                        break;
+                    case 4:
+                        System.out.println("Edit Profile");
+                        // ... Implement Edit Profile functionality
+                        break;
+                    case 5:
+                        // Logout
+                        current_LoginedUser = null;
+                        System.out.println("Logged out successfully.\n");
+                        break;
+                    case 6:
+                        // Add Keyword and Answer
+                        // boolean isStay = true;
+                        // System.out.println(
+                        //         "\n=============================================================================================================");
+                        // while (isStay) {
+                        //     boolean isKeyword = false;
+                        //     boolean isAnswer = false;
+                        //     String answer = null;
+                        //     String keyword = null;
+                        //     while (!isKeyword) {
+                        //         System.out.println("Enter keyword:");
+                        //         keyword = scanner.nextLine();
+                        //         if (keyword.isEmpty()) {
+                        //             System.out.println("Keyword cannot be empty.");
+                        //         } else if (keyword.equalsIgnoreCase("exit")) {
+                        //             isStay = false;
+                        //         } else {
+                        //             isKeyword = true;
+                        //         }
+                        //     }
+                        //     while (!isAnswer) {
+                        //         System.out.println("Enter answer:");
+                        //         answer = scanner.nextLine();
+                        //         if (answer.isEmpty()) {
+                        //             System.out.println("Answer cannot be empty.");
+                        //         } else if (answer.equalsIgnoreCase("exit")) {
+                        //             isStay = false;
+                        //         } else {
+                        //             isAnswer = true;
+                        //         }
+                        //     }
+                        //     if (isKeyword && isAnswer) { // Ensure both keyword and answer are provided
+                        //         System.out.println(train_ticket_system.addQA(keyword, answer));
+                        //     }
+                        // }
+                        // System.out.println(
+                        //         "\n=============================================================================================================");
 
-                    train_ticket_system.csAdmin(scanner);
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
+                        train_ticket_system.csAdmin(scanner);
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
             }
         }
     }
