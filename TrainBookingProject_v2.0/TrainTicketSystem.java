@@ -1,8 +1,13 @@
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import DAO.*;
+import DB_init.Database;
 import DataModel.*;
+
+import java.time.format.DateTimeParseException;
 
 public class TrainTicketSystem {
 	private static TrainTicketSystem instance = null;
@@ -949,4 +954,703 @@ public class TrainTicketSystem {
 		}
 		return returnWord;
 	}
+
+	// Report methods for admin
+    public void viewReports(Scanner scanner) {
+        Database db = Database.getInstance();
+        boolean viewing = true;
+
+        while (viewing) {
+            System.out.println("\n===== SYSTEM REPORT MENU =====");
+            System.out.println("1. User Report");
+            System.out.println("2. Train Report");
+            System.out.println("3. Order Report");
+            System.out.println("4. Exit Report Menu");
+            System.out.print("Choose a report to view: ");
+            int reportChoice = -1;
+
+            try {
+                reportChoice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                scanner.nextLine(); // Clear invalid input
+                continue;
+            }
+
+            switch (reportChoice) {
+                case 1:
+                    generateUserReport(scanner, db.getTable_user());
+                    break;
+                case 2:
+                    generateTrainReport(scanner, db.getTable_train());
+                    break;
+                case 3:
+                    generateOrderReport(scanner, db.getTable_orderRecord(), db.getTable_train());
+                    break;
+                case 4:
+                    viewing = false;
+                    System.out.println("Exiting Report Menu.");
+                    break;
+                default:
+                    System.out.println("Invalid option. Please choose between 1 and 4.");
+            }
+        }
+    }
+
+    private void generateUserReport(Scanner scanner, List<User> users) {
+        System.out.println("\n--- User Report ---");
+        System.out.println("Would you like to apply filters? (Y/N)");
+        String applyFilter = scanner.nextLine().trim().toUpperCase();
+
+        List<User> filteredUsers = new ArrayList<>(users);
+
+        if (applyFilter.equals("Y")) {
+            System.out.println("Select filter option:");
+            System.out.println("1. Filter by Role");
+            System.out.println("2. Search by Username");
+            System.out.println("3. Both Role and Username");
+            System.out.print("Choose an option: ");
+            int filterChoice = -1;
+
+            try {
+                filterChoice = scanner.nextInt();
+                scanner.nextLine(); 
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Skipping filters.");
+                scanner.nextLine(); 
+                filterChoice = -1;
+            }
+
+            switch (filterChoice) {
+                case 1:
+                    filteredUsers = filterUsersByRole(scanner, users);
+                    break;
+                case 2:
+                    filteredUsers = searchUsersByUsername(scanner, users);
+                    break;
+                case 3:
+                    filteredUsers = filterUsersByRole(scanner, users);
+                    filteredUsers = searchUsersByUsername(scanner, filteredUsers);
+                    break;
+                default:
+                    System.out.println("Invalid filter option. Showing all users.");
+            }
+        }
+
+       
+        System.out.println("\nTotal Users: " + filteredUsers.size());
+        long normalUsers = filteredUsers.stream()
+                                        .filter(user -> user.getRole().equalsIgnoreCase("normal"))
+                                        .count();
+        long adminUsers = filteredUsers.stream()
+                                       .filter(user -> user.getRole().equalsIgnoreCase("admin"))
+                                       .count();
+        System.out.println("Normal Users: " + normalUsers);
+        System.out.println("Admin Users: " + adminUsers);
+
+    
+        System.out.print("Would you like to list user details? (Y/N): ");
+        String listDetails = scanner.nextLine().trim().toUpperCase();
+        if (listDetails.equals("Y")) {
+            System.out.println("\n--- User Details ---");
+            for (User user : filteredUsers) {
+                System.out.println("Username: " + user.getUsername() +
+                                   ", Role: " + user.getRole() +
+                                   ", ID: " + user.getId());
+            }
+        }
+    }
+
+    private void generateTrainReport(Scanner scanner, List<Train> trains) {
+        System.out.println("\n--- Train Report ---");
+        System.out.println("Would you like to apply filters? (Y/N)");
+        String applyFilter = scanner.nextLine().trim().toUpperCase();
+
+        List<Train> filteredTrains = new ArrayList<>(trains);
+
+        if (applyFilter.equals("Y")) {
+            System.out.println("Select filter option:");
+            System.out.println("1. Search by Train ID");
+            System.out.println("2. Filter by Departure/Arrival Station");
+            System.out.println("3. Filter by Date Range");
+            System.out.println("4. Combine Filters");
+            System.out.print("Choose an option: ");
+            int filterChoice = -1;
+
+            try {
+                filterChoice = scanner.nextInt();
+                scanner.nextLine(); 
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Skipping filters.");
+                scanner.nextLine(); 
+                filterChoice = -1;
+            }
+
+            switch (filterChoice) {
+                case 1:
+                    filteredTrains = searchTrainsById(scanner, trains);
+                    break;
+                case 2:
+                    filteredTrains = filterTrainsByStation(scanner, trains);
+                    break;
+                case 3:
+                    filteredTrains = filterTrainsByDateRange(scanner, trains);
+                    break;
+                case 4:
+                    filteredTrains = searchTrainsById(scanner, trains);
+                    filteredTrains = filterTrainsByStation(scanner, filteredTrains);
+                    filteredTrains = filterTrainsByDateRange(scanner, filteredTrains);
+                    break;
+                default:
+                    System.out.println("Invalid filter option. Showing all trains.");
+            }
+        }
+
+        System.out.println("\nTotal Trains: " + filteredTrains.size());
+        for (Train train : filteredTrains) {
+            int soldSeats = train.getAvailableSeats() - train.getAvailableSeats();
+            System.out.println("Train ID: " + train.getTrainNumber() +
+                               ", Departure: " + train.getDeparture() +
+                               ", Arrival: " + train.getArrival() +
+                               ", Date: " + train.getDate() +
+                               ", Time: " + train.getTime() +
+                               ", Total Seats: " + train.getAvailableSeats() +
+                               ", Sold Seats: " + soldSeats +
+                               ", Price: $" + String.format("%.2f", train.getPrice()));
+        }
+    }
+
+    private void generateOrderReport(Scanner scanner, List<OrderRecord> orders, List<Train> trains) {
+        System.out.println("\n--- Order Report ---");
+        System.out.println("Would you like to apply filters? (Y/N)");
+        String applyFilter = scanner.nextLine().trim().toUpperCase();
+
+        List<OrderRecord> filteredOrders = new ArrayList<>(orders);
+
+        if (applyFilter.equals("Y")) {
+            System.out.println("Select filter option:");
+            System.out.println("1. Search by Order ID");
+            System.out.println("2. Filter by User ID");
+            System.out.println("3. Filter by Train ID");
+            System.out.println("4. Filter by Date Range");
+            System.out.println("5. Combine Filters");
+            System.out.print("Choose an option: ");
+            int filterChoice = -1;
+
+            try {
+                filterChoice = scanner.nextInt();
+                scanner.nextLine(); 
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Skipping filters.");
+                scanner.nextLine(); 
+                filterChoice = -1;
+            }
+
+            switch (filterChoice) {
+                case 1:
+                    filteredOrders = searchOrdersById(scanner, orders);
+                    break;
+                case 2:
+                    filteredOrders = filterOrdersByUserId(scanner, orders);
+                    break;
+                case 3:
+                    filteredOrders = filterOrdersByTrainId(scanner, orders);
+                    break;
+                case 4:
+                    filteredOrders = filterOrdersByDateRange(scanner, orders);
+                    break;
+                case 5:
+                    filteredOrders = searchOrdersById(scanner, orders);
+                    filteredOrders = filterOrdersByUserId(scanner, filteredOrders);
+                    filteredOrders = filterOrdersByTrainId(scanner, filteredOrders);
+                    filteredOrders = filterOrdersByDateRange(scanner, filteredOrders);
+                    break;
+                default:
+                    System.out.println("Invalid filter option. Showing all orders.");
+            }
+        }
+
+        System.out.println("\nTotal Orders: " + filteredOrders.size());
+        double totalRevenue = filteredOrders.stream()
+                                            .mapToDouble(OrderRecord::getAmount)
+                                            .sum();
+        System.out.printf("Total Revenue: $%.2f\n", totalRevenue);
+
+
+        Map<String, List<OrderRecord>> ordersByTrain = filteredOrders.stream()
+                                                                     .collect(Collectors.groupingBy(OrderRecord::getTrainId));
+
+        System.out.println("\nOrders and Revenue by Train:");
+        for (Map.Entry<String, List<OrderRecord>> entry : ordersByTrain.entrySet()) {
+            String trainId = entry.getKey();
+            List<OrderRecord> trainOrders = entry.getValue();
+            double trainRevenue = trainOrders.stream()
+                                             .mapToDouble(OrderRecord::getAmount)
+                                             .sum();
+            System.out.println("Train ID: " + trainId +
+                               ", Orders: " + trainOrders.size() +
+                               ", Revenue: $" + String.format("%.2f", trainRevenue));
+        }
+    }
+
+    private List<User> filterUsersByRole(Scanner scanner, List<User> users) {
+        System.out.println("Select Role to Filter:");
+        System.out.println("1. Normal");
+        System.out.println("2. Admin");
+        System.out.print("Choose an option: ");
+        int roleChoice = -1;
+
+        try {
+            roleChoice = scanner.nextInt();
+            scanner.nextLine(); 
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Skipping Role filter.");
+            scanner.nextLine(); // Clear invalid input
+            return users;
+        }
+
+        final String role;
+        switch (roleChoice) {
+            case 1:
+                role = "normal";
+                break;
+            case 2:
+                role = "admin";
+                break;
+            default:
+                System.out.println("Invalid role option. Skipping Role filter.");
+                return users;
+        }
+
+        return users.stream()
+                    .filter(user -> user.getRole().equalsIgnoreCase(role))
+                    .collect(Collectors.toList());
+    }
+
+    private List<User> searchUsersByUsername(Scanner scanner, List<User> users) {
+        System.out.print("Enter the username to search (supports partial matches): ");
+        String usernameSearch = scanner.nextLine().trim().toLowerCase();
+
+        return users.stream()
+                    .filter(user -> user.getUsername().toLowerCase().contains(usernameSearch))
+                    .collect(Collectors.toList());
+    }
+
+    private List<Train> searchTrainsById(Scanner scanner, List<Train> trains) {
+        System.out.print("Enter the Train ID to search: ");
+        String trainIdSearch = scanner.nextLine().trim().toLowerCase();
+
+        return trains.stream()
+                     .filter(train -> train.getTrainNumber().toLowerCase().contains(trainIdSearch))
+                     .collect(Collectors.toList());
+    }
+
+    private List<Train> filterTrainsByStation(Scanner scanner, List<Train> trains) {
+        System.out.print("Enter Departure Station to filter (leave blank to skip): ");
+        String departure = scanner.nextLine().trim().toLowerCase();
+
+        System.out.print("Enter Arrival Station to filter (leave blank to skip): ");
+        String arrival = scanner.nextLine().trim().toLowerCase();
+
+        return trains.stream()
+                     .filter(train -> (departure.isEmpty() || train.getDeparture().toLowerCase().contains(departure)) &&
+                                      (arrival.isEmpty() || train.getArrival().toLowerCase().contains(arrival)))
+                     .collect(Collectors.toList());
+    }
+
+    private List<Train> filterTrainsByDateRange(Scanner scanner, List<Train> trains) {
+		System.out.print("Enter Start Date (YYYY-MM-DD) or leave blank to skip: ");
+		String startDateStr = scanner.nextLine().trim();
+	
+		System.out.print("Enter End Date (YYYY-MM-DD) or leave blank to skip: ");
+		String endDateStr = scanner.nextLine().trim();
+	
+	
+		final LocalDate startDateFinal;
+		final LocalDate endDateFinal;
+	
+		try {
+
+			startDateFinal = !startDateStr.isEmpty() ? LocalDate.parse(startDateStr) : null;
+			endDateFinal = !endDateStr.isEmpty() ? LocalDate.parse(endDateStr) : null;
+		} catch (DateTimeParseException e) {
+			System.out.println("Invalid date format. Skipping Date Range filter.");
+			return trains;
+		}
+	
+		return trains.stream()
+					 .filter(train -> {
+						 LocalDate trainDate = LocalDate.parse(train.getDate());
+						 boolean afterStart = (startDateFinal == null) || (!trainDate.isBefore(startDateFinal));
+						 boolean beforeEnd = (endDateFinal == null) || (!trainDate.isAfter(endDateFinal));
+						 return afterStart && beforeEnd;
+					 })
+					 .collect(Collectors.toList());
+	}
+
+    private List<OrderRecord> searchOrdersById(Scanner scanner, List<OrderRecord> orders) {
+        System.out.print("Enter the Order ID to search: ");
+        String orderIdSearch = scanner.nextLine().trim().toLowerCase();
+
+        return orders.stream()
+                     .filter(order -> order.getOrderId().toLowerCase().contains(orderIdSearch))
+                     .collect(Collectors.toList());
+    }
+
+    private List<OrderRecord> filterOrdersByUserId(Scanner scanner, List<OrderRecord> orders) {
+        System.out.print("Enter the User ID to filter orders: ");
+        String userIdSearch = scanner.nextLine().trim().toLowerCase();
+
+        return orders.stream()
+                     .filter(order -> order.getUserId().toLowerCase().contains(userIdSearch))
+                     .collect(Collectors.toList());
+    }
+
+    private List<OrderRecord> filterOrdersByTrainId(Scanner scanner, List<OrderRecord> orders) {
+        System.out.print("Enter the Train ID to filter orders: ");
+        String trainIdSearch = scanner.nextLine().trim().toLowerCase();
+
+        return orders.stream()
+                     .filter(order -> order.getTrainId().toLowerCase().contains(trainIdSearch))
+                     .collect(Collectors.toList());
+    }
+
+	private List<OrderRecord> filterOrdersByDateRange(Scanner scanner, List<OrderRecord> orders) {
+        System.out.print("Enter Start Date (YYYY-MM-DD) or leave blank to skip: ");
+        String startDateStr = scanner.nextLine().trim();
+
+        System.out.print("Enter End Date (YYYY-MM-DD) or leave blank to skip: ");
+        String endDateStr = scanner.nextLine().trim();
+        final LocalDate startDateFinal = !startDateStr.isEmpty() ? LocalDate.parse(startDateStr) : null;
+        final LocalDate endDateFinal = !endDateStr.isEmpty() ? LocalDate.parse(endDateStr) : null;
+
+   
+        if (startDateFinal != null && endDateFinal != null && startDateFinal.isAfter(endDateFinal)) {
+            System.out.println("Start Date cannot be after End Date. Skipping Date Range filter.");
+            return orders;
+        }
+
+        return orders.stream()
+                     .filter(order -> {
+                         LocalDate orderDate = order.getOrderDate().toInstant()
+                                                      .atZone(ZoneId.systemDefault())
+                                                      .toLocalDate();
+                         boolean afterStart = (startDateFinal == null) || (!orderDate.isBefore(startDateFinal));
+                         boolean beforeEnd = (endDateFinal == null) || (!orderDate.isAfter(endDateFinal));
+                         return afterStart && beforeEnd;
+                     })
+                     .collect(Collectors.toList());
+    }
+
+//User Mangement
+	public void manageUsers(Scanner scanner) {
+		boolean managing = true;
+		while (managing) {
+			System.out.println("\n--- Manage Users ---");
+			System.out.println("1. List All Users");
+			System.out.println("2. Add New User");
+			System.out.println("3. Remove User");
+			System.out.println("4. Change User Role");
+			System.out.println("5. Return to Admin Menu");
+			System.out.print("Choose an option: ");
+			
+			int choice = -1;
+			try {
+				choice = scanner.nextInt();
+				scanner.nextLine(); 
+			} catch (InputMismatchException e) {
+				System.out.println("Invalid input. Please enter a number between 1 and 5.");
+				scanner.nextLine(); 
+				continue;
+			}
+			
+			switch (choice) {
+				case 1:
+					listAllUsers();
+					break;
+				case 2:
+					addNewUser(scanner);
+					break;
+				case 3:
+					removeUser(scanner);
+					break;
+				case 4:
+					changeUserRole(scanner);
+					break;
+				case 5:
+					managing = false;
+					System.out.println("Returning to Admin Menu.");
+					break;
+				default:
+					System.out.println("Invalid option. Please choose between 1 and 5.");
+			}
+		}
+	}
+	private void listAllUsers() {
+		Database db = Database.getInstance();
+        ArrayList<User> users = db.getTable_user();
+        if (users.isEmpty()) {
+            System.out.println("\nNo users found in the system.");
+            return;
+        }
+        
+        System.out.println("\n--- Registered Users ---");
+        System.out.printf("%-10s %-20s %-10s\n", "User ID", "Username", "Role");
+        System.out.println("-------------------------------------------------");
+        for (User user : users) {
+            System.out.printf("%-10s %-20s %-10s\n", user.getId(), user.getUsername(), user.getRole());
+        }
+    }
+
+	private void addNewUser(Scanner scanner) {
+		System.out.println("\n--- Add New User ---");
+		
+		System.out.print("Enter Username: ");
+		String username = scanner.nextLine().trim();
+		if (username.isEmpty()) {
+			System.out.println("Username cannot be empty.");
+			return;
+		}
+		
+		
+		if (userDAO.isUsernameExists(username)) {
+			System.out.println("Username already exists. Please choose a different username.");
+			return;
+		}
+		
+		System.out.print("Enter Password: ");
+		String password = scanner.nextLine().trim();
+		if (password.isEmpty()) {
+			System.out.println("Password cannot be empty.");
+			return;
+		}
+		
+		System.out.println("Select Role:");
+		System.out.println("1. Normal User");
+		System.out.println("2. Administrator");
+		System.out.print("Choose an option: ");
+		
+		int roleChoice = -1;
+		try {
+			roleChoice = scanner.nextInt();
+			scanner.nextLine(); 
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid input. Role set to 'normal user' by default.");
+			scanner.nextLine(); 
+			roleChoice = 1;
+		}
+		
+		String role = "normal";
+		if (roleChoice == 2) {
+			role = "admin";
+		}
+		
+		boolean success = userDAO.register(role, username, password);
+		if (success) {
+			System.out.println("User added successfully.");
+		} else {
+			System.out.println("Failed to add user. Please try again.");
+		}
+	}
+
+	private void removeUser(Scanner scanner) {
+		System.out.println("\n--- Remove User ---");
+		System.out.print("Enter the User ID or Username to remove: ");
+		String input = scanner.nextLine().trim();
+		
+		User userToRemove = null;
+		userToRemove = userDAO.getUser_fromUserTable(input);
+		if (userToRemove == null) {
+			userToRemove = userDAO.getUserByUsername(input);
+		}
+		
+		if (userToRemove == null) {
+			System.out.println("User not found.");
+			return;
+		}
+		
+		
+		if (userToRemove.getId().equals(currentUser.getId())) {
+			System.out.println("You cannot remove your own account.");
+			return;
+		}
+		
+		System.out.print("Are you sure you want to remove user '" + userToRemove.getUsername() + "'? (Y/N): ");
+		String confirmation = scanner.nextLine().trim().toUpperCase();
+		if (!confirmation.equals("Y")) {
+			System.out.println("User removal canceled.");
+			return;
+		}
+		
+		boolean success = userDAO.deleteUser_fromUserTable(userToRemove.getId());
+		if (success) {
+			System.out.println("User removed successfully.");
+		} else {
+			System.out.println("Failed to remove user. Please try again.");
+		}
+	}
+
+	private void changeUserRole(Scanner scanner) {
+		System.out.println("\n--- Change User Role ---");
+		System.out.print("Enter the User ID or Username to modify: ");
+		String input = scanner.nextLine().trim();
+		
+		User userToModify = null;
+		userToModify = userDAO.getUser_fromUserTable(input);
+		if (userToModify == null) {
+			userToModify = userDAO.getUserByUsername(input);
+		}
+		
+		if (userToModify == null) {
+			System.out.println("User not found.");
+			return;
+		}
+		
+
+		if (userToModify.getId().equals(currentUser.getId())) {
+			System.out.println("You cannot change your own role.");
+			return;
+		}
+		
+		System.out.println("Current Role: " + userToModify.getRole());
+		System.out.println("Select New Role:");
+		System.out.println("1. Normal User");
+		System.out.println("2. Administrator");
+		System.out.print("Choose an option: ");
+		
+		int roleChoice = -1;
+		try {
+			roleChoice = scanner.nextInt();
+			scanner.nextLine(); 
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid input. Role not changed.");
+			scanner.nextLine(); 
+			return;
+		}
+		
+		String newRole = userToModify.getRole(); 
+		if (roleChoice == 1) {
+			newRole = "normal";
+		} else if (roleChoice == 2) {
+			newRole = "admin";
+		} else {
+			System.out.println("Invalid role option. Role not changed.");
+			return;
+		}
+		
+		if (newRole.equalsIgnoreCase(userToModify.getRole())) {
+			System.out.println("User already has the role '" + newRole + "'. No changes made.");
+			return;
+		}
+		
+		userToModify.setRole(newRole);
+		boolean success = userDAO.updateUser_fromUserTable(userToModify);
+		if (success) {
+			System.out.println("User role updated successfully to '" + newRole + "'.");
+		} else {
+			System.out.println("Failed to update user role. Please try again.");
+		}
+	}
+
+	//Edit Profile
+	public void editProfile(Scanner scanner) {
+		System.out.println("\n--- Edit Profile ---");
+		boolean editing = true;
+		
+		while (editing) {
+			System.out.println("1. Change Username");
+			System.out.println("2. Change Password");
+			System.out.println("3. Return to Main Menu");
+			System.out.print("Choose an option: ");
+			
+			int choice = -1;
+			try {
+				choice = scanner.nextInt();
+				scanner.nextLine(); // Consume newline
+			} catch (InputMismatchException e) {
+				System.out.println("Invalid input. Please enter a number between 1 and 3.");
+				scanner.nextLine(); // Clear invalid input
+				continue;
+			}
+			
+			switch (choice) {
+				case 1:
+					changeUsername(scanner);
+					break;
+				case 2:
+					changePassword(scanner);
+					break;
+				case 3:
+					editing = false;
+					System.out.println("Returning to Main Menu.");
+					break;
+				default:
+					System.out.println("Invalid option. Please choose between 1 and 3.");
+			}
+		}
+	}
+
+	private void changeUsername(Scanner scanner) {
+		System.out.println("\n--- Change Username ---");
+		System.out.print("Enter your new username: ");
+		String newUsername = scanner.nextLine().trim();
+		
+		if (newUsername.isEmpty()) {
+			System.out.println("Username cannot be empty.");
+			return;
+		}
+		
+
+		if (userDAO.isUsernameExists(newUsername)) {
+			System.out.println("Username already exists. Please choose a different username.");
+			return;
+		}
+		
+		currentUser.setUsername(newUsername);
+		boolean success = userDAO.updateUser_fromUserTable(currentUser);
+		if (success) {
+			System.out.println("Username updated successfully.");
+		} else {
+			System.out.println("Failed to update username. Please try again.");
+		}
+	}
+
+	private void changePassword(Scanner scanner) {
+		System.out.println("\n--- Change Password ---");
+		System.out.print("Enter your current password: ");
+		String currentPassword = scanner.nextLine().trim();
+		
+		
+		User verifiedUser = userDAO.login(currentUser.getUsername(), currentPassword);
+		if (verifiedUser == null || !verifiedUser.getId().equals(currentUser.getId())) {
+			System.out.println("Incorrect current password.");
+			return;
+		}
+		
+		System.out.print("Enter your new password: ");
+		String newPassword = scanner.nextLine().trim();
+		if (newPassword.isEmpty()) {
+			System.out.println("Password cannot be empty.");
+			return;
+		}
+		
+		System.out.print("Confirm your new password: ");
+		String confirmPassword = scanner.nextLine().trim();
+		if (!newPassword.equals(confirmPassword)) {
+			System.out.println("Passwords do not match.");
+			return;
+		}
+		
+		currentUser.setPassword(newPassword);
+		boolean success = userDAO.updateUser_fromUserTable(currentUser);
+		if (success) {
+			System.out.println("Password updated successfully.");
+		} else {
+			System.out.println("Failed to update password. Please try again.");
+		}
+	}
+
+    
 }
+

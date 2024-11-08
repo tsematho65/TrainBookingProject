@@ -118,6 +118,38 @@ public class UserDAO {
 		return result;
 	}
 	
+	public boolean isUsernameExists(String username) {
+	for (User user : table_user) {
+        if (user.getUsername().equalsIgnoreCase(username)) {
+            return true;
+        }
+	    }
+	    return false;
+	}
+	
+	public User getUserByUsername(String username) {
+		for (User user : table_user) {
+	        if (user.getUsername().equals(username)) {
+	            return user;
+	        }
+	    }
+	
+	    return null;
+	
+	}
+	
+    public double calculateDiscount(double totalAmount, User currentUser) {
+
+        ArrayList<Coupon> coupons = currentUser.getCouponList();
+        double maxDiscount = 0.0;
+        for (Coupon coupon : coupons) {
+            if (coupon.getDiscount(totalAmount) > maxDiscount) {
+                maxDiscount = coupon.getDiscount(totalAmount);
+            }
+        }
+        return maxDiscount;
+    }
+	
 	// moved to TrainTicketSystem.java
 	// public void signIN() {
 	// 	nowUser.signIn();
@@ -135,4 +167,5 @@ public class UserDAO {
 	// 	}
 	// 	return orders;
 	// }
+
 }

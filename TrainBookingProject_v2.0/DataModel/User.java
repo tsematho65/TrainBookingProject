@@ -147,6 +147,10 @@ public class User {
     //     return null;
 	// }
     
+	public void setLastSignInDate(LocalDate lastSignInDate) {
+		this.lastSignInDate = lastSignInDate;
+	}
+    
 	public void addCoupon(Coupon coupon) {
 		couponList.add(coupon);
 	}
