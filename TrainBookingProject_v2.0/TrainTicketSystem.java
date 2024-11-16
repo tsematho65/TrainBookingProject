@@ -17,6 +17,7 @@ public class TrainTicketSystem {
 	private CustomerServiceDAO customerServiceDAO;
 	private OrderRecordDAO orderRecordDAO;
 	private User currentUser;
+	private MessageCenter messageCenter;
 
 	private TrainTicketSystem() {
 		userDAO = new UserDAO();
@@ -24,6 +25,7 @@ public class TrainTicketSystem {
 		seatPlanDAO = new SeatDAO();
 		customerServiceDAO = new CustomerServiceDAO();
 		orderRecordDAO = new OrderRecordDAO();
+		messageCenter = new MessageCenter();
 		currentUser = null;
 	}
 
@@ -166,7 +168,8 @@ public class TrainTicketSystem {
 		System.out.println("2. View Orders");
 		System.out.println("3. Edit Profile");
 		System.out.println("4. Customer Service");
-		System.out.println("5. Logout");
+		System.out.println("5. Subscribe and receive messages");
+		System.out.println("6. Logout");
 	}
 
 	// fn to order tickets
@@ -1694,6 +1697,24 @@ public class TrainTicketSystem {
 		} else {
 			System.out.println("Failed to update password. Please try again.");
 		}
+	}
+
+	public void updateAnnouncement(String announcement) {
+		messageCenter.updateAnnouncement(announcement);
+	}
+
+	public void notifyAllUsers() {
+		messageCenter.notifyObservers();
+	}
+
+	// Subscribe and receive messages
+	public void subscribeUser(String id) {
+		User user = userDAO.getUser_fromUserTable(id);
+		messageCenter.registerObserver(user);
+	}
+
+	public void displayUserList() {
+		userDAO.printUserList();
 	}
 
 }

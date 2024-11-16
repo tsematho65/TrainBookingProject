@@ -1,64 +1,45 @@
 package DAO;
+
 import java.util.*;
 
 import DB_init.Database;
 import DataModel.*;
 
-
-
 public class UserDAO {
-	
-    private ArrayList<User> table_user;
-    // private User nowUser;
-    
-    public UserDAO() {
-        table_user = Database.getInstance().getTable_user();
-    }
-    
 
-    public String print_user(User user) {
-    	
-        return user.toString();
-        
-    }
+	private ArrayList<User> table_user;
+	// private User nowUser;
 
-    // Moved to TrainTicketSystem.java
-	// public String getNowUser() {
-	// 	return nowUser.toString();
-	// }
-	
-	// public User getNowUser_fromUserTable() {
-	
-	// 	return nowUser;
-	// }
+	public UserDAO() {
+		table_user = Database.getInstance().getTable_user();
+	}
 
-    // changed from return boolean to return User
-    public User login(String userName, String pwd) {
+	public User login(String userName, String pwd) {
 		User currentUser = null;
-        for (User user : table_user) {
-            if (user.getUsername().equals(userName) && user.getPassword().equals(pwd)) {
-            	// this.nowUser = user;
+		for (User user : table_user) {
+			if (user.getUsername().equals(userName) && user.getPassword().equals(pwd)) {
+				// this.nowUser = user;
 				currentUser = user;
-            }
-        }
-        
-        return currentUser;
-    }
-    
+			}
+		}
+
+		return currentUser;
+	}
+
 	// Not needed here
-    // public double getDiscount() {
-    // 	return nowUser.getMember().getDiscount();
-    // }
-    
-	// public double getDiscount(String Id) {
-	// 	for (User user : table_user) {
-	// 		if (user.getUsername().equals(Id)) {
-	// 			return user.getMember().getDiscount();
-	// 		}
-	// 	}
-	// 	return 0;
+	// public double getDiscount() {
+	// return nowUser.getMember().getDiscount();
 	// }
-	
+
+	// public double getDiscount(String Id) {
+	// for (User user : table_user) {
+	// if (user.getUsername().equals(Id)) {
+	// return user.getMember().getDiscount();
+	// }
+	// }
+	// return 0;
+	// }
+
 	// Changed from return String to return boolean
 	public boolean register(String role, String userName, String pwd) {
 		for (User user : table_user) {
@@ -70,20 +51,20 @@ public class UserDAO {
 		return true;
 	}
 
-    public ArrayList<User> getUserList(List<User> userList) {
-    	return table_user;
-    }
-    
+	public ArrayList<User> getUserList(List<User> userList) {
+		return table_user;
+	}
+
 	public void printUserList() {
-		for (User user : table_user) {
-			System.out.println(print_user(user));
+		for (int i = 0; i < table_user.size(); i++) {
+			System.out.println("index: " + i + " " + table_user.get(i).toString());
 		}
 	}
 
-    public boolean addUser_fromUserTable(User user) {
-        table_user.add(user);
-        return true;
-    }
+	public boolean addUser_fromUserTable(User user) {
+		table_user.add(user);
+		return true;
+	}
 
 	public User getUser_fromUserTable(String Id) {
 		for (User user : table_user) {
@@ -117,55 +98,55 @@ public class UserDAO {
 		}
 		return result;
 	}
-	
+
 	public boolean isUsernameExists(String username) {
-	for (User user : table_user) {
-        if (user.getUsername().equalsIgnoreCase(username)) {
-            return true;
-        }
-	    }
-	    return false;
+		for (User user : table_user) {
+			if (user.getUsername().equalsIgnoreCase(username)) {
+				return true;
+			}
+		}
+		return false;
 	}
-	
+
 	public User getUserByUsername(String username) {
 		for (User user : table_user) {
-	        if (user.getUsername().equals(username)) {
-	            return user;
-	        }
-	    }
-	
-	    return null;
-	
-	}
-	
-    public double calculateDiscount(double totalAmount, User currentUser) {
+			if (user.getUsername().equals(username)) {
+				return user;
+			}
+		}
 
-        ArrayList<Coupon> coupons = currentUser.getCouponList();
-        double maxDiscount = 0.0;
-        for (Coupon coupon : coupons) {
-            if (coupon.getDiscount(totalAmount) > maxDiscount) {
-                maxDiscount = coupon.getDiscount(totalAmount);
-            }
-        }
-        return maxDiscount;
-    }
-	
+		return null;
+
+	}
+
+	public double calculateDiscount(double totalAmount, User currentUser) {
+
+		ArrayList<Coupon> coupons = currentUser.getCouponList();
+		double maxDiscount = 0.0;
+		for (Coupon coupon : coupons) {
+			if (coupon.getDiscount(totalAmount) > maxDiscount) {
+				maxDiscount = coupon.getDiscount(totalAmount);
+			}
+		}
+		return maxDiscount;
+	}
+
 	// moved to TrainTicketSystem.java
 	// public void signIN() {
-	// 	nowUser.signIn();
+	// nowUser.signIn();
 	// }
 
-    // public boolean checkIsAdmin() {
-	// 	return nowUser.getRole().equals("admin");
+	// public boolean checkIsAdmin() {
+	// return nowUser.getRole().equals("admin");
 	// }
 
 	// Already exists in OrderRecordDAO
 	// public ArrayList<OrderRecord> getOrdersByUser(String id) {
-	// 	ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();
-	// 	for (OrderRecord order : getUser_fromUserTable(id).getOrderRecordList()) {
-	// 		orders.add(order);
-	// 	}
-	// 	return orders;
+	// ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();
+	// for (OrderRecord order : getUser_fromUserTable(id).getOrderRecordList()) {
+	// orders.add(order);
+	// }
+	// return orders;
 	// }
 
 }
