@@ -154,11 +154,9 @@ public class Main{
                         String question = scanner.nextLine();
                         if(question.equals("exit")){
                             isStay = false;
-                            System.out.println("CSer : Goodbye!");
-                        }else if(question == null || question.isEmpty()){
-                            System.out.println("CSer : Please type your question.");
+                            train_ticket_system.getAnswer(question);
                         }else{
-                            System.out.println("CSer : " + train_ticket_system.getAnswer(question));
+                            train_ticket_system.getAnswer(question);
                         }
                         System.out.println((isStay) ? "CSer : Anything else?(type your question or type exit to back to main menu)" : "");
                     }

@@ -183,15 +183,54 @@ public class TrainTicketSystem {
 	}
 
 	// fn to find answer by keyword
-	public String getAnswer(String question) {
-		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
-		String lowerQ = question.toLowerCase();
+	public void getAnswer(String question) {
+	    ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
+		String lowerQ = question.replaceAll("[^a-zA-Z0-9\\s]", " ").toLowerCase().trim();
+		//bug report >>> book reportxxx still work
+ 		String respond = "";
+		if(lowerQ == null || lowerQ.isEmpty()){
+			System.out.println("CSer : Please type your question.");
+			return;
+		}
+		if(lowerQ.equals("exit")){
+			System.out.println("CSer : Goodbye!");
+			return;
+		}
+		LinkedHashMap<String,Integer> keywordCount = new LinkedHashMap<String,Integer>();
 		for (int i = 0; i < questionList.size(); i++) {
-            if (lowerQ.contains(questionList.get(i).getQuestion().toLowerCase())) {
-                return questionList.get(i).getAnswer();
-            }
+            int index = 0;
+			while ((index = lowerQ.indexOf(questionList.get(i).getQuestion().toLowerCase(), index)) != -1) {
+				boolean isStartBoundary = index == 0 || !Character.isLetterOrDigit(lowerQ.charAt(index - 1));
+                boolean isEndBoundary = index + questionList.get(i).getQuestion().toLowerCase().length() == lowerQ.length() || !Character.isLetterOrDigit(lowerQ.charAt(index + questionList.get(i).getQuestion().toLowerCase().length()));
+				if(isStartBoundary && isEndBoundary){
+					if (keywordCount.containsKey(questionList.get(i).getQuestion().toLowerCase())) {
+						keywordCount.replace(questionList.get(i).getQuestion().toLowerCase(), keywordCount.get(questionList.get(i).getQuestion().toLowerCase()) + 1);
+					} else {
+						keywordCount.put(questionList.get(i).getQuestion().toLowerCase(), 1);
+					}
+				}
+				index += questionList.get(i).getQuestion().toLowerCase().length();
+			}
         }
-		return "Your question seems to be new. Please ask via email for further assistance.";
+		if(keywordCount.isEmpty()){
+			respond = "CSer : Your question seems to be new. Please ask via email for further assistance.";
+		}else{
+			String maxKey = "";
+			int maxVal = 0;
+			for (String key : keywordCount.keySet()) {
+				if (keywordCount.get(key) > maxVal) {
+					maxKey = key;
+					maxVal = keywordCount.get(key);
+				}
+			}
+			for (int i = 0; i < questionList.size(); i++) {
+				if (maxKey.equals(questionList.get(i).getQuestion().toLowerCase())) {
+					respond = "CSer : " + questionList.get(i).getAnswer();
+				}
+			}
+			//For bug report : respond = questionList.get(questionList.indexOf(new CsQuestion(maxKey, ""))).getAnswer();
+		}
+		System.out.println(respond);
 	}
 
 	// fn to find answer by keyword
