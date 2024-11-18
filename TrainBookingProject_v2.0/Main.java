@@ -75,11 +75,11 @@ public class Main {
 
                 switch (option) {
                     case 1:
-                        train_ticket_system.orderTicket(scanner);
+                        train_ticket_system.bookTickets(scanner);
                         break;
 
                     case 2:
-                        train_ticket_system.checkTicket(scanner);
+                        train_ticket_system.viewOrders(scanner);
                         break;
 
                     // CS function

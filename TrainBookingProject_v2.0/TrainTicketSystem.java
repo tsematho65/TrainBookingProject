@@ -120,7 +120,7 @@ public class TrainTicketSystem {
 
 	// fn to display main menu
 	public void displayMainMenu() {
-		System.out.println("1. Order Ticket");
+		System.out.println("1. Book Tickets");
 		System.out.println("2. View Orders");
 		System.out.println("3. Customer Service");
 		System.out.println("4. Subscribe and receive messages");
@@ -133,7 +133,7 @@ public class TrainTicketSystem {
 	}
 
 	// fn to order tickets
-	public void orderTicket(Scanner scanner) {
+	public void bookTickets(Scanner scanner) {
 		if (orderRecordDAO.getOrdersByUserId(currentUser.getId()).size() > 0) {
 			System.out.print("\nDo you need any recommendations? (Y/N) ");
 			String preferences = scanner.nextLine();
@@ -312,8 +312,6 @@ public class TrainTicketSystem {
 
 	// fn to provide recommendations
 	public ArrayList<String> recommendTrains(String id) {
-		// ArrayList<OrderRecord> orderRecordList =
-		// userDAO.getUser_fromUserTable(id).getOrderRecordList();
 		ArrayList<OrderRecord> orderRecordList = orderRecordDAO.getOrdersByUserId(id);
 
 		if (orderRecordList.isEmpty()) {
@@ -385,7 +383,7 @@ public class TrainTicketSystem {
 	}
 
 	// fn to check tickets (more like check orders)
-	public void checkTicket(Scanner scanner) {
+	public void viewOrders(Scanner scanner) {
 		while (true) {
 			ArrayList<OrderRecord> userOrders = orderRecordDAO.getOrdersByUserId(currentUser.getId());
 			if (!userOrders.isEmpty()) {
