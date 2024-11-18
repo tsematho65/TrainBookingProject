@@ -1050,16 +1050,8 @@ public class TrainTicketSystem {
 	}
 
 	// fn to find answer by keyword
-	public String addQA(String keyword, String answer) {
-		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
-		String lowerK = keyword.toLowerCase();
+	public String addQA(ArrayList<String> keyword, String answer) {
 		String returnWord = "";
-		for (int i = 0; i < questionList.size(); i++) {
-			if (lowerK.equals(questionList.get(i).getQuestion().toLowerCase())) {
-				return "Keyword already exists.";
-
-			}
-		}
 		if (customerServiceDAO.addQA(new CsQuestion(keyword, answer))) {
 			returnWord = "QA added successfully.";
 		} else {
