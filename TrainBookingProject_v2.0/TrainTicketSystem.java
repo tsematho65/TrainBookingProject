@@ -74,37 +74,6 @@ public class TrainTicketSystem {
 
 	}
 
-	// sign in for reward?
-	public boolean signIn() {
-		LocalDate today = LocalDate.now();
-		LocalDate lastSignInDate = currentUser.getLastSignInDate();
-		if (lastSignInDate != null && lastSignInDate.equals(today)) {
-			System.out.println("You have already signed in today. Please come back tomorrow.");
-			return false;
-		}
-
-		lastSignInDate = today;
-
-		final int POINTS_PER_SIGN_IN = 10;
-		currentUser.setPoints(currentUser.getPoints() + 10);
-
-		if (isWinningSignIn()) {
-			System.out.println(currentUser.getUsername() + " signIn sucessful, you get " + POINTS_PER_SIGN_IN
-					+ " points and win a prize!");
-		} else {
-			System.out.println(currentUser.getUsername() + " signIn sucessful, you get " + POINTS_PER_SIGN_IN
-					+ "points but no prize. ");
-		}
-
-		return true;
-	}
-
-	private boolean isWinningSignIn() {
-
-		Random random = new Random();
-		return random.nextInt(10) < 1;
-	}
-
 	// fn to display finished orders
 	public void displayFinishedOrders(String id, Scanner scanner) {
 		ArrayList<OrderRecord> finishedOrders = getFinishedOrders(id);
@@ -135,8 +104,6 @@ public class TrainTicketSystem {
 	// fn to get finished orders
 	public ArrayList<OrderRecord> getFinishedOrders(String id) {
 		ArrayList<OrderRecord> finishedOrders = new ArrayList<OrderRecord>();
-		// ArrayList<OrderRecord> orderRecordList =
-		// userDAO.getUser_fromUserTable(id).getOrderRecordList();
 		ArrayList<OrderRecord> orderRecordList = orderRecordDAO.getOrdersByUserId(id);
 
 		for (int i = 0; i < orderRecordList.size(); i++) {
@@ -151,10 +118,6 @@ public class TrainTicketSystem {
 		return finishedOrders;
 	}
 
-	// public ArrayList<Train> getTrainTable(){
-	// return trainDAO.getTable_train();
-	// }
-
 	// fn to display main menu
 	public void displayMainMenu() {
 		System.out.println("1. Order Ticket");
@@ -164,7 +127,7 @@ public class TrainTicketSystem {
 		System.out.println("5. Daliy CheckIn");
 		System.out.println("6. Logout");
 	}
-	
+
 	public void checkIn() {
 		daliyCheckInDAO.checkIn(currentUser);
 	}
@@ -185,16 +148,11 @@ public class TrainTicketSystem {
 		}
 
 		// Base Case: No train recommendations
-		System.out.println(
-				"\n=============================================================================================================");
-		System.out.println("Available trains:");
-		displayTrains_available();
+		int trainCount = displayTrains_available();
 		System.out.println("\nPlease enter the train number you want to order: ");
 		int trainChoice = scanner.nextInt() - 1;
-		System.out.println(
-				"\n=============================================================================================================");
 
-		if (trainChoice < 0 || trainChoice > trainDAO.getTable_train().size()) {
+		if (trainChoice < 0 || trainChoice > trainCount) {
 			System.out.println("Invalid train selection.");
 			return;
 		}
@@ -240,7 +198,6 @@ public class TrainTicketSystem {
 
 		// Seats arrangement -> ticket Info:
 		ArrayList<String> seatNumbersForticket;
-		// System.out.println("Seats will be arranged randomly.");
 		if (passengerCount > 1 && passengerCount <= 6) {
 			System.out.println("Would you like to arrange seats together? (Y/N)");
 			String preference = scanner.next();
@@ -264,7 +221,7 @@ public class TrainTicketSystem {
 
 		// Ticket Info:
 		// ...
-		
+
 		OrderRecord orderRecord = new OrderRecord(
 				String.format("orderID_%s_%s", currentUser.getId(),
 						orderRecordDAO.getOrdersByUserId(currentUser.getId()).size()),
@@ -276,32 +233,18 @@ public class TrainTicketSystem {
 				order_ticketList// tmp
 		);
 
-		// Add through OrderRecordDAO
-		// current_LoginedUser.addOrderRecord(orderRecord);
 		orderRecordDAO.addOrderRecord(orderRecord);
 
-		System.out.println("Order successful.");
-		// System.out.println("Order ID: " + orderRecord.getOrderId());
+		System.out.println("Order successful. Order ID: " + orderRecord.getOrderId());
 	}
 
-	public double getTotalPriceWithDiscount(Double totalPrice) {
-		double discount = currentUser.getMember().getDiscount();
-		
-		double result =0;
-		
-		result = totalPrice -  (totalPrice * discount);
-		if (currentUser.getCouponList().size() > 0) {
-			result= result - userDAO.useCoupon(result, currentUser);
-			System.out.println("You use a coupon. ");
-		}
-		
-		return result;
-	}
-
-	public int displayTrains_available() {
+	private int displayTrains_available() {
 		ArrayList<Train> availableTrainTable = trainDAO.getTable_train();
 		int availableTrain_count = 0;
 
+		System.out.println(
+				"\n=============================================================================================================");
+		System.out.println("Available trains:");
 		// display a table to show all available trains
 		for (int i = 0; i < availableTrainTable.size(); i++) {
 			Train train = availableTrainTable.get(i);
@@ -310,7 +253,23 @@ public class TrainTicketSystem {
 				System.out.println((i + 1) + ": " + train.toString());
 			}
 		}
+		System.out.println(
+				"\n=============================================================================================================");
 		return availableTrain_count;
+	}
+
+	public double getTotalPriceWithDiscount(Double totalPrice) {
+		double discount = currentUser.getMember().getDiscount();
+
+		double result = 0;
+
+		result = totalPrice - (totalPrice * discount);
+		if (currentUser.getCouponList().size() > 0) {
+			result = result - userDAO.useCoupon(result, currentUser);
+			System.out.println("You use a coupon. ");
+		}
+
+		return result;
 	}
 
 	// recommend train according to user's order history
@@ -659,53 +618,57 @@ public class TrainTicketSystem {
 
 	public void cs(Scanner scanner) {
 		boolean isStay = true;
-		System.out.println("\n=============================================================================================================");
-		System.out.println("CSer : Hi, welcome to customer service, how can I help you? (type your question or type exit to back to main menu)");
-		while(isStay){
+		System.out.println(
+				"\n=============================================================================================================");
+		System.out.println(
+				"CSer : Hi, welcome to customer service, how can I help you? (type your question or type exit to back to main menu)");
+		while (isStay) {
 			System.out.print("You : ");
 			String question = scanner.nextLine();
-			if(question.equals("exit")){
+			if (question.equals("exit")) {
 				isStay = false;
 				getAnswer(question);
-			}else{
+			} else {
 				getAnswer(question);
 			}
-			System.out.println((isStay) ? "CSer : Anything else?(type your question or type exit to back to main menu)" : "");
+			System.out.println(
+					(isStay) ? "CSer : Anything else?(type your question or type exit to back to main menu)" : "");
 		}
-		System.out.println("\n=============================================================================================================");
+		System.out.println(
+				"\n=============================================================================================================");
 	}
 
 	// fn to find answer by keyword
 	public void getAnswer(String question) {
-	    ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
+		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
 		String lowerQ = question.replaceAll("[^a-zA-Z0-9\\s]", " ").toLowerCase().trim();
-		//bug report >>> book reportxxx still work
- 		String respond = "";
-		if(lowerQ == null || lowerQ.isEmpty()){
+		// bug report >>> book reportxxx still work
+		String respond = "";
+		if (lowerQ == null || lowerQ.isEmpty()) {
 			System.out.println("CSer : Please type your question.");
 			return;
 		}
-		if(lowerQ.equalsIgnoreCase("exit")){
+		if (lowerQ.equalsIgnoreCase("exit")) {
 			System.out.println("CSer : Goodbye!");
 			return;
 		}
-		LinkedHashMap<CsQuestion,Integer> keywordCount = new LinkedHashMap<CsQuestion,Integer>();
+		LinkedHashMap<CsQuestion, Integer> keywordCount = new LinkedHashMap<CsQuestion, Integer>();
 		for (int i = 0; i < questionList.size(); i++) {
 			int count = 0;
-            for (String keyword : questionList.get(i).getQuestion()) {
-            	String regex = "\\b" + keyword.toLowerCase() + "\\b";
-            	Matcher matcher = Pattern.compile(regex).matcher(lowerQ);
-            	while (matcher.find()) {
-                	count++;
-            	}
-            }
+			for (String keyword : questionList.get(i).getQuestion()) {
+				String regex = "\\b" + keyword.toLowerCase() + "\\b";
+				Matcher matcher = Pattern.compile(regex).matcher(lowerQ);
+				while (matcher.find()) {
+					count++;
+				}
+			}
 			if (count > 0) {
 				keywordCount.put(questionList.get(i), keywordCount.getOrDefault(questionList.get(i), 0) + count);
 			}
-        }
-		if(keywordCount.isEmpty()){
+		}
+		if (keywordCount.isEmpty()) {
 			respond = "CSer : Your question seems to be new. Please ask via email for further assistance.";
-		}else{
+		} else {
 			CsQuestion maxKey = null;
 			int maxVal = 0;
 			for (CsQuestion key : keywordCount.keySet()) {
@@ -719,7 +682,8 @@ public class TrainTicketSystem {
 					respond = "CSer : " + questionList.get(i).getAnswer();
 				}
 			}
-			//For bug report : respond = questionList.get(questionList.indexOf(new CsQuestion(maxKey, ""))).getAnswer() out bound;
+			// For bug report : respond = questionList.get(questionList.indexOf(new
+			// CsQuestion(maxKey, ""))).getAnswer() out bound;
 		}
 		System.out.println(respond);
 	}
@@ -1008,7 +972,7 @@ public class TrainTicketSystem {
 			String answer = null;
 			String keywordInput = null;
 			ArrayList<String> keywords = new ArrayList<>();
-	
+
 			while (!isKeyword) {
 				System.out.println("Enter keywords (separated by commas):");
 				keywordInput = scanner.nextLine();
@@ -1017,7 +981,7 @@ public class TrainTicketSystem {
 				} else if (keywordInput.equals("exit")) {
 					isStay = false;
 					System.out.println(
-						"\n=============================================================================================================");
+							"\n=============================================================================================================");
 					return;
 				} else {
 					String[] keywordArray = keywordInput.split(",");
@@ -1027,7 +991,7 @@ public class TrainTicketSystem {
 					isKeyword = true;
 				}
 			}
-	
+
 			while (!isAnswer) {
 				System.out.println("Enter answer:");
 				answer = scanner.nextLine();
@@ -1036,13 +1000,13 @@ public class TrainTicketSystem {
 				} else if (answer.equals("exit")) {
 					isStay = false;
 					System.out.println(
-						"\n=============================================================================================================");
+							"\n=============================================================================================================");
 					return;
 				} else {
 					isAnswer = true;
 				}
 			}
-	
+
 			System.out.println(addQA(keywords, answer));
 		}
 		System.out.println(
@@ -1668,12 +1632,13 @@ public class TrainTicketSystem {
 	public void displayUserList() {
 		userDAO.printUserList();
 	}
+
 	public boolean searchUser(String userName) {
-		for (User user :userDAO.getUserList()) {
+		for (User user : userDAO.getUserList()) {
 			if (user.getUsername().equals(userName)) {
 				return true;
 			}
-			
+
 		}
 		return false;
 	}
