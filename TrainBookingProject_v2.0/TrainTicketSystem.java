@@ -657,38 +657,69 @@ public class TrainTicketSystem {
 
 	public void cs(Scanner scanner) {
 		boolean isStay = true;
-		System.out.println(
-				"\n=============================================================================================================");
-		System.out.println(
-				"CSer : Hi, welcome to customer service, how can I help you? (type your question or type exit to back to main menu)");
-		while (isStay) {
+		System.out.println("\n=============================================================================================================");
+		System.out.println("CSer : Hi, welcome to customer service, how can I help you? (type your question or type exit to back to main menu)");
+		while(isStay){
 			System.out.print("You : ");
 			String question = scanner.nextLine();
-			if (question.equals("exit")) {
+			if(question.equals("exit")){
 				isStay = false;
-				System.out.println("CSer : Goodbye!");
-			} else if (question == null || question.isEmpty()) {
-				System.out.println("CSer : Please type your question.");
-			} else {
-				System.out.println("CSer : " + getAnswer(question));
+				getAnswer(question);
+			}else{
+				getAnswer(question);
 			}
-			System.out.println(
-					(isStay) ? "CSer : Anything else?(type your question or type exit to back to main menu)" : "");
+			System.out.println((isStay) ? "CSer : Anything else?(type your question or type exit to back to main menu)" : "");
 		}
-		System.out.println(
-				"\n=============================================================================================================");
+		System.out.println("\n=============================================================================================================");
 	}
 
 	// fn to find answer by keyword
-	public String getAnswer(String question) {
-		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
-		String lowerQ = question.toLowerCase();
-		for (int i = 0; i < questionList.size(); i++) {
-			if (lowerQ.contains(questionList.get(i).getQuestion().toLowerCase())) {
-				return questionList.get(i).getAnswer();
-			}
+	public void getAnswer(String question) {
+	    ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
+		String lowerQ = question.replaceAll("[^a-zA-Z0-9\\s]", " ").toLowerCase().trim();
+		//bug report >>> book reportxxx still work
+ 		String respond = "";
+		if(lowerQ == null || lowerQ.isEmpty()){
+			System.out.println("CSer : Please type your question.");
+			return;
 		}
-		return "Your question seems to be new. Please ask via email for further assistance.";
+		if(lowerQ.equalsIgnoreCase("exit")){
+			System.out.println("CSer : Goodbye!");
+			return;
+		}
+		LinkedHashMap<CsQuestion,Integer> keywordCount = new LinkedHashMap<CsQuestion,Integer>();
+		for (int i = 0; i < questionList.size(); i++) {
+			int count = 0;
+            for (String keyword : questionList.get(i).getQuestion()) {
+            	String regex = "\\b" + keyword.toLowerCase() + "\\b";
+            	Matcher matcher = Pattern.compile(regex).matcher(lowerQ);
+            	while (matcher.find()) {
+                	count++;
+            	}
+            }
+			if (count > 0) {
+				keywordCount.put(questionList.get(i), keywordCount.getOrDefault(questionList.get(i), 0) + count);
+			}
+        }
+		if(keywordCount.isEmpty()){
+			respond = "CSer : Your question seems to be new. Please ask via email for further assistance.";
+		}else{
+			CsQuestion maxKey = null;
+			int maxVal = 0;
+			for (CsQuestion key : keywordCount.keySet()) {
+				if (keywordCount.get(key) > maxVal) {
+					maxKey = key;
+					maxVal = keywordCount.get(key);
+				}
+			}
+			for (int i = 0; i < questionList.size(); i++) {
+				if (maxKey == questionList.get(i)) {
+					respond = "CSer : " + questionList.get(i).getAnswer();
+				}
+			}
+			//For bug report : respond = questionList.get(questionList.indexOf(new CsQuestion(maxKey, ""))).getAnswer() out bound;
+		}
+		System.out.println(respond);
 	}
 
 	// public void addTrain(Train train) {
@@ -973,18 +1004,28 @@ public class TrainTicketSystem {
 			boolean isKeyword = false;
 			boolean isAnswer = false;
 			String answer = null;
-			String keyword = null;
+			String keywordInput = null;
+			ArrayList<String> keywords = new ArrayList<>();
+	
 			while (!isKeyword) {
-				System.out.println("Enter keyword:");
-				keyword = scanner.nextLine();
-				if (keyword.isEmpty()) {
-					System.out.println("Keyword cannot be empty.");
-				} else if (keyword.equals("exit")) {
+				System.out.println("Enter keywords (separated by commas):");
+				keywordInput = scanner.nextLine();
+				if (keywordInput.isEmpty()) {
+					System.out.println("Keywords cannot be empty.");
+				} else if (keywordInput.equals("exit")) {
 					isStay = false;
+					System.out.println(
+						"\n=============================================================================================================");
+					return;
 				} else {
+					String[] keywordArray = keywordInput.split(",");
+					for (String keyword : keywordArray) {
+						keywords.add(keyword.trim());
+					}
 					isKeyword = true;
 				}
 			}
+	
 			while (!isAnswer) {
 				System.out.println("Enter answer:");
 				answer = scanner.nextLine();
@@ -992,11 +1033,15 @@ public class TrainTicketSystem {
 					System.out.println("Answer cannot be empty.");
 				} else if (answer.equals("exit")) {
 					isStay = false;
+					System.out.println(
+						"\n=============================================================================================================");
+					return;
 				} else {
 					isAnswer = true;
 				}
 			}
-			System.out.println(addQA(keyword, answer));
+	
+			System.out.println(addQA(keywords, answer));
 		}
 		System.out.println(
 				"\n=============================================================================================================");
