@@ -41,16 +41,20 @@ public class DaliyCheckInDAO {
         String couponType = COUPON_TYPES[random.nextInt(COUPON_TYPES.length)];
         String couponCode = COUPON_CODE_PREFIX + random.nextInt(10000);
         LocalDate expiryDate = LocalDate.now().plusDays(7);
+        double discount=0;
+        CouponFactory cuponFactory;
         boolean generateCoupon = random.nextBoolean();
         if(generateCoupon) {
 
 	        if (couponType.equals("Amount")) {
-	            double amount = 10 + (50 - 10) * random.nextDouble();
-	            currentUser.addCoupon(new AmountCoupon(amount, couponType, couponCode, expiryDate));
+	            discount = 10 + (50 - 10) * random.nextDouble();
+	           cuponFactory = new AmountCouponFactory();
+	            
 	        } else {
-	            double discount = 0.01 + (0.2 - 0.05) * random.nextDouble();
-	            currentUser.addCoupon(new DiscountCoupon(discount, couponType, couponCode, expiryDate));
+	            discount = 0.01 + (0.2 - 0.05) * random.nextDouble();
+	            cuponFactory = new DiscountCouponFactory();
 	        }
+	        currentUser.addCoupon(cuponFactory.createCoupon(discount, couponCode, expiryDate));
         }
         
         return generateCoupon;

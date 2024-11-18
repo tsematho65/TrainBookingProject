@@ -2,7 +2,6 @@ package DataModel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class User implements MessageObserver {
 
@@ -15,7 +14,7 @@ public class User implements MessageObserver {
     private LocalDate lastSignInDate;
     private ArrayList<OrderRecord> orderRecordList;
     private ArrayList<Coupon> couponList;
-    // private static final int POINTS_PER_SIGN_IN = 10;
+
 
     private String latestAnnouncement;
 
@@ -29,6 +28,7 @@ public class User implements MessageObserver {
         lastSignInDate = null;
         points = 0;
         latestAnnouncement = null;
+        couponList = new ArrayList<Coupon>();
     }
 
     public String getUsername() {
@@ -127,68 +127,9 @@ public class User implements MessageObserver {
         return latestAnnouncement != null;
     }
 
-    // Moved to TrainTicketSystem.java
-    // public boolean signIn() {
-    // LocalDate today = LocalDate.now();
-    // if (lastSignInDate != null && lastSignInDate.equals(today)) {
-    // System.out.println("You have already signed in today. Please come back
-    // tomorrow.");
-    // return false;
-    // }
 
-    // lastSignInDate = today;
 
-    // points += POINTS_PER_SIGN_IN;
+   
 
-    // if (isWinningSignIn()) {
-    // System.out.println(username + " signIn sucessful, you get " +
-    // POINTS_PER_SIGN_IN + " points and win a prize!");
-    // } else {
-    // System.out.println(username + " signIn sucessful, you get " +
-    // POINTS_PER_SIGN_IN + "points but no prize. ");
-    // }
-
-    // return true;
-    // }
-
-    // private boolean isWinningSignIn() {
-
-    // Random random = new Random();
-    // return random.nextInt(10) < 1;
-    // }
-
-    // Already exist in OrderRecordDAO
-    // public ArrayList<OrderRecord> getOrderRecordList() {
-    // return orderRecordList;
-    // }
-
-    // public void setOrderRecordList(ArrayList<OrderRecord> orderRecordList) {
-    // this.orderRecordList = orderRecordList;
-    // }
-
-    // public void addOrderRecord(OrderRecord orderRecord) {
-    // orderRecordList.add(orderRecord);
-    // }
-
-    // public void removeOrderRecord(OrderRecord orderRecord) {
-    // orderRecordList.remove(orderRecord);
-    // }
-
-    // public void updateOrderRecord(OrderRecord orderRecord) {
-    // for (OrderRecord or : orderRecordList) {
-    // if (or.getOrderId().equals(orderRecord.getOrderId())) {
-    // or = orderRecord;
-    // }
-    // }
-    // }
-
-    // public OrderRecord getOrderRecordById(String orderId) {
-    // for (OrderRecord orderRecord : orderRecordList) {
-    // if (orderRecord.getOrderId().equals(orderId)) {
-    // return orderRecord;
-    // }
-    // }
-    // return null;
-    // }
 
 }

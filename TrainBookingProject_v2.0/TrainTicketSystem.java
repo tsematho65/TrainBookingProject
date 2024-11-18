@@ -18,6 +18,7 @@ public class TrainTicketSystem {
 	private OrderRecordDAO orderRecordDAO;
 	private User currentUser;
 	private MessageCenter messageCenter;
+	private DaliyCheckInDAO daliyCheckInDAO;
 
 	private TrainTicketSystem() {
 		userDAO = new UserDAO();
@@ -27,6 +28,7 @@ public class TrainTicketSystem {
 		orderRecordDAO = new OrderRecordDAO();
 		messageCenter = new MessageCenter();
 		currentUser = null;
+		daliyCheckInDAO = new DaliyCheckInDAO();
 	}
 
 	public static TrainTicketSystem getInstance() {
@@ -65,20 +67,9 @@ public class TrainTicketSystem {
 	}
 
 	public boolean register(String username, String password) {
-		// Checking if username matches is already done in UserDAO
-		// check if the username is already taken
-		// for (User user : userDAO.getTable_user()) {
-		// if (user.getUsername().equals(username)) {
-		// return false;
-		// }
-		// }
 
 		return userDAO.register("normal", username, password);
-		// Adding new user is also done in UserDAO
-		// User user = new User("normal", "userID_" + userDAO.getTable_user().size(),
-		// username, password);
-		// userDAO.addUser_fromUserTable(user);
-		// return true;
+
 	}
 
 	// sign in for reward?
@@ -169,7 +160,12 @@ public class TrainTicketSystem {
 		System.out.println("3. Edit Profile");
 		System.out.println("4. Customer Service");
 		System.out.println("5. Subscribe and receive messages");
-		System.out.println("6. Logout");
+		System.out.println("6. Daliy CheckIn");
+		System.out.println("7. Logout");
+	}
+	
+	public void checkIn() {
+		daliyCheckInDAO.checkIn(currentUser);
 	}
 
 	// fn to order tickets
@@ -212,7 +208,7 @@ public class TrainTicketSystem {
 		if (passengerCount > seatCount) {
 			System.out.println("Not enough seats available.");
 		}
-		int totalPrice = 0;
+		double totalPrice = 0;
 		int counter = 0;
 		double ticketPrice = selectedTrain.getPrice();
 
@@ -267,14 +263,14 @@ public class TrainTicketSystem {
 
 		// Ticket Info:
 		// ...
-
+		
 		OrderRecord orderRecord = new OrderRecord(
 				String.format("orderID_%s_%s", currentUser.getId(),
 						orderRecordDAO.getOrdersByUserId(currentUser.getId()).size()),
 				currentUser.getId(),
 				selectedTrain.getTrainNumber(),
 				new Date(),
-				totalPrice, // tmp
+				getTotalPriceWithDiscount(totalPrice), // tmp
 				order_passengerList, // tmp
 				null// tmp
 		);
@@ -285,6 +281,20 @@ public class TrainTicketSystem {
 
 		System.out.println("Order successful.");
 		// System.out.println("Order ID: " + orderRecord.getOrderId());
+	}
+
+	public double getTotalPriceWithDiscount(Double totalPrice) {
+		double discount = currentUser.getMember().getDiscount();
+		
+		double result =0;
+		
+		result = totalPrice -  (totalPrice * discount);
+		if (currentUser.getCouponList().size() > 0) {
+			result= result - userDAO.useCoupon(result, currentUser);
+			System.out.println("You use a coupon. ");
+		}
+		
+		return result;
 	}
 
 	public int displayTrains_available() {
@@ -1643,6 +1653,15 @@ public class TrainTicketSystem {
 
 	private void changeUsername(Scanner scanner) {
 		System.out.println("\n--- Change Username ---");
+		System.out.println("Enter your current username:  ");
+		String currentUsername = scanner.nextLine().trim();
+		
+
+		if (!userDAO.isUsernameExists(currentUsername)) {
+			System.out.println("UserName Not exists. ");
+			return;
+		}
+		
 		System.out.print("Enter your new username: ");
 		String newUsername = scanner.nextLine().trim();
 
@@ -1650,23 +1669,33 @@ public class TrainTicketSystem {
 			System.out.println("Username cannot be empty.");
 			return;
 		}
+		
 
 		if (userDAO.isUsernameExists(newUsername)) {
 			System.out.println("Username already exists. Please choose a different username.");
 			return;
 		}
-
-		currentUser.setUsername(newUsername);
-		boolean success = userDAO.updateUser_fromUserTable(currentUser);
-		if (success) {
-			System.out.println("Username updated successfully.");
-		} else {
-			System.out.println("Failed to update username. Please try again.");
-		}
+		userDAO.getUserByName(currentUsername).setUsername(newUsername);
+		System.out.println("Username updated successfully.");
+//		boolean success = userDAO.updateUser_fromUserTable(userDAO.getUserByName(currentUsername));
+//		if (success) {
+//			System.out.println("Username updated successfully.");
+//		} else {
+//			System.out.println("Failed to update username. Please try again.");
+//		}
 	}
 
 	private void changePassword(Scanner scanner) {
 		System.out.println("\n--- Change Password ---");
+		System.out.println("Enter your current username:  ");
+		String currentUsername = scanner.nextLine().trim();
+		
+
+		if (!userDAO.isUsernameExists(currentUsername)) {
+			System.out.println("UserName Not exists. ");
+			return;
+		}
+		
 		System.out.print("Enter your current password: ");
 		String currentPassword = scanner.nextLine().trim();
 
@@ -1715,6 +1744,15 @@ public class TrainTicketSystem {
 
 	public void displayUserList() {
 		userDAO.printUserList();
+	}
+	public boolean searchUser(String userName) {
+		for (User user :userDAO.getUserList()) {
+			if (user.getUsername().equals(userName)) {
+				return true;
+			}
+			
+		}
+		return false;
 	}
 
 }

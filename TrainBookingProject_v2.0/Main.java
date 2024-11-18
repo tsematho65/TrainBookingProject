@@ -96,8 +96,14 @@ public class Main {
                         train_ticket_system.subscribeUser(current_LoginedUser.getId());
                         System.out.println("You have subscribed to receive messages.");
                         break;
-
+                    
                     case 6:
+                        // Check in
+                        train_ticket_system.checkIn();
+                        System.out.println(current_LoginedUser.getUsername() + " Points: " + current_LoginedUser.getPoints() );
+                        break;
+
+                    case 7:
                         // LOGOUT
                         current_LoginedUser = null;
                         System.out.println("Logged out successfully.\n");
@@ -134,7 +140,7 @@ public class Main {
                         break;
                     case 4:
                         System.out.println("Edit Profile");
-                        // ... Implement Edit Profile functionality
+						train_ticket_system.editProfile(scanner);
                         break;
                     case 5:
                         // Logout

@@ -26,6 +26,15 @@ public class UserDAO {
 		return currentUser;
 	}
 
+	public User getUserByName(String userName) {
+		for (User user : table_user) {
+			if (user.getUsername().equals(userName)) {
+				return user;
+			}
+		}
+		return null;
+	}
+
 	// Not needed here
 	// public double getDiscount() {
 	// return nowUser.getMember().getDiscount();
@@ -51,7 +60,7 @@ public class UserDAO {
 		return true;
 	}
 
-	public ArrayList<User> getUserList(List<User> userList) {
+	public ArrayList<User> getUserList() {
 		return table_user;
 	}
 
@@ -119,7 +128,7 @@ public class UserDAO {
 
 	}
 
-	public double calculateDiscount(double totalAmount, User currentUser) {
+	public double useCoupon(double totalAmount, User currentUser) {
 
 		ArrayList<Coupon> coupons = currentUser.getCouponList();
 		double maxDiscount = 0.0;
@@ -130,6 +139,8 @@ public class UserDAO {
 		}
 		return maxDiscount;
 	}
+
+	
 
 	// moved to TrainTicketSystem.java
 	// public void signIN() {
