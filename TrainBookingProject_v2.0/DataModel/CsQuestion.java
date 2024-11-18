@@ -1,20 +1,20 @@
 package DataModel;
-
+import java.util.*;
 public class CsQuestion {
-    private String question;
+    private ArrayList<String> questionList;
     private String answer;
 
-    public CsQuestion(String question, String answer) {
-        this.question = question;
+    public CsQuestion(ArrayList<String> questionList, String answer) {
+        this.questionList = questionList;
         this.answer = answer;
     }
 
-    public String getQuestion() {
-        return question;
+    public ArrayList<String> getQuestion() {
+        return questionList;
     }
 
     public void setQuestion(String question) {
-        this.question = question;
+        questionList.add(question);
     }
 
     public String getAnswer() {
