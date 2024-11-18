@@ -14,7 +14,7 @@ public class Database {
     private ArrayList<Train> table_train;
     private ArrayList<OrderRecord> table_orderRecord;
     private ArrayList<seatPlan> table_seattingPlan;
-    private ArrayList<Passenger> table_passenger;
+    // private ArrayList<Passenger> table_passenger;
     private ArrayList<CsQuestion> table_question;
     private ArrayList<Ticket> table_ticket;
 
@@ -25,7 +25,7 @@ public class Database {
         table_train = new ArrayList<>();
         table_orderRecord = new ArrayList<>();
         table_seattingPlan = new ArrayList<>();
-        table_passenger = new ArrayList<>();
+        // table_passenger = new ArrayList<>();
         table_question = new ArrayList<>();
         DB_initialize();
     }
@@ -90,9 +90,9 @@ public class Database {
         return getInstance().table_seattingPlan;
     }
 
-    public ArrayList<Passenger> getTable_passenger() {
-        return getInstance().table_passenger;
-    }
+    // public ArrayList<Passenger> getTable_passenger() {
+    //     return getInstance().table_passenger;
+    // }
 
     public ArrayList<CsQuestion> getTable_question() {
         return getInstance().table_question;
