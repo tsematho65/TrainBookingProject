@@ -54,24 +54,24 @@ public class Database {
         sp1.updateSeat(2, "X");
 
         table_seattingPlan.add(sp1);
-        table_question.add(new CsQuestion("book ticket",
+        table_question.add(new CsQuestion(new ArrayList<String>(Arrays.asList("book", "ticket")),
                 "To book a ticket, you should press 1 in the main menu after login, then follow the instructions to do booking."));
-        table_question.add(new CsQuestion("edit ticket",
+        table_question.add(new CsQuestion(new ArrayList<String>(Arrays.asList("edit", "ticket")),
                 "To edit a ticket, you should press 3 in the main menu after login, then follow the instructions to edit."));
-        table_question.add(new CsQuestion("check ticket",
+        table_question.add(new CsQuestion(new ArrayList<String>(Arrays.asList("check", "ticket")),
                 "To check a ticket, you should press 2 in the main menu after login, then you can see all ticket you booked."));
-        table_question.add(new CsQuestion("cancel ticket",
+        table_question.add(new CsQuestion(new ArrayList<String>(Arrays.asList("cancel", "ticket")),
                 "To cancel a ticket, you should press 4 in the main menu after login, then follow the instructions to cancel."));
-        table_question.add(new CsQuestion("edit profile",
+        table_question.add(new CsQuestion(new ArrayList<String>(Arrays.asList("edit", "profile")),
                 "To edit your profile, you should press 5 in the main menu after login."));
         table_question
-                .add(new CsQuestion("problem", "If you have any problem, please press 7 to contact customer service."));
-        table_question.add(new CsQuestion("customer service",
+                .add(new CsQuestion(new ArrayList<String>(Arrays.asList("problem")), "If you have any problem, please press 7 to contact customer service."));
+        table_question.add(new CsQuestion(new ArrayList<String>(Arrays.asList("customer service")),
                 "If you have any problem, please press 7 to contact customer service."));
         table_question
-                .add(new CsQuestion("help", "If you have any problem, please press 7 to contact customer service."));
+                .add(new CsQuestion(new ArrayList<String>(Arrays.asList("help")), "If you have any problem, please press 7 to contact customer service."));
         table_question
-                .add(new CsQuestion("contact method", "How to find us : email : 123@123.com, phone : 1234567890"));
+                .add(new CsQuestion(new ArrayList<String>(Arrays.asList("contact method")), "How to find us : email : 123@123.com, phone : 1234567890"));
     }
 
     public ArrayList<User> getTable_user() {
