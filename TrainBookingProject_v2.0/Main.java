@@ -82,28 +82,24 @@ public class Main {
                         train_ticket_system.checkTicket(scanner);
                         break;
 
-                    case 3:
-                        // EDIT PROFILE
-                        break;
-
                     // CS function
-                    case 4:
+                    case 3:
                         train_ticket_system.cs(scanner);
                         break;
 
-                    case 5:
+                    case 4:
                         // Subscribe and receive messages
                         train_ticket_system.subscribeUser(current_LoginedUser.getId());
                         System.out.println("You have subscribed to receive messages.");
                         break;
                     
-                    case 6:
+                    case 5:
                         // Check in
                         train_ticket_system.checkIn();
                         System.out.println(current_LoginedUser.getUsername() + " Points: " + current_LoginedUser.getPoints() );
                         break;
 
-                    case 7:
+                    case 6:
                         // LOGOUT
                         current_LoginedUser = null;
                         System.out.println("Logged out successfully.\n");

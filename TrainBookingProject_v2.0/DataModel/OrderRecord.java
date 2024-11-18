@@ -8,7 +8,7 @@ public class OrderRecord {
     private String trainId;
     private Date orderDate;
     private double amount;
-    private ArrayList<Passenger> passengerList;
+    // private ArrayList<Passenger> passengerList;
     private ArrayList<Ticket> ticketList;
     private int rating;
 
@@ -16,13 +16,13 @@ public class OrderRecord {
     public OrderRecord() {}
 
     // Parameterized constructor
-    public OrderRecord(String orderId, String userId, String trainId, Date orderDate, double amount, ArrayList<Passenger> passengerList, ArrayList<Ticket> ticketList) {
+    public OrderRecord(String orderId, String userId, String trainId, Date orderDate, double amount, ArrayList<Ticket> ticketList) {
         this.orderId = orderId;
         this.userId = userId;
         this.trainId = trainId;
         this.orderDate = orderDate;
         this.amount = amount;
-        this.passengerList = passengerList;
+        // this.passengerList = passengerList;
         this.ticketList = ticketList;
         this.rating = 0;
     }
@@ -68,13 +68,13 @@ public class OrderRecord {
         this.amount = amount;
     }
 
-    public ArrayList<Passenger> getPassengerList() {
-        return passengerList;
-    }
+    // public ArrayList<Passenger> getPassengerList() {
+    //     return passengerList;
+    // }
 
-    public void setPassengerList(ArrayList<Passenger> passengerList) {
-        this.passengerList = passengerList;
-    }
+    // public void setPassengerList(ArrayList<Passenger> passengerList) {
+    //     this.passengerList = passengerList;
+    // }
 
     public ArrayList<Ticket> getTicketList() {
         return ticketList;
@@ -97,8 +97,8 @@ public class OrderRecord {
         sb.append(String.format("User ID: %s\nTrain ID: %s\nOrder Date: %s\nTotal Amount: $%.2f\n", 
             userId, trainId, orderDate.toString(), amount));
         sb.append("Passengers:\n");
-        for (Passenger p : passengerList) {
-            sb.append(p.toString()).append("\n");
+        for (Ticket t : ticketList) {
+            sb.append(t.toString()).append("\n");
         }
         sb.deleteCharAt(sb.length() - 1);
         // sb.append("Tickets:\n");

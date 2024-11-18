@@ -157,11 +157,10 @@ public class TrainTicketSystem {
 	public void displayMainMenu() {
 		System.out.println("1. Order Ticket");
 		System.out.println("2. View Orders");
-		System.out.println("3. Edit Profile");
-		System.out.println("4. Customer Service");
-		System.out.println("5. Subscribe and receive messages");
-		System.out.println("6. Daliy CheckIn");
-		System.out.println("7. Logout");
+		System.out.println("3. Customer Service");
+		System.out.println("4. Subscribe and receive messages");
+		System.out.println("5. Daliy CheckIn");
+		System.out.println("6. Logout");
 	}
 	
 	public void checkIn() {
@@ -202,7 +201,7 @@ public class TrainTicketSystem {
 		System.out.print("Enter number of passengers: ");
 		int passengerCount = scanner.nextInt();
 
-		ArrayList<Passenger> order_passengerList = new ArrayList<>();
+		ArrayList<Ticket> order_ticketList = new ArrayList<>();
 
 		int seatCount = selectedTrain.getAvailableSeats();
 		if (passengerCount > seatCount) {
@@ -233,7 +232,7 @@ public class TrainTicketSystem {
 			int age = scanner.nextInt();
 			// scanner.nextLine(); // Consume newline
 
-			order_passengerList.add(new Passenger(name, age));
+			order_ticketList.add(new Ticket(name, age));
 			counter++;
 		}
 
@@ -271,8 +270,8 @@ public class TrainTicketSystem {
 				selectedTrain.getTrainNumber(),
 				new Date(),
 				getTotalPriceWithDiscount(totalPrice), // tmp
-				order_passengerList, // tmp
-				null// tmp
+				// order_passengerList, // tmp
+				order_ticketList// tmp
 		);
 
 		// Add through OrderRecordDAO
@@ -555,10 +554,10 @@ public class TrainTicketSystem {
 		switch (editOption) {
 			case 1:
 				// Modify Passenger Information
-				ArrayList<Passenger> passengers = order.getPassengerList();
-				for (int i = 0; i < passengers.size(); i++) {
-					Passenger p = passengers.get(i);
-					System.out.printf("Passenger %d: %s, Age: %d\n", i + 1, p.getName(), p.getAge());
+				ArrayList<Ticket> tickets = order.getTicketList();
+				for (int i = 0; i < tickets.size(); i++) {
+					Ticket t = tickets.get(i);
+					System.out.printf("Passenger %d: %s, Age: %d\n", i + 1, t.getName(), t.getAge());
 					System.out.print("Do you want to modify this passenger's information? (Y/N): ");
 					String choice = scanner.nextLine();
 					if (choice.equalsIgnoreCase("Y")) {
@@ -568,8 +567,8 @@ public class TrainTicketSystem {
 						int newAge = scanner.nextInt();
 						scanner.nextLine();
 
-						p.setName(newName);
-						p.setAge(newAge);
+						t.setName(newName);
+						t.setAge(newAge);
 					}
 				}
 				System.out.println("Passenger information updated.");
@@ -640,7 +639,7 @@ public class TrainTicketSystem {
 
 		String trainId = order.getTrainId();
 		Train train = trainDAO.getTrain_fromTrainTable(trainId);
-		int passengerCount = order.getPassengerList().size();
+		int passengerCount = order.getTicketList().size();
 		train.setAvailableSeats(train.getAvailableSeats() + passengerCount);
 		trainDAO.updateTrain_fromTrainTable(train);
 
