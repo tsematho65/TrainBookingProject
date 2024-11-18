@@ -127,7 +127,7 @@ public class Main {
                         train_ticket_system.manageTrainSchedule(scanner);// Corrected method call
                         break;
                     case 2:
-                        System.out.println("View Reports");
+                        train_ticket_system.viewReports(scanner);
                         break;
                     case 3:
                         System.out.println("Display User List");

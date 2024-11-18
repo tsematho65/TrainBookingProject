@@ -386,14 +386,15 @@ public class TrainTicketSystem {
 	public void viewOrders(Scanner scanner) {
 		while (true) {
 			ArrayList<OrderRecord> userOrders = orderRecordDAO.getOrdersByUserId(currentUser.getId());
+			if (userOrders.isEmpty()) {
+				System.out.println("You currently have no orders.");
+				return;
+			}
+
 			if (!userOrders.isEmpty()) {
 				summarizeOrders(userOrders);
 			}
 			displayOrders(userOrders);
-
-			if (userOrders.isEmpty()) {
-				return;
-			}
 
 			System.out.print("Enter the Order No. to EDIT or CANCEL it, 0 to return to the main menu: ");
 			int orderNo = scanner.nextInt(); // not to be confused with Order Id
@@ -416,7 +417,7 @@ public class TrainTicketSystem {
 						break;
 
 					case 2:
-						cancelTicket(scanner, userOrders.get(orderNo - 1));
+						cancelOrder(scanner, userOrders.get(orderNo - 1));
 						break;
 
 					case 3:
@@ -430,21 +431,17 @@ public class TrainTicketSystem {
 	}
 
 	private int displayOrders(ArrayList<OrderRecord> userOrders) {
-		if (userOrders.isEmpty()) {
-			System.out.println("You currently have no orders.");
-		} else {
-			System.out.println("Your Order Records:");
-			for (int i = 0; i < userOrders.size(); i++) {
-				OrderRecord order = userOrders.get(i);
-				String orderNoAndId = String.format("%s %d: %s %s", "==========", i + 1, order.getOrderId(),
-						"==========");
-				System.out.println(orderNoAndId);
-				System.out.println(order.toString());
-				for (int j = 0; j < orderNoAndId.length(); j++) {
-					System.out.print("=");
-				}
-				System.out.println();
+		System.out.println("Your Order Records:");
+		for (int i = 0; i < userOrders.size(); i++) {
+			OrderRecord order = userOrders.get(i);
+			String orderNoAndId = String.format("%s %d: %s %s", "==========", i + 1, order.getOrderId(),
+					"==========");
+			System.out.println(orderNoAndId);
+			System.out.println(order.toString());
+			for (int j = 0; j < orderNoAndId.length(); j++) {
+				System.out.print("=");
 			}
+			System.out.println();
 		}
 		return userOrders.size();
 	}
@@ -504,8 +501,7 @@ public class TrainTicketSystem {
 		System.out.println(order.toString());
 		System.out.println("You can perform the following actions:");
 		System.out.println("1. Modify Passenger Information");
-		System.out.println("2. Modify Ticket Type");
-		System.out.println("3. Return");
+		System.out.println("2. Return");
 		System.out.print("Choose an option: ");
 		int editOption = scanner.nextInt();
 		scanner.nextLine();
@@ -532,53 +528,7 @@ public class TrainTicketSystem {
 				}
 				System.out.println("Passenger information updated.");
 				break;
-
 			case 2:
-				// ArrayList<Ticket> tickets = order.getTicketList();
-				// for (int i = 0; i < tickets.size(); i++) {
-				// Ticket t = tickets.get(i);
-				// System.out.printf("Ticket %d: %s\n", i + 1, t.toString());
-				// System.out.print("Do you want to modify this ticket's type? (Y/N): ");
-				// String choice = scanner.nextLine();
-				// if (choice.equalsIgnoreCase("Y")) {
-				// System.out.println("Select new ticket type:");
-				// System.out.println("1. Regular");
-				// System.out.println("2. Business");
-				// System.out.print("Choose: ");
-				// int typeChoice = scanner.nextInt();
-				// scanner.nextLine();
-
-				// if (typeChoice == 1) {
-				// if (t instanceof BusinessTicket) {
-				// BusinessTicket bt = (BusinessTicket) t;
-				// double newPrice = system.getTrainTable().get(order.getTrainId() -
-				// 1).getPrice();
-				// RegularTicket rt = new RegularTicket("Regular", newPrice);
-				// tickets.set(i, rt);
-				// order.setAmount(order.getAmount() - bt.getPrice() + rt.getPrice());
-				// ticketDAO.getTable_ticket().remove(bt);
-				// ticketDAO.addTicket(rt);
-				// }
-				// } else if (typeChoice == 2) {
-				// if (t instanceof RegularTicket) {
-				// RegularTicket rt = (RegularTicket) t;
-				// double newPrice = system.getTrainTable().get(order.getTrainId() -
-				// 1).getPrice() * 1.5;
-				// BusinessTicket bt = new BusinessTicket("Business", newPrice, "Yes");
-				// tickets.set(i, bt);
-				// order.setAmount(order.getAmount() - rt.getPrice() + bt.getPrice());
-				// ticketDAO.getTable_ticket().remove(rt);
-				// ticketDAO.addTicket(bt);
-				// }
-				// } else {
-				// System.out.println("Invalid ticket type selection.");
-				// }
-				// }
-				// }
-				// System.out.println("Ticket types updated.");
-				break;
-
-			case 3:
 				return;
 
 			default:
@@ -588,7 +538,7 @@ public class TrainTicketSystem {
 		System.out.println("Order has been updated.");
 	}
 
-	private void cancelTicket(Scanner scanner, OrderRecord order) {
+	private void cancelOrder(Scanner scanner, OrderRecord order) {
 		System.out.print("Are you sure you want to cancel this order? (Y/N): ");
 		String confirm = scanner.nextLine();
 		if (!confirm.equalsIgnoreCase("Y")) {
@@ -601,10 +551,6 @@ public class TrainTicketSystem {
 		int passengerCount = order.getTicketList().size();
 		train.setAvailableSeats(train.getAvailableSeats() + passengerCount);
 		trainDAO.updateTrain_fromTrainTable(train);
-
-		// for (Ticket t : order.getTicketList()) {
-		// ticketDAO.getTable_ticket().remove(t);
-		// }
 
 		boolean deleted = orderRecordDAO.deleteOrderRecord(order.getOrderId());
 		if (deleted) {
@@ -686,33 +632,6 @@ public class TrainTicketSystem {
 		System.out.println(respond);
 	}
 
-	// public void addTrain(Train train) {
-	// trainDAO.addTrain_fromTrainTable(train);
-	// }
-
-	// public boolean removeTrain(String trainNumber) {
-	// return trainDAO.deleteTrain_fromTrainTable(trainNumber);
-	// }
-
-	// public void updateTrain(Train train) {
-	// trainDAO.updateTrain_fromTrainTable(train);
-	// }
-
-	// public Train getTrainByNumber(String trainNumber) {
-	// return trainDAO.getTrain_fromTrainTable(trainNumber);
-	// }
-
-	// public void displayAllTrains() {
-	// ArrayList<Train> allTrains = trainDAO.getTable_train();
-	// if (allTrains.isEmpty()) {
-	// System.out.println("No trains available.");
-	// } else {
-	// for (Train train : allTrains) {
-	// System.out.println(train.toString());
-	// }
-	// }
-	// }
-
 	// BEGINNING OF ADMIN FUNCTIONS //
 
 	public void manageTrainSchedule(Scanner scanner) {
@@ -766,15 +685,6 @@ public class TrainTicketSystem {
 	private void addTrain(Scanner scanner) {
 		System.out.println("\n--- Add a New Train ---");
 		System.out.println("--- Open Hour: 10:00 - 17:00 ---");
-		// Change to auto gen train id according to number of trains in table
-		// System.out.print("Enter Train ID: ");
-		// String trainID = scanner.nextLine();
-
-		// Train existingTrain = system.getTrainByNumber(trainID);
-		// if (existingTrain != null) {
-		// System.out.println("Train ID already exists. Please use a different ID.");
-		// return;
-		// }
 
 		String trainID = ("trainId_" + (trainDAO.getTable_train().size() + 1));
 
