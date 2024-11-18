@@ -51,11 +51,6 @@ public class UserDAO {
 
 	// Changed from return String to return boolean
 	public boolean register(String role, String userName, String pwd) {
-		for (User user : table_user) {
-			if (user.getUsername().equals(userName)) {
-				return false;
-			}
-		}
 		table_user.add(new User("normal", "userID_" + (table_user.size() + 1), userName, pwd));
 		return true;
 	}
@@ -108,7 +103,7 @@ public class UserDAO {
 		return result;
 	}
 
-	public boolean isUsernameExists(String username) {
+	public boolean usernameExists(String username) {
 		for (User user : table_user) {
 			if (user.getUsername().equalsIgnoreCase(username)) {
 				return true;

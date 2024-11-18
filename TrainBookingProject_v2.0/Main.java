@@ -21,31 +21,11 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    System.out.print("Enter username: ");
-                    String username = scanner.nextLine();
-                    System.out.print("Enter password: ");
-                    String password = scanner.nextLine();
-
-                    current_LoginedUser = train_ticket_system.login(username, password);
-                    train_ticket_system.setCurrentUser(current_LoginedUser);
-                    // System.out.print("\nWelcome " + current_LoginedUser.getUsername() + "!");
-
+                    current_LoginedUser = train_ticket_system.login(scanner);
                     break;
 
                 case 2:
-                    System.out.print("Registeraion Form:\nEnter username: ");
-                    String register_username = scanner.nextLine();
-                    System.out.print("Enter password: ");
-                    String register_pwd = scanner.nextLine();
-
-                    boolean result = train_ticket_system.register(register_username, register_pwd);
-                    if (result) {
-                        System.out.println("Register successfully.");
-                    } else {
-                        System.out.println("Username already exists.");
-                    }
-
-                    System.out.println("");
+                    train_ticket_system.register(scanner);
                     break;
 
                 case 3:
@@ -67,9 +47,13 @@ public class Main {
                 train_ticket_system.displayFinishedOrders(current_LoginedUser.getId(), scanner);
 
                 System.out.println();
-                train_ticket_system.displayMainMenu();
-                System.out.print("Choose an option: ");
-
+                System.out.println("1. Book Tickets");
+                System.out.println("2. View Orders");
+                System.out.println("3. Customer Service");
+                System.out.println("4. Subscribe and receive messages");
+                System.out.println("5. Daily CheckIn");
+                System.out.println("6. Logout");
+                System.out.print("Please select an option: ");
                 option = scanner.nextInt();
                 scanner.nextLine();
 
@@ -90,13 +74,11 @@ public class Main {
                     case 4:
                         // Subscribe and receive messages
                         train_ticket_system.subscribeUser(current_LoginedUser.getId());
-                        System.out.println("You have subscribed to receive messages.");
                         break;
                     
                     case 5:
                         // Check in
                         train_ticket_system.checkIn();
-                        System.out.println(current_LoginedUser.getUsername() + " Points: " + current_LoginedUser.getPoints() );
                         break;
 
                     case 6:

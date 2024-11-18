@@ -20,7 +20,6 @@ public class TrainTicketSystem {
 	private OrderRecordDAO orderRecordDAO;
 	private User currentUser;
 	private MessageCenter messageCenter;
-	private DaliyCheckInDAO daliyCheckInDAO;
 
 	private TrainTicketSystem() {
 		userDAO = new UserDAO();
@@ -30,7 +29,6 @@ public class TrainTicketSystem {
 		orderRecordDAO = new OrderRecordDAO();
 		messageCenter = new MessageCenter();
 		currentUser = null;
-		daliyCheckInDAO = new DaliyCheckInDAO();
 	}
 
 	public static TrainTicketSystem getInstance() {
@@ -48,18 +46,16 @@ public class TrainTicketSystem {
 		this.currentUser = currentUser;
 	}
 
-	// fn to display welcome menu
-	public void displayWelcomeMenu() {
-		System.out.println("Welcome to Train Ticket System!");
-		System.out.println("1. Login");
-		System.out.println("2. Register");
-		System.out.println("3. Exit");
-	}
-
-	public User login(String username, String password) {
+	public User login(Scanner scanner) {
+		System.out.print("Enter username: ");
+		String username = scanner.nextLine();
+		System.out.print("Enter password: ");
+		String password = scanner.nextLine();
+		
 		User user = userDAO.login(username, password);
 		if (user != null) {
 			System.out.println("Login successful.");
+			currentUser = user;
 		} else {
 			System.out.println("Invalid username or password.");
 		}
@@ -68,10 +64,20 @@ public class TrainTicketSystem {
 		return user;
 	}
 
-	public boolean register(String username, String password) {
+	public boolean register(Scanner scanner) {
+		System.out.print("Registration Form:\nEnter username: ");
+		String username = scanner.nextLine();
+		System.out.print("Enter password: ");
+		String password = scanner.nextLine();
 
+		if (!userDAO.usernameExists(username)) {
+			System.out.println("Register successfully.");
+		} else {
+			System.out.println("Username already exists.");
+		}
+		
+		System.out.println("");
 		return userDAO.register("normal", username, password);
-
 	}
 
 	// fn to display finished orders
@@ -116,20 +122,6 @@ public class TrainTicketSystem {
 			}
 		}
 		return finishedOrders;
-	}
-
-	// fn to display main menu
-	public void displayMainMenu() {
-		System.out.println("1. Book Tickets");
-		System.out.println("2. View Orders");
-		System.out.println("3. Customer Service");
-		System.out.println("4. Subscribe and receive messages");
-		System.out.println("5. Daliy CheckIn");
-		System.out.println("6. Logout");
-	}
-
-	public void checkIn() {
-		daliyCheckInDAO.checkIn(currentUser);
 	}
 
 	// fn to order tickets
@@ -583,7 +575,7 @@ public class TrainTicketSystem {
 	}
 
 	// fn to find answer by keyword
-	public void getAnswer(String question) {
+	private void getAnswer(String question) {
 		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
 		String lowerQ = question.replaceAll("[^a-zA-Z0-9\\s]", " ").toLowerCase().trim();
 		// bug report >>> book reportxxx still work
@@ -631,6 +623,64 @@ public class TrainTicketSystem {
 		}
 		System.out.println(respond);
 	}
+
+	// Subscribe and receive messages
+	public void subscribeUser(String id) {
+		User user = userDAO.getUser_fromUserTable(id);
+		messageCenter.registerObserver(user);
+		System.out.println("You have subscribed to receive messages.");
+	}
+
+	public void checkIn() {
+        LocalDate today = LocalDate.now();
+
+        if (currentUser.getLastSignInDate() != null && currentUser.getLastSignInDate().equals(today)) {
+            System.out.println("You have already checked in today.");
+            return;
+        }
+
+        currentUser.setLastSignInDate(today);
+
+        int pointsEarned = 10; // 
+        currentUser.setPoints(currentUser.getPoints() + pointsEarned);
+        System.out.println(currentUser.getUsername() + " successful CheckIn " + pointsEarned + " Points Earned!");
+
+        
+        if (generateRandomCoupon(currentUser)) {
+            System.out.println("Congratulations! You have received a coupon.");
+        } else {
+            System.out.println("Sorry, you did not receive a coupon this time.");
+        }
+
+		System.out.println(currentUser.getUsername() + " Points: " + currentUser.getPoints());
+    }
+
+    private boolean generateRandomCoupon(User currentUser) {
+		final String[] COUPON_TYPES = {"Amount", "Discount"};
+		final String COUPON_CODE_PREFIX = "COUPON";
+
+        Random random = new Random();
+        String couponType = COUPON_TYPES[random.nextInt(COUPON_TYPES.length)];
+        String couponCode = COUPON_CODE_PREFIX + random.nextInt(10000);
+        LocalDate expiryDate = LocalDate.now().plusDays(7);
+        double discount=0;
+        CouponFactory cuponFactory;
+        boolean generateCoupon = random.nextBoolean();
+        if(generateCoupon) {
+
+	        if (couponType.equals("Amount")) {
+	            discount = 10 + (50 - 10) * random.nextDouble();
+	           cuponFactory = new AmountCouponFactory();
+	            
+	        } else {
+	            discount = 0.01 + (0.2 - 0.05) * random.nextDouble();
+	            cuponFactory = new DiscountCouponFactory();
+	        }
+	        currentUser.addCoupon(cuponFactory.createCoupon(discount, couponCode, expiryDate));
+        }
+        
+        return generateCoupon;
+    }
 
 	// BEGINNING OF ADMIN FUNCTIONS //
 
@@ -1361,8 +1411,7 @@ public class TrainTicketSystem {
 	}
 
 	private void listAllUsers() {
-		Database db = Database.getInstance();
-		ArrayList<User> users = db.getTable_user();
+		ArrayList<User> users = userDAO.getUserList();
 		if (users.isEmpty()) {
 			System.out.println("\nNo users found in the system.");
 			return;
@@ -1386,7 +1435,7 @@ public class TrainTicketSystem {
 			return;
 		}
 
-		if (userDAO.isUsernameExists(username)) {
+		if (userDAO.usernameExists(username)) {
 			System.out.println("Username already exists. Please choose a different username.");
 			return;
 		}
@@ -1531,24 +1580,7 @@ public class TrainTicketSystem {
 		messageCenter.notifyObservers();
 	}
 
-	// Subscribe and receive messages
-	public void subscribeUser(String id) {
-		User user = userDAO.getUser_fromUserTable(id);
-		messageCenter.registerObserver(user);
-	}
-
 	public void displayUserList() {
 		userDAO.printUserList();
 	}
-
-	public boolean searchUser(String userName) {
-		for (User user : userDAO.getUserList()) {
-			if (user.getUsername().equals(userName)) {
-				return true;
-			}
-
-		}
-		return false;
-	}
-
 }
