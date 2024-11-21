@@ -7,7 +7,6 @@
 	</classpathentry>
 	<classpathentry excluding="Software Pratices/|TrainBookingProject_vCS_function/|TrainBookingProject_v2.0/" kind="src" path=""/>
 	<classpathentry kind="src" path="TrainBookingProject_v2.0"/>
-	<classpathentry kind="src" path="TrainBookingProject_vCS_function"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
