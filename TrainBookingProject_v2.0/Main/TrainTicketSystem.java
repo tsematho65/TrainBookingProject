@@ -1,3 +1,4 @@
+package Main;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -21,7 +22,7 @@ public class TrainTicketSystem {
 	private User currentUser;
 	private MessageCenter messageCenter;
 
-	private TrainTicketSystem() {
+	public TrainTicketSystem() {
 		userDAO = new UserDAO();
 		trainDAO = new TrainDAO();
 		seatPlanDAO = new SeatDAO();
@@ -653,9 +654,10 @@ public class TrainTicketSystem {
         }
 
 		System.out.println(currentUser.getUsername() + " Points: " + currentUser.getPoints());
+		
     }
 
-    private boolean generateRandomCoupon(User currentUser) {
+    public boolean generateRandomCoupon(User currentUser) {
 		final String[] COUPON_TYPES = {"Amount", "Discount"};
 		final String COUPON_CODE_PREFIX = "COUPON";
 
@@ -1565,6 +1567,7 @@ public class TrainTicketSystem {
 
 		userToModify.setRole(newRole);
 		boolean success = userDAO.updateUser_fromUserTable(userToModify);
+		
 		if (success) {
 			System.out.println("User role updated successfully to '" + newRole + "'.");
 		} else {
