@@ -22,15 +22,5 @@ public class AmountCoupon implements Coupon {
 		
 	}
 
-	public String getCouponType() {
-		return couponType;
-	}
 
-	public String getCouponCode() {
-		return couponCode;
-	}
-
-	public boolean isExpired() {
-		return LocalDate.now().isAfter(expiryDate);
-	}
 }

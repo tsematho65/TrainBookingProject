@@ -14,7 +14,7 @@ public class HandleCuponTest extends TestCase{
 	  TrainTicketSystem ticketSystem = new TrainTicketSystem();
 	  UserDAO userDAO = new UserDAO();
 	  
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			ticketSystem.generateRandomCoupon(userDAO.getUserByName("q"));
 				
 		}
@@ -29,7 +29,7 @@ public class HandleCuponTest extends TestCase{
 		UserDAO userDAO = new UserDAO();
 		
 		int i = 0;
-		while(i<10) {
+		while(i<100) {
 			ticketSystem.generateRandomCoupon(userDAO.getUserByName("q"));
 			i++;
 		}

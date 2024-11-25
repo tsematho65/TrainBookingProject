@@ -22,15 +22,5 @@ public class DiscountCoupon implements Coupon {
         return totalAmount * discount;
     }
 
-    public String getCouponType() {
-        return couponType;
-    }
 
-    public String getCouponCode() {
-        return couponCode;
-    }
-
-    public boolean isExpired() {
-        return LocalDate.now().isAfter(expiryDate);
-    }
 }

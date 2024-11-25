@@ -3,6 +3,8 @@ package Test;
 import junit.framework.TestCase;
 import org.junit.Test;
 import DAO.UserDAO;
+import DataModel.PlatinumMember;
+import DataModel.User;
 
 
 
@@ -37,6 +39,8 @@ public class AccountControlTest extends TestCase{
 	  
 	  assertEquals( userDAO.login("test", "test1"), null);
   }
+  
+
    
   
 }

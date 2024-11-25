@@ -130,32 +130,17 @@ public class UserDAO {
 
 		ArrayList<Coupon> coupons = currentUser.getCouponList();
 		double maxDiscount = 0.0;
+		Coupon coupon1= null;
 		for (Coupon coupon : coupons) {
 			if (coupon.getDiscount(totalAmount) > maxDiscount) {
 				maxDiscount = coupon.getDiscount(totalAmount);
+				coupon1 = coupon;
 			}
 		}
+		currentUser.getCouponList().remove(coupon1);
 		return maxDiscount;
 	}
 
-	
 
-	// moved to TrainTicketSystem.java
-	// public void signIN() {
-	// nowUser.signIn();
-	// }
-
-	// public boolean checkIsAdmin() {
-	// return nowUser.getRole().equals("admin");
-	// }
-
-	// Already exists in OrderRecordDAO
-	// public ArrayList<OrderRecord> getOrdersByUser(String id) {
-	// ArrayList<OrderRecord> orders = new ArrayList<OrderRecord>();
-	// for (OrderRecord order : getUser_fromUserTable(id).getOrderRecordList()) {
-	// orders.add(order);
-	// }
-	// return orders;
-	// }
 
 }
