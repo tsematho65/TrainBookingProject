@@ -27,7 +27,7 @@ public class UserDAO {
 	}
 
 	public User getUserByName(String userName) {
-		for (User user : table_user) {
+		for (User user : getUserList()) {
 			if (user.getUsername().equals(userName)) {
 				return user;
 			}
@@ -54,7 +54,7 @@ public class UserDAO {
 		if (usernameExists(userName)) {
 			return false;
 		}
-		table_user.add(new User("normal", "userID_" + (table_user.size() + 1), userName, pwd));
+		addUser_fromUserTable(new User("normal", "userID_" + (table_user.size() + 1), userName, pwd));
 		return true;
 	}
 
@@ -137,7 +137,7 @@ public class UserDAO {
 				coupon1 = coupon;
 			}
 		}
-		currentUser.getCouponList().remove(coupon1);
+		currentUser.removeCoupon(coupon1);
 		return maxDiscount;
 	}
 

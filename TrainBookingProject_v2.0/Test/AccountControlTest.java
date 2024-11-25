@@ -14,6 +14,7 @@ public class AccountControlTest extends TestCase{
   public void testRegisterSucessful() {
 	  UserDAO userDAO = new UserDAO();
 	  boolean result = userDAO.register("normal", "test", "test");
+	  
 	  assertTrue(result);
 
   }

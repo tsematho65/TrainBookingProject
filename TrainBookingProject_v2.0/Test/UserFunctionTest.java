@@ -26,7 +26,7 @@ public class UserFunctionTest {
       User user = userDAO.login("q", "q");     
       user.setMember(new PlatinumMember());
       assertTrue(0.2 == user.getDiscount());
-      assertEquals("Platinum Member", user.getMemberType());
+      assertEquals("Platinum Member", user.getMember().getMemberType());
   }
   
   @Test
@@ -47,8 +47,27 @@ public class UserFunctionTest {
       assertEquals("test", user.getRole());
       assertEquals(100, user.getPoints());
       assertEquals(LocalDate.now(), user.getLastSignInDate());
-      
-        }
+  }
+  
+  @Test
+  public void manageUser() {
+	  UserDAO userDAO = new UserDAO();
+	  User currentUser;
+	  currentUser = userDAO.getUserByName("1");
+	  currentUser = userDAO.getUserByName("b");
+	  
+	  
+
+	  assertNull(userDAO.getUser_fromUserTable("userID_7"));
+	  User b = userDAO.getUser_fromUserTable("userID_3");
+	  userDAO.updateUser_fromUserTable(b);
+	  assertNull(userDAO.getUserByUsername("d"));
+	  userDAO.getUserByUsername("c");
+	  userDAO.deleteUser_fromUserTable("userID_4");
+	  userDAO.printUserList();
+	  
+  
+  }
   
   
 }

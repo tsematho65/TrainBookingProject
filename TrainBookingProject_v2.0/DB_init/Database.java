@@ -34,6 +34,7 @@ public class Database {
         table_user.add(new User("admin", "userID_1", "admin", "admin"));
         table_user.add(new User("normal", "userID_2", "q", "q"));
         table_user.add(new User("normal", "userID_3", "b", "b"));
+        table_user.add(new User("normal", "userID_4", "c", "c"));
 
         table_train.add(new Train("trainID_1", "LA", "Chicago", "2024-10-01", "12:00", 24, 100));
         table_train.add(new Train("trainID_2", "Washington DC", "Miami", "2024-10-02", "14:00", 24, 150));
