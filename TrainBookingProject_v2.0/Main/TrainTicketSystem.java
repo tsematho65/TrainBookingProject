@@ -554,76 +554,87 @@ public class TrainTicketSystem {
 	}
 
 	public void cs(Scanner scanner) {
-		boolean isStay = true;
-		System.out.println(
-				"\n=============================================================================================================");
-		System.out.println(
-				"CSer : Hi, welcome to customer service, how can I help you? (type your question or type exit to back to main menu)");
-		while (isStay) {
-			System.out.print("You : ");
-			String question = scanner.nextLine();
-			if (question.equals("exit")) {
-				isStay = false;
-				getAnswer(question);
-			} else {
-				getAnswer(question);
-			}
-			System.out.println(
-					(isStay) ? "CSer : Anything else?(type your question or type exit to back to main menu)" : "");
-		}
-		System.out.println(
-				"\n=============================================================================================================");
+	    boolean isStay = true;
+
+	    // Welcome message
+	    System.out.println(
+	            "\n=============================================================================================================");
+	    System.out.println(
+	            "CSer : Hi, welcome to customer service, how can I help you? (type your question or type exit to return to the main menu)");
+
+	    // Main loop
+	    while (isStay) {
+	        System.out.print("You : ");
+	        String question = scanner.nextLine(); // Get user input
+
+	        // Process the input
+	        String response = getAnswer(question);
+
+	        // Print the response
+	        System.out.println(response);
+
+	        // Check if the user wants to exit
+	        if (question.equalsIgnoreCase("exit")) {
+	            isStay = false;
+	        } else {
+	            System.out.println("CSer : Anything else? (type your question or type exit to return to the main menu)");
+	        }
+	    }
+
+	    // Exit message
+	    System.out.println(
+	            "\n=============================================================================================================");
 	}
 
 	// fn to find answer by keyword
-	private void getAnswer(String question) {
-		ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
-		String lowerQ = question.replaceAll("[^a-zA-Z0-9\\s]", " ").toLowerCase().trim();
-		// bug report >>> book reportxxx still work
-		String respond = "";
-		if (lowerQ == null || lowerQ.isEmpty()) {
-			System.out.println("CSer : Please type your question.");
-			return;
+	 public String getAnswer(String question) {
+		    if (question == null || question.trim().isEmpty()) {
+		        return "CSer : Please type your question.";
+		    }
+
+		    ArrayList<CsQuestion> questionList = customerServiceDAO.getTable_question();
+		    String lowerQ = question.replaceAll("[^a-zA-Z0-9\\s]", " ").toLowerCase().trim();
+
+		    if (lowerQ.equalsIgnoreCase("exit")) {
+		        return "CSer : Goodbye!";
+		    }
+
+		    LinkedHashMap<CsQuestion, Integer> keywordCount = new LinkedHashMap<>();
+		    for (int i = 0; i < questionList.size(); i++) {
+		        int count = 0;
+		        for (String keyword : questionList.get(i).getQuestion()) {
+		            String regex = "\\b" + keyword.toLowerCase() + "\\b";
+		            Matcher matcher = Pattern.compile(regex).matcher(lowerQ);
+		            while (matcher.find()) {
+		                count++;
+		            }
+		        }
+		        if (count > 0) {
+		            keywordCount.put(questionList.get(i), keywordCount.getOrDefault(questionList.get(i), 0) + count);
+		        }
+		    }
+
+		    if (keywordCount.isEmpty()) {
+		        return "CSer : Your question seems to be new. Please ask via email for further assistance.";
+		    }
+
+		    CsQuestion maxKey = null;
+		    int maxVal = 0;
+		    for (CsQuestion key : keywordCount.keySet()) {
+		        if (keywordCount.get(key) > maxVal) {
+		            maxKey = key;
+		            maxVal = keywordCount.get(key);
+		        }
+		    }
+
+		    for (int i = 0; i < questionList.size(); i++) {
+		        if (maxKey == questionList.get(i)) {
+		            return "CSer : " + questionList.get(i).getAnswer();
+		        }
+		    }
+
+		    return "";
 		}
-		if (lowerQ.equalsIgnoreCase("exit")) {
-			System.out.println("CSer : Goodbye!");
-			return;
-		}
-		LinkedHashMap<CsQuestion, Integer> keywordCount = new LinkedHashMap<CsQuestion, Integer>();
-		for (int i = 0; i < questionList.size(); i++) {
-			int count = 0;
-			for (String keyword : questionList.get(i).getQuestion()) {
-				String regex = "\\b" + keyword.toLowerCase() + "\\b";
-				Matcher matcher = Pattern.compile(regex).matcher(lowerQ);
-				while (matcher.find()) {
-					count++;
-				}
-			}
-			if (count > 0) {
-				keywordCount.put(questionList.get(i), keywordCount.getOrDefault(questionList.get(i), 0) + count);
-			}
-		}
-		if (keywordCount.isEmpty()) {
-			respond = "CSer : Your question seems to be new. Please ask via email for further assistance.";
-		} else {
-			CsQuestion maxKey = null;
-			int maxVal = 0;
-			for (CsQuestion key : keywordCount.keySet()) {
-				if (keywordCount.get(key) > maxVal) {
-					maxKey = key;
-					maxVal = keywordCount.get(key);
-				}
-			}
-			for (int i = 0; i < questionList.size(); i++) {
-				if (maxKey == questionList.get(i)) {
-					respond = "CSer : " + questionList.get(i).getAnswer();
-				}
-			}
-			// For bug report : respond = questionList.get(questionList.indexOf(new
-			// CsQuestion(maxKey, ""))).getAnswer() out bound;
-		}
-		System.out.println(respond);
-	}
 
 	// Subscribe and receive messages
 	public void subscribeUser(String id) {
